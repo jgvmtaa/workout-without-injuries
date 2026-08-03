@@ -4,7 +4,8 @@
 
 **Depends on:** Phase 4 (eligibility). **Blocks:** Phase 6 (editing).
 
-**Root README refs:** §11 (plan model), §12 (algorithm), §24.4 (tests), §27 Phase 5.
+**Root README refs:** §11 (plan model), §12 (algorithm), §16 (home), §20 (UI state/events),
+§24.4 (tests), §27 Phase 5.
 
 ---
 
@@ -40,7 +41,8 @@
 - [ ] `WorkoutPlanDataStore` + `DefaultWorkoutPlanRepository` persist the current plan
 - [ ] `GenerateWorkoutPlanUseCase` orchestrates split→filter→group→rank→assemble
 
-## 5.8 Plan screen (README §16 home links to it)
+## 5.8 Plan screen (README §11, §16)
+- [ ] Follow the §20 state/event pattern (immutable `UiState`, `sealed *Event`, previewable `Screen`, no `NavController`)
 - [ ] Render generated plan by day with sets/reps/rest
 
 ## 5.9 Tests (README §24.4)

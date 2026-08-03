@@ -40,9 +40,9 @@ Phase 7  MVP polish (empty states, a11y, tests, copy review)
 | 1 | [phase-1-project-foundation.md](phase-1-project-foundation.md) | Nav shell + DI + theme + placeholders | §17–§19, §22, §27 |
 | 2 | [phase-2-domain-and-catalogs.md](phase-2-domain-and-catalogs.md) | Domain models + exercise/injury catalogs | §4.3–§7, §10–§11, §26, §31 |
 | 3 | [phase-3-onboarding.md](phase-3-onboarding.md) | Onboarding flow + profile persistence | §4.1–§4.5, §20, §21 |
-| 4 | [phase-4-filtering.md](phase-4-filtering.md) | Eligibility engine + library filters | §8, §9, §14, §15 |
-| 5 | [phase-5-plan-generation.md](phase-5-plan-generation.md) | Deterministic plan generator | §11, §12 |
-| 6 | [phase-6-plan-editing.md](phase-6-plan-editing.md) | Remove/replace/reorder/regenerate | §13 |
+| 4 | [phase-4-filtering.md](phase-4-filtering.md) | Eligibility engine + library filters | §8, §9, §14, §15, §20 |
+| 5 | [phase-5-plan-generation.md](phase-5-plan-generation.md) | Deterministic plan generator | §11, §12, §16 |
+| 6 | [phase-6-plan-editing.md](phase-6-plan-editing.md) | Edit plan + edit profile/limitations | §13, §16, §17, §25 |
 | 7 | [phase-7-polish.md](phase-7-polish.md) | Empty/edge states, a11y, tests, copy | §24, §25, §28 |
 
 ## Guardrails that apply to every phase (README §2, §29)
@@ -52,6 +52,10 @@ Phase 7  MVP polish (empty states, a11y, tests, copy review)
 - Plan generation must be **deterministic**: same profile ⇒ same plan.
 - Keep the eligibility & plan-generation engine **independent of Android/Compose**.
 - Do **not** build any deferred feature (LLM, auth, cloud, logging, Room, etc.) — see §29.
+
+**Out of scope:** README §30 (post-MVP direction — v1.1 tracking, v1.2 adaptation,
+v1.3 NL onboarding, v1.4 remote catalog) is intentionally **not** broken into tasks
+here. It's future work, addressed only after the §28 MVP is complete.
 
 ## Definition of MVP completion (README §28)
 

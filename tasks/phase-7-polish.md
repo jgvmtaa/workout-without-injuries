@@ -13,7 +13,7 @@ dialogs, UI tests, and content/copy review — then verify MVP completion.
 ## 7.1 Home screen finalization (README §16)
 - [ ] Current plan section + View plan
 - [ ] Profile summary (e.g. "4 days · Build muscle · Intermediate")
-- [ ] Active limitations count
+- [ ] Active limitations count + entry to the Profile/limitations screen (README §3, Phase 6.4)
 - [ ] Exercise library entry point
 - [ ] No analytics/history in first iteration (README §16)
 

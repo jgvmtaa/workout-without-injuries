@@ -11,7 +11,7 @@ screens. **No business logic yet.**
 ---
 
 ## 1.1 Package structure (README §19)
-- [ ] Create package tree under `com.jgv.workoutplanner`:
+  - [ ] Create package tree under `com.jgv.workoutplanner`:
   - [ ] `navigation/`, `core/ui/`, `core/designsystem/`
   - [ ] `domain/model/`, `domain/repository/`, `domain/usecase/`
   - [ ] `data/catalog/`, `data/local/`, `data/repository/`
@@ -43,6 +43,11 @@ screens. **No business logic yet.**
 ## 1.6 DI bootstrap (README §22)
 - [ ] `di/AppModule.kt` with Hilt module skeleton
 - [ ] ViewModels obtainable via `hilt-navigation-compose`
+
+## 1.7 Architecture baseline (README §18)
+- [ ] Establish unidirectional data flow: Compose screen → ViewModel → use case → repository → local data source
+- [ ] Screens receive immutable UI state and emit events (state hoisting) — no business state in composables
+- [ ] Reserve the `domain/` layer for eligibility & plan-generation logic (kept off the UI layer)
 
 ---
 

@@ -6,7 +6,7 @@ exercise library UI that surfaces availability and exclusion reasons.
 **Depends on:** Phases 2 (models/catalog) and 3 (profile). **Blocks:** Phases 5–6.
 
 **Root README refs:** §8 (engine), §9 (filtering behavior), §14 (library),
-§15 (detail), §27 Phase 4.
+§15 (detail), §20 (UI state/events), §27 Phase 4.
 
 ---
 
@@ -29,6 +29,7 @@ exercise library UI that surfaces availability and exclusion reasons.
 - [ ] Omit "Include anyway" override in MVP (README §9)
 
 ## 4.4 Exercise library screen (README §14)
+- [ ] Follow the §20 state/event pattern (immutable `UiState`, `sealed *Event`, previewable `Screen`, no `NavController`)
 - [ ] Muscle-group tabs/chips: All + 10 groups
 - [ ] Browse by muscle group; search by name; filter by equipment
 - [ ] Show available and excluded rows with subtitle (muscle · equipment · tag)
