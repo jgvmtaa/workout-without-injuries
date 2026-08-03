@@ -1,4 +1,4 @@
-# Task Breakdown — Injury-Aware Workout Planner (Android MVP)
+# Task Breakdown — Workout Planner (Android MVP)
 
 This directory decomposes the [root README](../README.md) into a hierarchical,
 **sequentially workable** task list. Each phase builds on the previous one, so

@@ -11,7 +11,7 @@ screens. **No business logic yet.**
 ---
 
 ## 1.1 Package structure (README §19)
-- [ ] Create package tree under `com.example.injuryplanner`:
+- [ ] Create package tree under `com.jgv.workoutplanner`:
   - [ ] `navigation/`, `core/ui/`, `core/designsystem/`
   - [ ] `domain/model/`, `domain/repository/`, `domain/usecase/`
   - [ ] `data/catalog/`, `data/local/`, `data/repository/`

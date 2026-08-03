@@ -11,7 +11,7 @@ set wired in. No product logic yet.
 
 ## 0.1 Toolchain & repo hygiene
 - [ ] Confirm Android Studio + JDK + Android SDK versions and record them in the repo
-- [ ] Create the Android project: single `app` module, package `com.example.injuryplanner` (README §19)
+- [ ] Create the Android project: single `app` module, package `com.jgv.workoutplanner` (README §19)
 - [ ] Verify `./gradlew assembleDebug` succeeds on a clean checkout
 
 ## 0.2 Dependency catalog (README §23)
