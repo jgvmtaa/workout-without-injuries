@@ -1,4 +1,43 @@
-Injury-Aware Workout Planner — Android MVP Plan
+# Workout Planner
+
+Workout Planner is an Android app that creates practical workout plans around a
+person's training preferences, available equipment, and confirmed movement
+limitations. It helps users avoid exercises that may conflict with the
+limitations they select while keeping every recommendation understandable and
+editable.
+
+## How It Works
+
+1. The user chooses a training goal, experience level, weekly schedule, session
+   duration, and available equipment.
+2. The user can record previous injuries. The app may suggest related movement
+   limitations, but the user decides which limitations currently apply.
+3. The app evaluates a built-in exercise catalog against the confirmed
+   limitations, available equipment, and experience level.
+4. A deterministic planner generates a workout from eligible exercises. The
+   same profile produces the same plan.
+5. The user can browse the exercise library, understand why an exercise was
+   excluded, and remove, replace, reorder, or regenerate planned exercises.
+6. The profile and current plan are stored locally so they remain available
+   after the app is closed.
+
+## Safety Approach
+
+Workout Planner does not diagnose injuries, prescribe rehabilitation, or
+replace a physician or physical therapist. Injury history is used only to
+suggest possible movement limitations. Exercise filtering is based on the
+limitations the user explicitly confirms, and the app explains each conflict
+instead of declaring an exercise universally safe or unsafe for an injury.
+
+## MVP Scope
+
+The MVP is local-first and deterministic. It does not require an account, cloud
+service, backend, subscription, social feature, or AI-generated workout advice.
+The repository currently contains the product and technical specification plus
+the sequential implementation plan in [`tasks/`](tasks/README.md).
+
+## Product And Implementation Specification
+
 1. MVP objective
 Build an Android application that:
 Collects basic workout preferences.
@@ -1441,5 +1480,4 @@ The UI collects confirmed limitations.
 The domain engine determines eligibility.
 The static catalog describes exercises.
 No Compose code contains exercise-safety rules.
-
 
