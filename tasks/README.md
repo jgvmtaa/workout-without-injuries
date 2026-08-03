@@ -1,0 +1,62 @@
+# Task Breakdown — Injury-Aware Workout Planner (Android MVP)
+
+This directory decomposes the [root README](../README.md) into a hierarchical,
+**sequentially workable** task list. Each phase builds on the previous one, so
+work them top-to-bottom. Within a phase, tasks are ordered by dependency.
+
+## How to use this
+
+- Each phase lives in its own file (`phase-N-*.md`).
+- Tasks use `- [ ]` checkboxes. Check them off as you complete them.
+- Every task references the source section(s) in the root README, e.g. `(README §5.3)`.
+- A phase is **done** only when its *Completion criteria* (last section of each
+  phase file) are all satisfied.
+
+## Dependency order (do not skip ahead)
+
+```
+Phase 0  Environment & project bootstrap        (prerequisite for everything)
+   ↓
+Phase 1  Project foundation (nav shell, DI, theme, placeholder screens)
+   ↓
+Phase 2  Domain models & static catalogs         ← recommended first CODING task (README §31)
+   ↓
+Phase 3  Onboarding & local profile persistence
+   ↓
+Phase 4  Exercise filtering / eligibility engine
+   ↓
+Phase 5  Plan generation
+   ↓
+Phase 6  Plan editing
+   ↓
+Phase 7  MVP polish (empty states, a11y, tests, copy review)
+```
+
+## Phase index
+
+| Phase | File | Goal | Root README ref |
+|-------|------|------|-----------------|
+| 0 | [phase-0-bootstrap.md](phase-0-bootstrap.md) | Repo, toolchain, build green | §23 |
+| 1 | [phase-1-project-foundation.md](phase-1-project-foundation.md) | Nav shell + DI + theme + placeholders | §17–§19, §22, §27 |
+| 2 | [phase-2-domain-and-catalogs.md](phase-2-domain-and-catalogs.md) | Domain models + exercise/injury catalogs | §4.3–§7, §10–§11, §26, §31 |
+| 3 | [phase-3-onboarding.md](phase-3-onboarding.md) | Onboarding flow + profile persistence | §4.1–§4.5, §20, §21 |
+| 4 | [phase-4-filtering.md](phase-4-filtering.md) | Eligibility engine + library filters | §8, §9, §14, §15 |
+| 5 | [phase-5-plan-generation.md](phase-5-plan-generation.md) | Deterministic plan generator | §11, §12 |
+| 6 | [phase-6-plan-editing.md](phase-6-plan-editing.md) | Remove/replace/reorder/regenerate | §13 |
+| 7 | [phase-7-polish.md](phase-7-polish.md) | Empty/edge states, a11y, tests, copy | §24, §25, §28 |
+
+## Guardrails that apply to every phase (README §2, §29)
+
+- The app **filters**, it does **not** diagnose. Use conservative, limitation-based copy.
+- Suggested limitations are **never** applied silently — the user confirms them.
+- Plan generation must be **deterministic**: same profile ⇒ same plan.
+- Keep the eligibility & plan-generation engine **independent of Android/Compose**.
+- Do **not** build any deferred feature (LLM, auth, cloud, logging, Room, etc.) — see §29.
+
+## Definition of MVP completion (README §28)
+
+The MVP is complete when a new user can: accept the safety notice; set goal /
+schedule / experience / equipment; select injuries; review & confirm suggested
+limitations; generate a deterministic plan; understand exclusions; browse the
+library by muscle group; replace an exercise with an eligible alternative; and
+close/reopen the app without losing profile or plan.
