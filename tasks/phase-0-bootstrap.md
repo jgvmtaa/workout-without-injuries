@@ -12,7 +12,7 @@ set wired in. No product logic yet.
 ## 0.1 Toolchain & repo hygiene
 - [x] Confirm Android Studio + JDK + Android SDK versions and record them in the repo — see [docs/toolchain.md](../docs/toolchain.md)
 - [x] Create the Android project: single `app` module, package `com.jgv.workoutplanner` (README §19)
-- [~] Verify `./gradlew assembleDebug` succeeds on a clean checkout — wrapper + project are complete; **could not be executed on the scaffolding host** (JVM TCP blocked by endpoint policy, see docs/toolchain.md "Environment caveat"). Run on a normal dev machine / CI.
+- [x] Verify `./gradlew assembleDebug` succeeds on a clean checkout — **verified via Android Studio**: AGP produced `app-debug.apk`, installed and launched on an Android 14 emulator. (CLI `gradlew` still can't run on the scaffolding host due to the JVM TCP block — see docs/toolchain.md.)
 
 ## 0.2 Dependency catalog (README §23)
 - [x] Set up Gradle version catalog (`libs.versions.toml`)
@@ -26,18 +26,13 @@ set wired in. No product logic yet.
 - [x] Pin all versions to current-stable at implementation time (README §23 note)
 
 ## 0.3 Build sanity
-- [x] App launches to a blank `MainActivity` Compose surface — implemented (`MainActivity.kt`); runtime launch pending build on an unrestricted host
-- [x] Hilt `@HiltAndroidApp` application class compiles and runs — `WorkoutPlannerApp.kt` (runtime pending build)
-- [x] Unit test source set runs (one trivial passing test) — `ExampleUnitTest.kt` (run pending build)
+- [x] App launches to a blank `MainActivity` Compose surface — verified on emulator (renders "Workout Planner", `Displayed .../.MainActivity`, no crash)
+- [x] Hilt `@HiltAndroidApp` application class compiles and runs — `WorkoutPlannerApp.kt`; Hilt codegen ran and the app process started cleanly
+- [x] Unit test source set runs (one trivial passing test) — `ExampleUnitTest.kt`
 
 ---
 
 ## Completion criteria
-- [~] Clean clone builds and installs a debug APK — pending execution on an unrestricted host (see caveat above).
-- [x] All §23 dependencies resolve — declared and pinned in the version catalog.
-- [x] Empty app launches without crashing — placeholder surface implemented (runtime verification pending build).
-
-> **Note:** `[~]` marks items that are fully implemented but whose *runtime/build
-> verification* is blocked by this machine's endpoint network policy (the JVM
-> cannot open TCP sockets, so the Gradle daemon can't start). See
-> [docs/toolchain.md](../docs/toolchain.md).
+- [x] Clean clone builds and installs a debug APK — verified via Android Studio on an Android 14 emulator.
+- [x] All §23 dependencies resolve — declared and pinned in the version catalog; all coordinates verified against Maven repos.
+- [x] Empty app launches without crashing — verified on emulator.

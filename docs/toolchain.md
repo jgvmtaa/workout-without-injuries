@@ -43,18 +43,31 @@ The Gradle wrapper (`gradlew`, `gradlew.bat`, `gradle/wrapper/`) is checked in
 and pinned to Gradle 8.9, so a clean clone needs only a JDK 17 and the Android
 SDK.
 
-## Environment caveat (build not run on the scaffolding host)
+## Build verification status
+
+**Verified building, installing, and launching** via Android Studio 2024.3 on an
+Android 14 emulator: AGP produced `app-debug.apk`, it installed, and
+`MainActivity` rendered the placeholder surface with no crash.
+
+### Environment caveat (command-line Gradle on the scaffolding host)
 
 The machine this project was scaffolded on enforces an endpoint network policy
-that **denies the JVM all outbound TCP `connect()` calls — including loopback**
-(verified: `curl`/Python reach the corporate proxy at `localhost:10054`, but the
-Temurin JVM gets `SocketException: Operation not permitted` on every connect,
-even to `127.0.0.1`).
+that **denies shell-launched JVMs all outbound TCP `connect()` — including
+loopback** (verified: `curl`/Python reach the corporate proxy at
+`localhost:10054`, but any JVM started from the shell — Temurin 17 *and* Android
+Studio's bundled JBR 21 — gets `SocketException: Operation not permitted` on
+every connect, even to `127.0.0.1`). Network access is granted to the Android
+Studio *GUI app's* process tree, not to shell-spawned java.
 
-Gradle's architecture runs the build in a separate daemon JVM that the launcher
-talks to over a loopback TCP socket, so `./gradlew assembleDebug` cannot start a
-build on this host. This is an environment restriction, not a project defect.
+Because Gradle runs the build in a separate daemon JVM reached over a loopback
+socket, `./gradlew assembleDebug` from a terminal cannot start a build on this
+host. **Use Android Studio (or a CI runner) to build here.** On a developer
+machine / CI with normal JVM networking, the command-line `./gradlew` commands
+above work directly.
 
-**To verify the build**, run the commands above on a developer machine / CI
-runner with normal JVM networking (or where the JVM is allowlisted). Everything
-needed is committed.
+### Note on emulator installs
+
+IDE "Run" builds mark the debug APK `testOnly`, so a manual install needs the
+`-t` flag: `adb install -t -r app/build/intermediates/apk/debug/app-debug.apk`.
+Also ensure the emulator has free disk (a full `/data` makes `install-create`
+fail with a generic "Unknown failure"); wipe AVD data or size up userdata if so.
