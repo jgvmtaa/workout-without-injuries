@@ -45,6 +45,7 @@ dialogs, UI tests, and content/copy review — then verify MVP completion.
 ## 7.6 Content & safety review (README §2, §27 Phase 7)
 - [ ] Catalog-content review (counts, patterns, conflicting limitations sane)
 - [ ] Safety-copy review — conservative, limitation-based, never diagnostic (README §2)
+- [ ] Clear the polish-related items in [docs/follow-ups.md](../docs/follow-ups.md) (real launcher icon, app base theme)
 
 ## 7.7 MVP completion verification (README §28)
 - [ ] Walk the full §28 checklist end-to-end on a device/emulator
