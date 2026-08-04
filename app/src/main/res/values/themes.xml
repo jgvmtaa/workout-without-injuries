@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Base application theme. The real UI is driven by Compose's MaterialTheme
+        (see ui/theme), so this XML theme only needs to provide a sensible
+        actionbar-less window backdrop for the activity.
+    -->
+    <style name="Theme.WorkoutPlanner" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>
