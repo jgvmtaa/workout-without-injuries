@@ -16,6 +16,34 @@ picked up. Check items off as they're handled.
   screen (`androidx.core:core-splashscreen`) or need XML-level system-bar /
   status-bar styling. _(Phase 0)_
 
+## Address during Phase 2 (domain & catalogs)
+
+- [ ] **Type the exercise route arguments.** `AppRoute.ExerciseDetails` and
+  `AppRoute.ExerciseReplacement` carry `exerciseId: String`; README §17 types them
+  as `ExerciseId`. Swap once the enum exists — Navigation's type-safe API handles
+  enums natively, so it is a mechanical change in `navigation/` plus the two screens.
+  _(Phase 1)_
+- [ ] **Replace the placeholder route arguments.** `AppNavigation.kt` hands
+  `PLACEHOLDER_EXERCISE_ID` / `PLACEHOLDER_WORKOUT_DAY_ID` to the detail and
+  replacement destinations so they are reachable. Real ids come from the catalog
+  (Phase 2) and the generated plan (Phase 5). _(Phase 1)_
+
+## Address before/during Phases 3–6 (feature work)
+
+- [ ] **Delete `core/ui/PlaceholderScreen.kt`.** Every stub screen shares it; it
+  should disappear as each screen gets real content, along with the
+  `placeholder_*` strings. _(Phase 1)_
+- [ ] **Decide the start destination.** `AppNavigation` always starts at
+  `Welcome`. Once onboarding completion is persisted (Phase 3), start at `Home` for
+  returning users. _(Phase 1)_
+- [ ] **Give profile editing its own exit path.** The Profile screen's edit actions
+  reuse the onboarding destinations (`Preferences`, `InjuryHistory`,
+  `MovementLimitations`), so "Continue" walks the user through the remainder of the
+  onboarding flow instead of returning to Profile. Editing needs to save and return
+  to Profile — and, per README §13/§25, warn that the existing plan is now outdated.
+  Decide whether that is a nav-graph change (an edit sub-graph) or a mode flag on the
+  shared screens. _(Phase 1)_
+
 ## Address before any release build (post-MVP / when shipping)
 
 - [ ] **Release signing + minification.** The `release` build type in

@@ -56,6 +56,9 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    // Declared explicitly rather than relied on transitively via material3: the
+    // core icon set (back arrow, info) is used by the shared core/ui components.
+    implementation(libs.androidx.material.icons.core)
     debugImplementation(libs.androidx.ui.tooling)
 
     // Lifecycle

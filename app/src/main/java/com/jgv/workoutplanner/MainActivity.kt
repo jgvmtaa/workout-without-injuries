@@ -4,21 +4,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.jgv.workoutplanner.ui.theme.WorkoutPlannerTheme
+import com.jgv.workoutplanner.core.designsystem.AppTheme
+import com.jgv.workoutplanner.navigation.AppNavigation
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
- * Single-activity host for the app. Phase 0 renders a blank Compose surface only;
- * the navigation shell and screens arrive in later phases.
+ * Single-activity host (README §18, §19). It applies the theme and hands off to the
+ * navigation shell; everything else lives in the feature packages.
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -26,31 +21,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            WorkoutPlannerTheme {
-                PlaceholderSurface()
+            AppTheme {
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    AppNavigation()
+                }
             }
         }
-    }
-}
-
-@Composable
-private fun PlaceholderSurface() {
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(text = "Workout Planner")
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PlaceholderSurfacePreview() {
-    WorkoutPlannerTheme {
-        PlaceholderSurface()
     }
 }

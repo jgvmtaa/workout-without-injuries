@@ -1,3 +1,42 @@
 <resources>
     <string name="app_name">Workout Planner</string>
+
+    <!-- Screen titles (README §4, §17) -->
+    <string name="screen_welcome">Welcome</string>
+    <string name="screen_safety_notice">Safety notice</string>
+    <string name="screen_preferences">Training preferences</string>
+    <string name="screen_injury_history">Injury history</string>
+    <string name="screen_movement_limitations">Movement limitations</string>
+    <string name="screen_profile_review">Review your profile</string>
+    <string name="screen_home">Home</string>
+    <string name="screen_plan">Your plan</string>
+    <string name="screen_exercise_library">Exercise library</string>
+    <string name="screen_exercise_details">Exercise details</string>
+    <string name="screen_exercise_replacement">Replace exercise</string>
+    <string name="screen_profile">Profile</string>
+
+    <!-- Shared actions -->
+    <string name="action_back">Back</string>
+    <string name="action_continue">Continue</string>
+    <string name="action_get_started">Get started</string>
+    <string name="action_review_safety">Review safety information</string>
+    <string name="action_accept_safety">I understand and accept</string>
+    <string name="action_finish_setup">Finish setup</string>
+    <string name="action_view_plan">View plan</string>
+    <string name="action_browse_library">Browse exercise library</string>
+    <string name="action_open_profile">Open profile</string>
+    <string name="action_open_exercise_details">Open exercise details</string>
+    <string name="action_replace_exercise">Replace an exercise</string>
+    <string name="action_edit_preferences">Edit training preferences</string>
+    <string name="action_edit_injuries">Edit injury history</string>
+    <string name="action_edit_limitations">Edit movement limitations</string>
+    <string name="action_choose_replacement">Choose this alternative</string>
+
+    <!-- Shared states -->
+    <string name="state_loading">Loading…</string>
+
+    <!-- Phase 1 scaffolding. Removed as the real screens land in Phases 3–6. -->
+    <string name="placeholder_screen_note">Placeholder screen. The real content arrives in a later phase.</string>
+    <string name="placeholder_exercise_id">Exercise: %1$s</string>
+    <string name="placeholder_replacement_context">Replacing %1$s in day %2$s.</string>
 </resources>

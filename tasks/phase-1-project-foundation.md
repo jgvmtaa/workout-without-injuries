@@ -11,47 +11,76 @@ screens. **No business logic yet.**
 ---
 
 ## 1.1 Package structure (README §19)
-  - [ ] Create package tree under `com.jgv.workoutplanner`:
-  - [ ] `navigation/`, `core/ui/`, `core/designsystem/`
-  - [ ] `domain/model/`, `domain/repository/`, `domain/usecase/`
-  - [ ] `data/catalog/`, `data/local/`, `data/repository/`
-  - [ ] `feature/onboarding/{welcome,safety,preferences,injuries,limitations,review}/`
-  - [ ] `feature/{home,plan,exerciselibrary,exercisedetails,profile}/`
-  - [ ] `di/`
+  - [x] Create package tree under `com.jgv.workoutplanner`:
+  - [x] `navigation/`, `core/ui/`, `core/designsystem/`
+  - [x] `domain/model/`, `domain/repository/`, `domain/usecase/` — created empty
+        (`.gitkeep`); populated in Phase 2
+  - [x] `data/catalog/`, `data/local/`, `data/repository/` — created empty
+        (`.gitkeep`); populated in Phases 2–3
+  - [x] `feature/onboarding/{welcome,safety,preferences,injuries,limitations,review}/`
+  - [x] `feature/{home,plan,exerciselibrary,exercisedetails,profile}/` —
+        `ExerciseReplacementScreen` lives in `feature/plan/` because replacement is a
+        plan edit (README §13)
+  - [x] `di/`
 
 ## 1.2 Design system (README §19 core/designsystem)
-- [ ] `AppTheme.kt`, `Color.kt`, `Type.kt`, `Dimens.kt` (Material 3)
-- [ ] Light theme baseline (dark optional for MVP)
+- [x] `AppTheme.kt`, `Color.kt`, `Type.kt`, `Dimens.kt` (Material 3)
+- [x] Light theme baseline (dark included, follows the system setting).
+      Dynamic (Material You) color is deliberately **not** used — the palette carries
+      meaning once availability states land, so it must be identical on every device.
+      This replaces the Phase 0 `ui/theme/` package, which is deleted.
 
 ## 1.3 Core UI scaffolding (README §19 core/ui)
-- [ ] `AppScaffold.kt`, `AppTopBar.kt`
-- [ ] `LoadingContent.kt`, `EmptyContent.kt` placeholders
+- [x] `AppScaffold.kt`, `AppTopBar.kt`
+- [x] `LoadingContent.kt`, `EmptyContent.kt` placeholders
+- [x] `PlaceholderScreen.kt` — temporary shared body for the stub screens; deleted
+      screen-by-screen as real content lands in Phases 3–6
 
 ## 1.4 Navigation shell (README §17)
-- [ ] Define `AppRoute` sealed interface with all destinations (Welcome, SafetyNotice,
+- [x] Define `AppRoute` sealed interface with all destinations (Welcome, SafetyNotice,
       Preferences, InjuryHistory, MovementLimitations, ProfileReview, Home, Plan,
       ExerciseLibrary, ExerciseDetails(exerciseId), ExerciseReplacement(dayId, exerciseId), Profile)
-- [ ] `AppNavigation.kt` with `NavHost` wiring every route
-- [ ] Use type-safe navigation (README §17); `@Serializable` routes
-- [ ] **Do not** pass `NavController` into screen composables (README §20)
+- [x] `AppNavigation.kt` with `NavHost` wiring every route
+- [x] Use type-safe navigation (README §17); `@Serializable` routes
+- [x] **Do not** pass `NavController` into screen composables (README §20) — the
+      controller is confined to `AppNavigation.kt`; screens take plain lambdas
+
+> **Note:** exercise arguments are typed `String`, not `ExerciseId` — that enum is
+> Phase 2 catalog work, and Phase 1 carries no domain types. Swapping them is tracked
+> as a Phase 2 item in [docs/follow-ups.md](../docs/follow-ups.md).
 
 ## 1.5 Placeholder screens
-- [ ] A stub composable per destination showing its name
-- [ ] `@Preview` for each screen
-- [ ] Every destination reachable via a temporary debug menu or wired flow
+- [x] A stub composable per destination showing its name
+- [x] `@Preview` for each screen
+- [x] Every destination reachable via a temporary debug menu or wired flow — the real
+      flow is wired (Welcome → Safety → Preferences → Injuries → Limitations → Review →
+      Home → Plan/Library/Profile → Details/Replacement), so no debug menu is needed.
+      Plan and Library pass stand-in ids to the argument-carrying destinations until
+      Phases 2 and 5 supply real ones.
 
 ## 1.6 DI bootstrap (README §22)
-- [ ] `di/AppModule.kt` with Hilt module skeleton
-- [ ] ViewModels obtainable via `hilt-navigation-compose`
+- [x] `di/AppModule.kt` with Hilt module skeleton — intentionally empty; Phase 2 adds
+      the catalogs and repository bindings, Phase 3 the DataStore providers
+- [x] ViewModels obtainable via `hilt-navigation-compose` — `HomeViewModel`
+      (`@HiltViewModel`) is resolved with `hiltViewModel()` in `HomeRoute`
 
 ## 1.7 Architecture baseline (README §18)
-- [ ] Establish unidirectional data flow: Compose screen → ViewModel → use case → repository → local data source
-- [ ] Screens receive immutable UI state and emit events (state hoisting) — no business state in composables
-- [ ] Reserve the `domain/` layer for eligibility & plan-generation logic (kept off the UI layer)
+- [x] Establish unidirectional data flow: Compose screen → ViewModel → use case →
+      repository → local data source. `HomeRoute`/`HomeScreen`/`HomeViewModel` is the
+      reference implementation of the top half; the lower half arrives with the
+      repositories in Phases 2–3.
+- [x] Screens receive immutable UI state and emit events (state hoisting) — no business
+      state in composables. `HomeUiState` is the one-state-model-per-screen example.
+- [x] Reserve the `domain/` layer for eligibility & plan-generation logic (kept off the
+      UI layer) — packages created and left empty
 
 ---
 
 ## Completion criteria (README §27 Phase 1)
-- [ ] Every destination can be navigated to.
-- [ ] Each screen has a preview.
-- [ ] No business logic is implemented yet.
+- [x] Every destination can be navigated to. — verified by walking the full flow on a
+      running app (Welcome → Safety → Preferences → Injuries → Limitations → Review →
+      Home → Plan / Library / Profile → Exercise details & replacement). Built and run
+      from Android Studio; CLI Gradle still cannot run on this host, see
+      docs/toolchain.md.
+- [x] Each screen has a preview.
+- [x] No business logic is implemented yet.
