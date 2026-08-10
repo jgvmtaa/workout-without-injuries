@@ -25,13 +25,14 @@ All library versions are pinned in the Gradle version catalog at
 - Platforms installed: `android-31`, `android-33`, `android-34`, `android-35`, `android-36`
 - Build tools: `35.0.0`
 - `cmdline-tools/latest` and `platform-tools` present
-- No Android Studio installed on this machine; the project was scaffolded by
-  hand and is a standard AGP project that Android Studio (Koala / Ladybug or
-  newer) can open directly.
+- The project was scaffolded by hand before Android Studio was installed, and is a
+  standard AGP project that Android Studio (Koala / Ladybug or newer) opens directly.
+  Studio is present now, and Phases 1–3 lean on it: it builds here, and its bundled
+  kotlinc backs `tools/verify-no-gradle.sh`.
 
 ## Building
 
-Standard commands (require a JVM with normal network access — see caveat below):
+Standard commands, from an interactive terminal or Android Studio:
 
 ```bash
 ./gradlew assembleDebug     # build the debug APK
@@ -50,8 +51,9 @@ on an Android 14 emulator: AGP produced `app-debug.apk`, it installed, and
 `MainActivity` rendered the placeholder surface with no crash.
 
 **Phases 2 and 3 — not yet verified by a real build.** Both were written on the host
-described in the caveat below, where Gradle cannot run, so nothing in them has been
-through AGP, KSP, Hilt code generation, aapt, lint, or a device. What *was* verified,
+described in the caveat below, from a shell that cannot reach the Gradle daemon, so
+nothing in them has been through AGP, KSP, Hilt code generation, aapt, lint, or a
+device. What *was* verified,
 with [`tools/verify-no-gradle.sh`](../tools/verify-no-gradle.sh):
 
 - every file under `app/src/main`, `app/src/test` and `app/src/androidTest` compiles,

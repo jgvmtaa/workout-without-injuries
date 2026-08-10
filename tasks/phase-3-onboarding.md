@@ -114,6 +114,7 @@ they need a device).
 - [x] Suggested limitations are never confirmed automatically.
 
 Both hold in the code and are covered by tests, but neither has been confirmed on a
-device — Gradle cannot run on the machine this was written on. See
+device: the shell this was written from cannot reach the Gradle daemon, so no real
+build has run. See
 [docs/follow-ups.md](../docs/follow-ups.md#pending-verification) before treating the
 phase as closed.

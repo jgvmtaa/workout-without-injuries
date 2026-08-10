@@ -36,16 +36,22 @@ Phase 7  MVP polish (empty states, a11y, tests, copy review)
 
 ## Phase index
 
-| Phase | File | Goal | Root README ref |
-|-------|------|------|-----------------|
-| 0 | [phase-0-bootstrap.md](phase-0-bootstrap.md) | Repo, toolchain, build green | §23 |
-| 1 | [phase-1-project-foundation.md](phase-1-project-foundation.md) | Nav shell + DI + theme + placeholders | §17–§19, §22, §27 |
-| 2 | [phase-2-domain-and-catalogs.md](phase-2-domain-and-catalogs.md) | Domain models + exercise/injury catalogs | §4.3–§7, §10–§11, §26, §31 |
-| 3 | [phase-3-onboarding.md](phase-3-onboarding.md) | Onboarding flow + profile persistence | §4.1–§4.5, §20, §21 |
-| 4 | [phase-4-filtering.md](phase-4-filtering.md) | Eligibility engine + library filters | §8, §9, §14, §15, §20 |
-| 5 | [phase-5-plan-generation.md](phase-5-plan-generation.md) | Deterministic plan generator | §11, §12, §16 |
-| 6 | [phase-6-plan-editing.md](phase-6-plan-editing.md) | Edit plan + edit profile/limitations | §13, §16, §17, §25 |
-| 7 | [phase-7-polish.md](phase-7-polish.md) | Empty/edge states, a11y, tests, copy | §24, §25, §28 |
+| Phase | File | Goal | Status | Spec ref |
+|-------|------|------|--------|----------|
+| 0 | [phase-0-bootstrap.md](phase-0-bootstrap.md) | Repo, toolchain, build green | ✅ Done | §23 |
+| 1 | [phase-1-project-foundation.md](phase-1-project-foundation.md) | Nav shell + DI + theme + placeholders | ✅ Done | §17–§19, §22, §27 |
+| 2 | [phase-2-domain-and-catalogs.md](phase-2-domain-and-catalogs.md) | Domain models + exercise/injury catalogs | ✅ Done, unbuilt¹ | §4.3–§7, §10–§11, §26, §31 |
+| 3 | [phase-3-onboarding.md](phase-3-onboarding.md) | Onboarding flow + profile persistence | ✅ Done, unbuilt¹ | §4.1–§4.5, §20, §21 |
+| 4 | [phase-4-filtering.md](phase-4-filtering.md) | Eligibility engine + library filters | ⬜ Next | §8, §9, §14, §15, §20 |
+| 5 | [phase-5-plan-generation.md](phase-5-plan-generation.md) | Deterministic plan generator | ⬜ | §11, §12, §16 |
+| 6 | [phase-6-plan-editing.md](phase-6-plan-editing.md) | Edit plan + edit profile/limitations | ⬜ | §13, §16, §17, §25 |
+| 7 | [phase-7-polish.md](phase-7-polish.md) | Empty/edge states, a11y, tests, copy | ⬜ | §24, §25, §28 |
+
+¹ Every task and completion criterion is met and the unit tests pass, but neither phase
+has been through a real Gradle build — no KSP, Hilt code generation, aapt, lint, or
+device run. Clear
+[docs/follow-ups.md § Pending verification](../docs/follow-ups.md#pending-verification)
+before building Phase 4 on top.
 
 ## Guardrails that apply to every phase (README §2, §29)
 

@@ -34,7 +34,9 @@ screens. **No business logic yet.**
 - [x] `AppScaffold.kt`, `AppTopBar.kt`
 - [x] `LoadingContent.kt`, `EmptyContent.kt` placeholders
 - [x] `PlaceholderScreen.kt` — temporary shared body for the stub screens; deleted
-      screen-by-screen as real content lands in Phases 3–6
+      screen-by-screen as real content lands in Phases 3–6. Phase 3 removed six callers
+      (the onboarding screens); six remain — Home, Plan, Exercise library, Exercise
+      details, Exercise replacement, Profile.
 
 ## 1.4 Navigation shell (README §17)
 - [x] Define `AppRoute` sealed interface with all destinations (Welcome, SafetyNotice,
@@ -45,9 +47,9 @@ screens. **No business logic yet.**
 - [x] **Do not** pass `NavController` into screen composables (README §20) — the
       controller is confined to `AppNavigation.kt`; screens take plain lambdas
 
-> **Note:** exercise arguments are typed `String`, not `ExerciseId` — that enum is
-> Phase 2 catalog work, and Phase 1 carries no domain types. Swapping them is tracked
-> as a Phase 2 item in [docs/follow-ups.md](../docs/follow-ups.md).
+> **Note:** exercise arguments were typed `String` in Phase 1, not `ExerciseId` — that
+> enum is Phase 2 catalog work, and Phase 1 carries no domain types. Phase 2 swapped
+> them, so `AppRoute` now matches README §17 exactly.
 
 ## 1.5 Placeholder screens
 - [x] A stub composable per destination showing its name
@@ -59,8 +61,9 @@ screens. **No business logic yet.**
       Phases 2 and 5 supply real ones.
 
 ## 1.6 DI bootstrap (README §22)
-- [x] `di/AppModule.kt` with Hilt module skeleton — intentionally empty; Phase 2 adds
-      the catalogs and repository bindings, Phase 3 the DataStore providers
+- [x] `di/AppModule.kt` with Hilt module skeleton — empty in Phase 1; Phase 2 added the
+      repository bindings in `RepositoryModule`, Phase 3 the `DataStore` provider and
+      the `@ApplicationScope` qualifier
 - [x] ViewModels obtainable via `hilt-navigation-compose` — `HomeViewModel`
       (`@HiltViewModel`) is resolved with `hiltViewModel()` in `HomeRoute`
 
@@ -72,7 +75,8 @@ screens. **No business logic yet.**
 - [x] Screens receive immutable UI state and emit events (state hoisting) — no business
       state in composables. `HomeUiState` is the one-state-model-per-screen example.
 - [x] Reserve the `domain/` layer for eligibility & plan-generation logic (kept off the
-      UI layer) — packages created and left empty
+      UI layer) — packages created and left empty; filled by Phases 2 and 3, and still
+      free of any Android or Compose dependency
 
 ---
 
@@ -80,7 +84,6 @@ screens. **No business logic yet.**
 - [x] Every destination can be navigated to. — verified by walking the full flow on a
       running app (Welcome → Safety → Preferences → Injuries → Limitations → Review →
       Home → Plan / Library / Profile → Exercise details & replacement). Built and run
-      from Android Studio; CLI Gradle still cannot run on this host, see
-      docs/toolchain.md.
+      from Android Studio.
 - [x] Each screen has a preview.
 - [x] No business logic is implemented yet.

@@ -12,7 +12,7 @@ set wired in. No product logic yet.
 ## 0.1 Toolchain & repo hygiene
 - [x] Confirm Android Studio + JDK + Android SDK versions and record them in the repo — see [docs/toolchain.md](../docs/toolchain.md)
 - [x] Create the Android project: single `app` module, package `com.jgv.workoutplanner` (README §19)
-- [x] Verify `./gradlew assembleDebug` succeeds on a clean checkout — **verified via Android Studio**: AGP produced `app-debug.apk`, installed and launched on an Android 14 emulator. (CLI `gradlew` still can't run on the scaffolding host due to the JVM TCP block — see docs/toolchain.md.)
+- [x] Verify `./gradlew assembleDebug` succeeds on a clean checkout — **verified via Android Studio**: AGP produced `app-debug.apk`, installed and launched on an Android 14 emulator. (Command-line `./gradlew` works from an interactive terminal; it fails only from tooling-spawned shells — see docs/toolchain.md.)
 
 ## 0.2 Dependency catalog (README §23)
 - [x] Set up Gradle version catalog (`libs.versions.toml`)

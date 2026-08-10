@@ -7,9 +7,9 @@ picked up. Check items off as they're handled.
 ## Pending verification
 
 Unlike the rest of this file, these are **not** deferred by choice — they are checks
-that cannot run on the machine this was written on (see
-[toolchain.md](toolchain.md#build-verification-status)). Clear them on a machine where
-Gradle works.
+that could not run from the shell this was written in, which cannot reach the Gradle
+daemon (see [toolchain.md](toolchain.md#environment-caveat-gradle-from-an-automation-spawned-shell)).
+They are a few minutes' work from an ordinary terminal or Android Studio.
 
 What *has* been checked here, with [`tools/verify-no-gradle.sh`](../tools/verify-no-gradle.sh):
 every file under `app/src/main`, `app/src/test` and `app/src/androidTest` compiles
