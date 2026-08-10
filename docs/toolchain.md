@@ -50,22 +50,20 @@ SDK.
 on an Android 14 emulator: AGP produced `app-debug.apk`, it installed, and
 `MainActivity` rendered the placeholder surface with no crash.
 
-**Phases 2 and 3 — not yet verified by a real build.** Both were written on the host
-described in the caveat below, from a shell that cannot reach the Gradle daemon, so
-nothing in them has been through AGP, KSP, Hilt code generation, aapt, lint, or a
-device. What *was* verified,
-with [`tools/verify-no-gradle.sh`](../tools/verify-no-gradle.sh):
+**Phases 2 and 3 — verified.** `./gradlew test assembleDebug` and
+`./gradlew connectedDebugAndroidTest` both pass: 155 JVM unit tests, plus
+`OnboardingScreensTest` on a device, through AGP, KSP, Hilt code generation, aapt and
+lint.
 
-- every file under `app/src/main`, `app/src/test` and `app/src/androidTest` compiles,
-  Compose screens included, using the real Compose and kotlinx-serialization compiler
-  plugins;
-- all 155 JVM unit tests pass.
+Both phases were written from a shell that cannot reach the Gradle daemon (see the
+caveat below), so during development they were checked with
+[`tools/verify-no-gradle.sh`](../tools/verify-no-gradle.sh) — every source set compiles,
+Compose included, and the unit tests run — and only built afterwards from an ordinary
+terminal. Worth knowing if a phase is ever developed that way again: the script proves
+compilation and logic and nothing else, so the real build stays the gate.
 
-That covers compilation and logic, and nothing else. Hilt's dependency graph in
-particular is unvalidated — a missing binding compiles clean under the script and fails
-at KSP. Before treating either phase as done, run `./gradlew test assembleDebug` in
-Android Studio and work through the checklist in
-[follow-ups.md](follow-ups.md#pending-verification).
+What is still unverified is the part no test covers — persistence across process death.
+See [follow-ups.md](follow-ups.md#pending-verification).
 
 ### Environment caveat (Gradle from an automation-spawned shell)
 

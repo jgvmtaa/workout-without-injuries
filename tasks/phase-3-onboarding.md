@@ -104,8 +104,10 @@ flag; see docs/follow-ups.md for why, and for when that would need revisiting.
 
 Beyond the two required, and agreed before writing: persistence round-trips including
 maximal and unreadable states, label coverage for every domain enum, the
-frequency-to-split mapping, and Compose tests for the §24.6 flows (written, not yet run —
-they need a device).
+frequency-to-split mapping, and Compose tests for the §24.6 flows.
+
+All of it passes — 155 JVM unit tests via `./gradlew test`, and
+`OnboardingScreensTest` on a device via `./gradlew connectedDebugAndroidTest`.
 
 ---
 
@@ -113,8 +115,11 @@ they need a device).
 - [x] The user can leave and reopen the app without losing the profile.
 - [x] Suggested limitations are never confirmed automatically.
 
-Both hold in the code and are covered by tests, but neither has been confirmed on a
-device: the shell this was written from cannot reach the Gradle daemon, so no real
-build has run. See
-[docs/follow-ups.md](../docs/follow-ups.md#pending-verification) before treating the
-phase as closed.
+The second is enforced structurally and covered from both sides — the ViewModel tests
+prove nothing is written on open, the instrumented tests prove the suggestion renders
+unticked.
+
+The first is covered by tests but not yet by hand: the unit tests prove the round trip
+through the serializer and the repository, but nothing exercises a real process death.
+One force-stop-and-reopen on a device would close it — see
+[docs/follow-ups.md](../docs/follow-ups.md#pending-verification).

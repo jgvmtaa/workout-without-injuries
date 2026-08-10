@@ -7,29 +7,27 @@ picked up. Check items off as they're handled.
 ## Pending verification
 
 Unlike the rest of this file, these are **not** deferred by choice — they are checks
-that could not run from the shell this was written in, which cannot reach the Gradle
-daemon (see [toolchain.md](toolchain.md#environment-caveat-gradle-from-an-automation-spawned-shell)).
-They are a few minutes' work from an ordinary terminal or Android Studio.
+that could not run from the shell Phases 2 and 3 were written in, which cannot reach the
+Gradle daemon (see
+[toolchain.md](toolchain.md#environment-caveat-gradle-from-an-automation-spawned-shell)).
+Most have since been cleared from an ordinary terminal: `./gradlew test assembleDebug`
+and `./gradlew connectedDebugAndroidTest` both pass.
 
-What *has* been checked here, with [`tools/verify-no-gradle.sh`](../tools/verify-no-gradle.sh):
-every file under `app/src/main`, `app/src/test` and `app/src/androidTest` compiles
-against the real Compose and serialization compiler plugins, and all 155 JVM unit tests
-pass. What that script cannot do is aapt, KSP, Hilt code generation, lint, packaging, or
-anything on a device — hence the list below.
+What remains is the handful of things only a person looking at a running app can
+confirm.
 
-- [ ] **Build it.** `./gradlew test assembleDebug` in Android Studio. Nothing in Phase 2
-  or Phase 3 has been through AGP, KSP, Hilt code generation, aapt, or lint. In
-  particular Hilt's dependency graph is unvalidated: Phase 3 adds a
-  `DataStore<PersistedState>` provider, an `@ApplicationScope` qualifier, five
-  `@HiltViewModel` classes and a `MainViewModel` obtained with `by viewModels()`. A
-  missing binding compiles clean under the script and fails at KSP. _(Phase 2, Phase 3)_
-- [ ] **Run the instrumented tests.** `app/src/androidTest` now holds
-  `OnboardingScreensTest` (README §24.6). It type-checks but has never executed — it
-  needs an emulator. _(Phase 3)_
-- [ ] **Walk the onboarding flow on a device.** Welcome → safety → preferences →
-  injuries → limitations → review → home, then force-stop and reopen: the app should
-  land on Home, and reopening mid-flow should resume with the answers intact. This is
-  the Phase 3 completion criterion and only a real device proves it. _(Phase 3)_
+- [x] **Build it.** `./gradlew test assembleDebug` passes. Phases 2 and 3 have now been
+  through AGP, KSP, Hilt code generation, aapt and lint — so the Hilt graph is valid,
+  including Phase 3's `DataStore<PersistedState>` provider, the `@ApplicationScope`
+  qualifier, five `@HiltViewModel` classes and the `MainViewModel` obtained with
+  `by viewModels()`. _(Phase 2, Phase 3)_
+- [x] **Run the instrumented tests.** `./gradlew connectedDebugAndroidTest` passes:
+  `OnboardingScreensTest` (README §24.6) runs green on a device. _(Phase 3)_
+- [ ] **Walk the onboarding flow by hand.** Welcome → safety → preferences → injuries →
+  limitations → review → home, then force-stop and reopen: the app should land on Home,
+  and reopening mid-flow should resume with the answers intact. The instrumented tests
+  drive the screens but not the process — nothing yet exercises persistence across app
+  death, which is the Phase 3 completion criterion. _(Phase 3)_
 - [ ] **Check the two changed previews render:** `ExerciseDetailsScreen` and
   `ExerciseReplacementScreen`. Both signatures changed from `String` to `ExerciseId`.
   _(Phase 2)_
