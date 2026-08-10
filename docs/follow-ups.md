@@ -10,11 +10,13 @@ Unlike the rest of this file, these are **not** deferred by choice — they are 
 that could not run from the shell Phases 2 and 3 were written in, which cannot reach the
 Gradle daemon (see
 [toolchain.md](toolchain.md#environment-caveat-gradle-from-an-automation-spawned-shell)).
-Most have since been cleared from an ordinary terminal: `./gradlew test assembleDebug`
-and `./gradlew connectedDebugAndroidTest` both pass.
+All of Phase 3's have since been cleared from an ordinary terminal and a device:
+`./gradlew test assembleDebug` and `./gradlew connectedDebugAndroidTest` both pass, and
+the flow has been walked by hand including a force-stop.
 
-What remains is the handful of things only a person looking at a running app can
-confirm.
+Two Phase 2 spot-checks are still open. Both are a minute's work on a running app and
+neither blocks Phase 4 — but neither has been done, so they stay here rather than being
+assumed from a green build.
 
 - [x] **Build it.** `./gradlew test assembleDebug` passes. Phases 2 and 3 have now been
   through AGP, KSP, Hilt code generation, aapt and lint — so the Hilt graph is valid,
@@ -23,11 +25,11 @@ confirm.
   `by viewModels()`. _(Phase 2, Phase 3)_
 - [x] **Run the instrumented tests.** `./gradlew connectedDebugAndroidTest` passes:
   `OnboardingScreensTest` (README §24.6) runs green on a device. _(Phase 3)_
-- [ ] **Walk the onboarding flow by hand.** Welcome → safety → preferences → injuries →
-  limitations → review → home, then force-stop and reopen: the app should land on Home,
-  and reopening mid-flow should resume with the answers intact. The instrumented tests
-  drive the screens but not the process — nothing yet exercises persistence across app
-  death, which is the Phase 3 completion criterion. _(Phase 3)_
+- [x] **Walk the onboarding flow by hand.** Passes: Welcome → safety → preferences →
+  injuries → limitations → review → home, force-stopped and reopened. The profile
+  survives app death and a returning user lands on Home — the Phase 3 completion
+  criterion, and the one thing no test covers, since the instrumented tests drive the
+  screens but never kill the process. _(Phase 3)_
 - [ ] **Check the two changed previews render:** `ExerciseDetailsScreen` and
   `ExerciseReplacementScreen`. Both signatures changed from `String` to `ExerciseId`.
   _(Phase 2)_

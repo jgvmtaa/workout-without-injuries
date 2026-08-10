@@ -115,11 +115,14 @@ All of it passes — 155 JVM unit tests via `./gradlew test`, and
 - [x] The user can leave and reopen the app without losing the profile.
 - [x] Suggested limitations are never confirmed automatically.
 
-The second is enforced structurally and covered from both sides — the ViewModel tests
-prove nothing is written on open, the instrumented tests prove the suggestion renders
-unticked.
+Both verified on a device, not just in tests.
 
-The first is covered by tests but not yet by hand: the unit tests prove the round trip
-through the serializer and the repository, but nothing exercises a real process death.
-One force-stop-and-reopen on a device would close it — see
-[docs/follow-ups.md](../docs/follow-ups.md#pending-verification).
+The first was walked by hand — onboarding completed, app force-stopped, reopened on
+Home with the profile intact. That is the one claim the test suite cannot make, since
+neither the unit tests nor the instrumented ones kill the process.
+
+The second is enforced structurally and covered from both sides: the ViewModel tests
+prove nothing is written when the screen opens, the instrumented tests prove the
+suggestion renders unticked.
+
+**Phase 3 is closed.** Phase 4 can build on it.
