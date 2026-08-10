@@ -4,6 +4,31 @@ Running list of things noticed during implementation that are intentionally
 deferred (not bugs, not blockers). Grouped by the phase where they should be
 picked up. Check items off as they're handled.
 
+## Pending verification
+
+Unlike the rest of this file, these are **not** deferred by choice — they are checks
+that could not run on the machine Phase 2 was written on (see
+[toolchain.md](toolchain.md#build-verification-status)). Clear them on a machine where
+Gradle works, before building on top of Phase 2.
+
+- [ ] **Build it.** `./gradlew test assembleDebug` in Android Studio. Nothing in
+  Phase 2 has been through AGP, KSP, Hilt code generation, aapt, or lint. The 36 unit
+  tests pass under a standalone kotlinc harness, but that harness runs neither the
+  Hilt processor nor resource compilation. _(Phase 2)_
+- [ ] **Check the two changed previews render:** `ExerciseDetailsScreen` and
+  `ExerciseReplacementScreen`. Both signatures changed from `String` to `ExerciseId`.
+  _(Phase 2)_
+- [ ] **Walk the argument-carrying destinations:** Plan → exercise details, Plan →
+  replace exercise, Library → exercise details. Each should show
+  `Exercise: MACHINE_CHEST_PRESS`. This is the only behavioural change Phase 2 makes
+  to the running app — it exercises the `ExerciseId` enum through the nav argument.
+  Navigation 2.8.4 maps `SerialKind.ENUM` to `NavType.EnumType` with no `typeMap`
+  needed, but that was confirmed by reading the library, not by running it. _(Phase 2)_
+- [ ] **Expect ~28 unused-resource lint warnings.** The `limitation_*` strings have no
+  consumer until the Phase 3 limitations screen. Lint is warning-only here (no `lint`
+  block in `app/build.gradle.kts`, and the repo has no CI), so this is noise rather
+  than breakage — but confirm the count is only those strings. _(Phase 2)_
+
 ## Address before/ during Phase 7 (MVP polish)
 
 - [ ] **Real launcher icon.** The current icon (`app/src/main/res/mipmap*`,
@@ -18,15 +43,35 @@ picked up. Check items off as they're handled.
 
 ## Address during Phase 2 (domain & catalogs)
 
-- [ ] **Type the exercise route arguments.** `AppRoute.ExerciseDetails` and
+- [x] **Type the exercise route arguments.** `AppRoute.ExerciseDetails` and
   `AppRoute.ExerciseReplacement` carry `exerciseId: String`; README §17 types them
   as `ExerciseId`. Swap once the enum exists — Navigation's type-safe API handles
   enums natively, so it is a mechanical change in `navigation/` plus the two screens.
-  _(Phase 1)_
-- [ ] **Replace the placeholder route arguments.** `AppNavigation.kt` hands
+  _(Phase 1 → done in Phase 2)_
+- [x] **Replace the placeholder route arguments.** `AppNavigation.kt` hands
   `PLACEHOLDER_EXERCISE_ID` / `PLACEHOLDER_WORKOUT_DAY_ID` to the detail and
   replacement destinations so they are reachable. Real ids come from the catalog
-  (Phase 2) and the generated plan (Phase 5). _(Phase 1)_
+  (Phase 2) and the generated plan (Phase 5). _(Phase 1 → partly done in Phase 2:
+  the exercise argument is now a real catalog id, renamed `SAMPLE_EXERCISE_ID`.
+  `PLACEHOLDER_WORKOUT_DAY_ID` stays until Phase 5 generates day ids.)_
+
+## Address during Phase 4 (filtering) and Phase 5 (plan generation)
+
+- [ ] **Six limitations exclude no exercise.** `AVOID_HIGH_IMPACT`, `AVOID_JUMPING`,
+  `AVOID_RUNNING`, `AVOID_RAPID_DIRECTION_CHANGE`, `AVOID_SPINAL_ROTATION`, and
+  `AVOID_LOADED_WRIST_FLEXION` match nothing in the catalog, because the MVP has no
+  plyometric, running, loaded-rotation, or loaded-wrist-flexion exercises. Confirming
+  one currently changes nothing. Don't write Phase 4 copy that implies otherwise, and
+  revisit if conditioning work is ever added. _(Phase 2)_
+- [ ] **`Equipment.CARDIO_MACHINE` has no exercises.** README §4.3 lists it as a
+  selectable option, but the MVP catalog is strength-only, so selecting it is inert.
+  Either hide it in the Phase 3 preferences screen or leave it and accept that it does
+  nothing until conditioning exists. _(Phase 2)_
+- [ ] **Isometric holds have no duration field.** `ExercisePrescription` models
+  sets/reps/rest, so `FRONT_PLANK` and `SIDE_PLANK` use `reps = 1..1` and state the
+  hold duration in their description. Fine for reading, awkward for a plan UI that
+  renders "1 rep". Add a duration to the prescription when Phase 5 or 6 needs to show
+  or edit it. _(Phase 2)_
 
 ## Address before/during Phases 3–6 (feature work)
 

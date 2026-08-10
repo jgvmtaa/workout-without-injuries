@@ -39,4 +39,243 @@
     <string name="placeholder_screen_note">Placeholder screen. The real content arrives in a later phase.</string>
     <string name="placeholder_exercise_id">Exercise: %1$s</string>
     <string name="placeholder_replacement_context">Replacing %1$s in day %2$s.</string>
+
+    <!--
+        Exercise catalog copy (README §6, §7).
+
+        One name and one description per ExerciseId, named `exercise_<id>` and
+        `exercise_<id>_description` after the lower-cased enum constant. The enum is the
+        identifier; these are display copy only and must never be used as ids.
+
+        Descriptions are execution cues, not coaching. They say what the movement is and
+        which position it puts you in, so someone reading an exclusion reason can see why
+        the movement conflicts with a limitation they confirmed.
+    -->
+
+    <!-- Chest -->
+    <string name="exercise_push_up">Push-up</string>
+    <string name="exercise_push_up_description">Lower your chest towards the floor with your body in a straight line, then press back up. Your hands stay planted, so your wrists are loaded in extension.</string>
+    <string name="exercise_machine_chest_press">Machine chest press</string>
+    <string name="exercise_machine_chest_press_description">Press the handles forward while keeping your upper back supported against the pad.</string>
+    <string name="exercise_dumbbell_bench_press">Dumbbell bench press</string>
+    <string name="exercise_dumbbell_bench_press_description">Lying on a bench, press two dumbbells from chest height to straight arms. The dumbbells let your elbows travel further down than a barbell would.</string>
+    <string name="exercise_incline_dumbbell_press">Incline dumbbell press</string>
+    <string name="exercise_incline_dumbbell_press_description">Press two dumbbells upwards from an inclined bench. The angle shifts work towards the upper chest and front shoulders.</string>
+    <string name="exercise_barbell_bench_press">Barbell bench press</string>
+    <string name="exercise_barbell_bench_press_description">Lying on a bench, lower a barbell to your chest and press it back up. The fixed bar sets your grip width and holds your wrists in extension.</string>
+    <string name="exercise_cable_chest_fly">Cable chest fly</string>
+    <string name="exercise_cable_chest_fly_description">With a slight bend in your elbows, bring both cable handles together in front of your chest. Your arms open wide at the start of each rep.</string>
+
+    <!-- Back -->
+    <string name="exercise_lat_pulldown">Lat pulldown</string>
+    <string name="exercise_lat_pulldown_description">Seated with your thighs secured, pull the bar down to your upper chest, then let it rise under control.</string>
+    <string name="exercise_assisted_pull_up">Assisted pull-up</string>
+    <string name="exercise_assisted_pull_up_description">Pull yourself up to the bar with the machine counterweighting part of your bodyweight, so you can pick the load.</string>
+    <string name="exercise_pull_up">Pull-up</string>
+    <string name="exercise_pull_up_description">Hang from the bar and pull until your chin clears it. Your full bodyweight loads your shoulders, elbows, and grip.</string>
+    <string name="exercise_seated_cable_row">Seated cable row</string>
+    <string name="exercise_seated_cable_row_description">Sitting tall, pull the handle to your stomach and return under control. Reaching forward at the start rounds your lower back under load.</string>
+    <string name="exercise_chest_supported_dumbbell_row">Chest-supported dumbbell row</string>
+    <string name="exercise_chest_supported_dumbbell_row_description">Lying face down on an inclined bench, row two dumbbells towards your hips. The bench carries your torso, so your lower back is not loaded.</string>
+    <string name="exercise_iso_lateral_row">Iso-lateral machine row</string>
+    <string name="exercise_iso_lateral_row_description">Row one handle at a time against a chest pad, so each side works independently while the machine supports your torso.</string>
+    <string name="exercise_barbell_row">Barbell row</string>
+    <string name="exercise_barbell_row_description">Hinged forward with a flat back, row the barbell to your stomach. Holding the hinge under load is the hard part of this exercise.</string>
+    <string name="exercise_band_row">Resistance-band row</string>
+    <string name="exercise_band_row_description">Anchor a band at chest height, step back to tension it, and pull the handles to your ribs.</string>
+
+    <!-- Shoulders -->
+    <string name="exercise_machine_shoulder_press">Machine shoulder press</string>
+    <string name="exercise_machine_shoulder_press_description">Press the handles overhead with your back against the pad.</string>
+    <string name="exercise_seated_dumbbell_shoulder_press">Seated dumbbell shoulder press</string>
+    <string name="exercise_seated_dumbbell_shoulder_press_description">Press two dumbbells from shoulder height to overhead while seated with back support.</string>
+    <string name="exercise_dumbbell_lateral_raise">Dumbbell lateral raise</string>
+    <string name="exercise_dumbbell_lateral_raise_description">Raise two dumbbells out to your sides up to shoulder height, leading with your elbows.</string>
+    <string name="exercise_cable_lateral_raise">Cable lateral raise</string>
+    <string name="exercise_cable_lateral_raise_description">Raise a low cable handle out to the side, one arm at a time, for constant tension through the range.</string>
+    <string name="exercise_band_lateral_raise">Resistance-band lateral raise</string>
+    <string name="exercise_band_lateral_raise_description">Standing on a band, raise the handles out to your sides up to shoulder height.</string>
+    <string name="exercise_cable_rear_delt_fly">Cable rear-delt fly</string>
+    <string name="exercise_cable_rear_delt_fly_description">With the cables crossed in front of you, pull both handles out and back to work the rear shoulders.</string>
+    <string name="exercise_face_pull">Face pull</string>
+    <string name="exercise_face_pull_description">Pull a rope towards your face at eye level, rotating your hands outwards as your elbows travel back.</string>
+    <string name="exercise_band_pull_apart">Resistance-band pull-apart</string>
+    <string name="exercise_band_pull_apart_description">Hold a band at chest height with straight arms and pull it apart until it touches your sternum.</string>
+
+    <!-- Biceps -->
+    <string name="exercise_dumbbell_curl">Dumbbell curl</string>
+    <string name="exercise_dumbbell_curl_description">Curl two dumbbells from your sides to your shoulders with your palms turned up.</string>
+    <string name="exercise_hammer_curl">Hammer curl</string>
+    <string name="exercise_hammer_curl_description">Curl two dumbbells with your palms facing each other, keeping your forearms in a neutral position throughout.</string>
+    <string name="exercise_cable_curl">Cable curl</string>
+    <string name="exercise_cable_curl_description">Curl a low cable bar to your shoulders with your palms turned up, keeping your elbows at your sides.</string>
+    <string name="exercise_band_curl">Resistance-band curl</string>
+    <string name="exercise_band_curl_description">Standing on a band, curl the handles to your shoulders with your palms turned up.</string>
+
+    <!-- Triceps -->
+    <string name="exercise_cable_triceps_pressdown">Cable triceps pressdown</string>
+    <string name="exercise_cable_triceps_pressdown_description">With your elbows at your sides and palms facing down, press the bar down until your arms are straight.</string>
+    <string name="exercise_overhead_cable_triceps_extension">Overhead cable triceps extension</string>
+    <string name="exercise_overhead_cable_triceps_extension_description">Facing away from the cable with your arms overhead, straighten your elbows against the resistance.</string>
+    <string name="exercise_band_triceps_pressdown">Resistance-band triceps pressdown</string>
+    <string name="exercise_band_triceps_pressdown_description">Anchor a band overhead and press the handles down until your elbows are straight, palms facing down.</string>
+    <string name="exercise_assisted_dip">Assisted dip</string>
+    <string name="exercise_assisted_dip_description">Lower and press yourself back up between the handles with the machine counterweighting part of your bodyweight.</string>
+    <string name="exercise_dip">Dip</string>
+    <string name="exercise_dip_description">Supporting your full bodyweight on parallel bars, lower until your upper arms are level with your torso, then press back up. Your shoulders travel behind your body at the bottom.</string>
+
+    <!-- Quadriceps -->
+    <string name="exercise_bodyweight_squat">Bodyweight squat</string>
+    <string name="exercise_bodyweight_squat_description">Sit down and back between your feet, then stand tall again. Depth is up to you.</string>
+    <string name="exercise_goblet_squat">Goblet squat</string>
+    <string name="exercise_goblet_squat_description">Hold one dumbbell at your chest and squat down between your feet. The load sits in front of you, so your knees and hips both travel through a deep range.</string>
+    <string name="exercise_leg_press">Leg press</string>
+    <string name="exercise_leg_press_description">Seated in the machine, press the platform away until your legs are almost straight. Your back stays supported throughout.</string>
+    <string name="exercise_leg_extension">Leg extension</string>
+    <string name="exercise_leg_extension_description">Seated in the machine, straighten your knees against the pad. All of the load goes through the knee joint.</string>
+    <string name="exercise_bulgarian_split_squat">Bulgarian split squat</string>
+    <string name="exercise_bulgarian_split_squat_description">With your rear foot on a bench, lower straight down on the front leg and drive back up. One leg carries the work and your balance.</string>
+    <string name="exercise_walking_lunge">Walking lunge</string>
+    <string name="exercise_walking_lunge_description">Step forward and lower your back knee towards the floor, then step through onto the other leg.</string>
+    <string name="exercise_step_up">Step-up</string>
+    <string name="exercise_step_up_description">Step onto a bench with one leg and stand up on it, then lower under control. The working leg does the work; the other only guides you.</string>
+
+    <!-- Hamstrings -->
+    <string name="exercise_dumbbell_romanian_deadlift">Dumbbell Romanian deadlift</string>
+    <string name="exercise_dumbbell_romanian_deadlift_description">Holding two dumbbells, push your hips back and lower the weights along your legs with a flat back, then stand tall. Your back holds its position against the load.</string>
+    <string name="exercise_single_leg_romanian_deadlift">Single-leg Romanian deadlift</string>
+    <string name="exercise_single_leg_romanian_deadlift_description">Balancing on one leg, hinge forward and lower a dumbbell towards the floor, then return upright. Your standing leg carries both the load and your balance.</string>
+    <string name="exercise_seated_leg_curl">Seated leg curl</string>
+    <string name="exercise_seated_leg_curl_description">Seated with your hips bent, pull your heels down and under the seat against the pad.</string>
+    <string name="exercise_lying_leg_curl">Lying leg curl</string>
+    <string name="exercise_lying_leg_curl_description">Lying face down, curl your heels towards your glutes against the pad.</string>
+    <string name="exercise_nordic_hamstring_curl">Nordic hamstring curl</string>
+    <string name="exercise_nordic_hamstring_curl_description">Kneeling with your ankles anchored, lower your torso towards the floor as slowly as you can, then pull yourself back up. Your knees carry your weight throughout.</string>
+
+    <!-- Glutes -->
+    <string name="exercise_glute_bridge">Glute bridge</string>
+    <string name="exercise_glute_bridge_description">Lying on your back with your knees bent, drive your hips up until your body is level from knees to shoulders.</string>
+    <string name="exercise_hip_thrust">Hip thrust</string>
+    <string name="exercise_hip_thrust_description">With your upper back on a bench and a barbell across your hips, drive your hips up to full extension and lower under control.</string>
+    <string name="exercise_cable_pull_through">Cable pull-through</string>
+    <string name="exercise_cable_pull_through_description">Facing away from a low cable, push your hips back to let the rope travel between your legs, then stand tall by driving your hips forward.</string>
+    <string name="exercise_hip_abduction_machine">Hip abduction machine</string>
+    <string name="exercise_hip_abduction_machine_description">Seated in the machine, press your knees outwards against the pads and return under control.</string>
+    <string name="exercise_band_hip_abduction">Resistance-band hip abduction</string>
+    <string name="exercise_band_hip_abduction_description">With a band around your thighs, press your knees apart against the resistance.</string>
+    <string name="exercise_hip_adduction_machine">Hip adduction machine</string>
+    <string name="exercise_hip_adduction_machine_description">Seated in the machine, squeeze your knees together against the pads. Each rep starts with your legs held apart.</string>
+    <string name="exercise_band_hip_adduction">Resistance-band hip adduction</string>
+    <string name="exercise_band_hip_adduction_description">Standing on one leg with a band around the other ankle, pull that leg across your body against the resistance.</string>
+
+    <!-- Calves -->
+    <string name="exercise_standing_calf_raise">Standing calf raise</string>
+    <string name="exercise_standing_calf_raise_description">Standing tall, rise onto the balls of your feet and lower your heels under control.</string>
+    <string name="exercise_seated_calf_raise">Seated calf raise</string>
+    <string name="exercise_seated_calf_raise_description">Seated with the pad across your thighs, rise onto the balls of your feet and lower your heels under control.</string>
+
+    <!-- Core -->
+    <string name="exercise_dead_bug">Dead bug</string>
+    <string name="exercise_dead_bug_description">Lying on your back, extend one arm and the opposite leg away from you while keeping your lower back flat on the floor.</string>
+    <string name="exercise_bird_dog">Bird dog</string>
+    <string name="exercise_bird_dog_description">On hands and knees, reach one arm and the opposite leg out without letting your hips rotate.</string>
+    <string name="exercise_front_plank">Front plank</string>
+    <string name="exercise_front_plank_description">Hold a straight line from head to heels on your forearms and toes. Hold each set for 20–45 seconds.</string>
+    <string name="exercise_side_plank">Side plank</string>
+    <string name="exercise_side_plank_description">On one forearm, hold your body in a straight line without letting your hips drop. Hold each set for 20–45 seconds per side.</string>
+    <string name="exercise_pallof_press">Pallof press</string>
+    <string name="exercise_pallof_press_description">Standing side-on to a cable, press the handle straight out from your chest and resist the pull that tries to rotate you.</string>
+    <string name="exercise_cable_crunch">Cable crunch</string>
+    <string name="exercise_cable_crunch_description">Kneeling below a high cable, curl your ribs towards your hips against the load, then return under control.</string>
+    <string name="exercise_hanging_knee_raise">Hanging knee raise</string>
+    <string name="exercise_hanging_knee_raise_description">Hanging from a bar, draw your knees up towards your chest and lower them without swinging.</string>
+
+    <!--
+        Injury catalog copy (README §4.4, §6).
+
+        Wording stays descriptive rather than diagnostic — these are histories the user
+        recognises, not conditions the app is asserting. Every body region ends with an
+        undiagnosed-pain option so nobody has to guess at a label to be heard.
+    -->
+
+    <!-- Shoulder -->
+    <string name="injury_shoulder_general">Previous shoulder injury</string>
+    <string name="injury_shoulder_rotator_cuff">Rotator cuff injury</string>
+    <string name="injury_shoulder_instability">Shoulder instability</string>
+    <string name="injury_shoulder_impingement">Shoulder impingement</string>
+    <string name="injury_shoulder_surgery">Previous shoulder surgery</string>
+    <string name="injury_shoulder_undiagnosed_pain">Shoulder pain without a diagnosis</string>
+
+    <!-- Elbow -->
+    <string name="injury_elbow_general">Previous elbow injury</string>
+    <string name="injury_elbow_tendon">Tendon-related elbow pain</string>
+    <string name="injury_elbow_surgery">Previous elbow surgery</string>
+    <string name="injury_elbow_undiagnosed_pain">Elbow pain without a diagnosis</string>
+
+    <!-- Wrist and hand -->
+    <string name="injury_wrist_general">Previous wrist injury</string>
+    <string name="injury_wrist_surgery">Previous wrist surgery</string>
+    <string name="injury_wrist_undiagnosed_pain">Wrist pain without a diagnosis</string>
+
+    <!-- Lower back -->
+    <string name="injury_lower_back_disc_related">Disc-related condition</string>
+    <string name="injury_lower_back_general">Previous lower-back injury</string>
+    <string name="injury_lower_back_surgery">Previous lower-back surgery</string>
+    <string name="injury_lower_back_recurrent_pain">Recurrent lower-back pain</string>
+    <string name="injury_lower_back_undiagnosed_pain">Lower-back pain without a diagnosis</string>
+
+    <!-- Hip -->
+    <string name="injury_hip_general">Previous hip injury</string>
+    <string name="injury_hip_impingement">Hip impingement</string>
+    <string name="injury_hip_surgery">Previous hip surgery</string>
+    <string name="injury_hip_undiagnosed_pain">Hip pain without a diagnosis</string>
+
+    <!-- Knee -->
+    <string name="injury_knee_acl">ACL injury</string>
+    <string name="injury_knee_meniscus">Meniscus injury</string>
+    <string name="injury_knee_patellar_tendon">Patellar tendon issue</string>
+    <string name="injury_knee_patellofemoral">Kneecap-related pain</string>
+    <string name="injury_knee_surgery">Previous knee surgery</string>
+    <string name="injury_knee_undiagnosed_pain">Knee pain without a diagnosis</string>
+
+    <!-- Ankle and foot -->
+    <string name="injury_ankle_sprain">Previous ankle sprain</string>
+    <string name="injury_ankle_achilles">Achilles tendon issue</string>
+    <string name="injury_ankle_foot_surgery">Previous ankle or foot surgery</string>
+    <string name="injury_ankle_foot_undiagnosed_pain">Ankle or foot pain without a diagnosis</string>
+
+    <!--
+        Movement limitation labels (README §4.5, §6).
+
+        Phrased as the movement to avoid, in plain language, because the user reads these
+        as a checklist of what currently applies to them and later as the reason an
+        exercise was excluded. First consumed by the limitations screen in Phase 3.
+    -->
+    <string name="limitation_avoid_high_impact">Avoid high-impact movements</string>
+    <string name="limitation_avoid_jumping">Avoid jumping and landing</string>
+    <string name="limitation_avoid_running">Avoid running</string>
+    <string name="limitation_avoid_rapid_direction_change">Avoid rapid changes of direction</string>
+    <string name="limitation_avoid_deep_knee_flexion">Avoid deep knee bending</string>
+    <string name="limitation_avoid_kneeling">Avoid kneeling and weight on the knees</string>
+    <string name="limitation_avoid_single_leg_loading">Avoid loading one leg at a time</string>
+    <string name="limitation_avoid_heavy_knee_loading">Avoid heavy loading through the knees</string>
+    <string name="limitation_avoid_loaded_spinal_flexion">Avoid rounding the back under load</string>
+    <string name="limitation_avoid_loaded_spinal_extension">Avoid arching the back under load</string>
+    <string name="limitation_avoid_spinal_rotation">Avoid twisting the spine</string>
+    <string name="limitation_avoid_unsupported_hip_hinge">Avoid unsupported hip-hinge positions</string>
+    <string name="limitation_avoid_high_spinal_compression">Avoid heavy loading through the spine</string>
+    <string name="limitation_avoid_overhead_pressing">Avoid pressing overhead</string>
+    <string name="limitation_avoid_deep_shoulder_extension">Avoid taking the arms far behind the body</string>
+    <string name="limitation_avoid_wide_grip_pressing">Avoid wide-grip pressing</string>
+    <string name="limitation_avoid_shoulder_abduction">Avoid raising the arms out to the side</string>
+    <string name="limitation_avoid_internal_rotation_under_load">Avoid rotating the shoulder inwards under load</string>
+    <string name="limitation_avoid_heavy_elbow_flexion">Avoid heavy elbow bending</string>
+    <string name="limitation_avoid_heavy_elbow_extension">Avoid heavy elbow straightening</string>
+    <string name="limitation_avoid_loaded_wrist_extension">Avoid weight on a bent-back wrist</string>
+    <string name="limitation_avoid_loaded_wrist_flexion">Avoid weight on a bent-forward wrist</string>
+    <string name="limitation_avoid_pronated_grip">Avoid palms-down grips</string>
+    <string name="limitation_avoid_supinated_grip">Avoid palms-up grips</string>
+    <string name="limitation_avoid_deep_hip_flexion">Avoid deep hip bending</string>
+    <string name="limitation_avoid_wide_hip_abduction">Avoid taking the legs wide apart</string>
+    <string name="limitation_avoid_unilateral_balance_demand">Avoid balancing on one leg</string>
 </resources>

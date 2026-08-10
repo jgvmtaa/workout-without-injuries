@@ -45,9 +45,23 @@ SDK.
 
 ## Build verification status
 
-**Verified building, installing, and launching** via Android Studio 2024.3 on an
-Android 14 emulator: AGP produced `app-debug.apk`, it installed, and
+**Phase 1 — verified building, installing, and launching** via Android Studio 2024.3
+on an Android 14 emulator: AGP produced `app-debug.apk`, it installed, and
 `MainActivity` rendered the placeholder surface with no crash.
+
+**Phase 2 — not yet verified by a real build.** It was written on the host described
+in the caveat below, where Gradle cannot run, so nothing in it has been through AGP,
+KSP, Hilt code generation, aapt, or lint. What *was* verified, using the kotlinc
+workaround further down:
+
+- the domain models, both catalogs, and both repositories compile clean;
+- their 36 unit tests pass;
+- the whole `app/src/main/java` tree type-checks, including the Compose and DI files
+  (bytecode generation then fails inside the hand-assembled classpath, which is a
+  limitation of the workaround rather than a problem in the source).
+
+Before treating Phase 2 as done, run `./gradlew test assembleDebug` in Android Studio
+and work through the checklist in [follow-ups.md](follow-ups.md#pending-verification).
 
 ### Environment caveat (command-line Gradle on the scaffolding host)
 
@@ -64,6 +78,44 @@ socket, `./gradlew assembleDebug` from a terminal cannot start a build on this
 host. **Use Android Studio (or a CI runner) to build here.** On a developer
 machine / CI with normal JVM networking, the command-line `./gradlew` commands
 above work directly.
+
+### Workaround: type-checking and running JVM tests without Gradle
+
+The block is on *socket connect*, not on running a JVM, so the Kotlin compiler can be
+invoked directly. Android Studio bundles kotlinc 2.0.21 — the version this project
+pins — and every dependency is already extracted in the Gradle cache. That is enough
+to compile the pure-Kotlin layers (domain, catalogs, repositories) and run their JUnit
+tests on this host:
+
+```bash
+JAVA="/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java"
+KOTLINC="/Applications/Android Studio.app/Contents/plugins/Kotlin/kotlinc"
+CACHE=~/.gradle/caches/modules-2/files-2.1
+
+# Dependency jars (junit, hamcrest, javax.inject, coroutines, androidx.annotation)
+# live under $CACHE; find them with:
+#   find $CACHE -name '*.jar' | grep -vE 'sources|javadoc'
+
+"$JAVA" -cp "$KOTLINC/lib/kotlin-compiler.jar" \
+  org.jetbrains.kotlin.cli.jvm.K2JVMCompiler \
+  -jvm-target 17 -classpath "$DEPS" -d out \
+  path/to/R-stub app/src/main/java/com/jgv/workoutplanner/domain \
+  app/src/main/java/com/jgv/workoutplanner/data app/src/test/java/...
+
+"$JAVA" -cp "out:$DEPS:$KOTLINC/lib/kotlin-stdlib.jar" \
+  org.junit.runner.JUnitCore com.jgv.workoutplanner.data.catalog.ExerciseCatalogTest
+```
+
+Catalog code references `R.string.*`, which aapt normally generates. Generate a
+stand-in instead — an `object R { object string { const val <name> = <n> } }` built by
+parsing `res/values/strings.xml`. It costs nothing and adds a real check: a reference
+to a string that does not exist becomes a compile error.
+
+**Limits.** This does not run aapt, KSP, Hilt code generation, lint, or the Compose
+compiler plugin, so it does not replace a build. Compose sources type-check under this
+setup but fail during bytecode generation (the hand-assembled classpath is not the one
+AGP builds). Treat it as a fast correctness check for the non-Android layers, and
+still build in Android Studio or CI before calling something verified.
 
 ### Note on emulator installs
 

@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.jgv.workoutplanner.domain.model.ExerciseId
 import com.jgv.workoutplanner.feature.exercisedetails.ExerciseDetailsScreen
 import com.jgv.workoutplanner.feature.exerciselibrary.ExerciseLibraryScreen
 import com.jgv.workoutplanner.feature.home.HomeRoute
@@ -20,9 +21,11 @@ import com.jgv.workoutplanner.feature.plan.ExerciseReplacementScreen
 import com.jgv.workoutplanner.feature.plan.PlanScreen
 import com.jgv.workoutplanner.feature.profile.ProfileScreen
 
-// Stand-in arguments so the argument-carrying destinations are reachable before the
-// catalog (Phase 2) and the generated plan (Phase 5) can supply real ids.
-private const val PLACEHOLDER_EXERCISE_ID = "MACHINE_CHEST_PRESS"
+// A real catalog exercise, but still a stand-in: the Plan and Library screens are
+// placeholders until Phases 4–6, so nothing can yet report which exercise was tapped.
+private val SAMPLE_EXERCISE_ID = ExerciseId.MACHINE_CHEST_PRESS
+
+// Workout day ids are generated with the plan, so this stays a stand-in until Phase 5.
 private const val PLACEHOLDER_WORKOUT_DAY_ID = "day-1"
 
 /**
@@ -105,13 +108,13 @@ fun AppNavigation(
         composable<AppRoute.Plan> {
             PlanScreen(
                 onOpenExerciseDetails = {
-                    navController.navigate(AppRoute.ExerciseDetails(PLACEHOLDER_EXERCISE_ID))
+                    navController.navigate(AppRoute.ExerciseDetails(SAMPLE_EXERCISE_ID))
                 },
                 onReplaceExercise = {
                     navController.navigate(
                         AppRoute.ExerciseReplacement(
                             workoutDayId = PLACEHOLDER_WORKOUT_DAY_ID,
-                            exerciseId = PLACEHOLDER_EXERCISE_ID,
+                            exerciseId = SAMPLE_EXERCISE_ID,
                         ),
                     )
                 },
@@ -122,7 +125,7 @@ fun AppNavigation(
         composable<AppRoute.ExerciseLibrary> {
             ExerciseLibraryScreen(
                 onOpenExerciseDetails = {
-                    navController.navigate(AppRoute.ExerciseDetails(PLACEHOLDER_EXERCISE_ID))
+                    navController.navigate(AppRoute.ExerciseDetails(SAMPLE_EXERCISE_ID))
                 },
                 onBack = goBack,
             )

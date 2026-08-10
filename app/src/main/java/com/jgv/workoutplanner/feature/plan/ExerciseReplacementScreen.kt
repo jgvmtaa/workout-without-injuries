@@ -8,6 +8,7 @@ import com.jgv.workoutplanner.R
 import com.jgv.workoutplanner.core.designsystem.AppTheme
 import com.jgv.workoutplanner.core.ui.PlaceholderAction
 import com.jgv.workoutplanner.core.ui.PlaceholderScreen
+import com.jgv.workoutplanner.domain.model.ExerciseId
 
 /**
  * Eligible alternatives for one exercise in one day of the plan (README §13).
@@ -16,7 +17,7 @@ import com.jgv.workoutplanner.core.ui.PlaceholderScreen
 @Composable
 fun ExerciseReplacementScreen(
     workoutDayId: String,
-    exerciseId: String,
+    exerciseId: ExerciseId,
     onReplacementChosen: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -27,7 +28,7 @@ fun ExerciseReplacementScreen(
         onBack = onBack,
         supportingText = stringResource(
             R.string.placeholder_replacement_context,
-            exerciseId,
+            exerciseId.name,
             workoutDayId,
         ),
         actions = listOf(
@@ -45,7 +46,7 @@ private fun ExerciseReplacementScreenPreview() {
     AppTheme {
         ExerciseReplacementScreen(
             workoutDayId = "day-1",
-            exerciseId = "MACHINE_CHEST_PRESS",
+            exerciseId = ExerciseId.MACHINE_CHEST_PRESS,
             onReplacementChosen = {},
             onBack = {},
         )

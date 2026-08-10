@@ -1,5 +1,6 @@
 package com.jgv.workoutplanner.navigation
 
+import com.jgv.workoutplanner.domain.model.ExerciseId
 import kotlinx.serialization.Serializable
 
 /**
@@ -8,9 +9,10 @@ import kotlinx.serialization.Serializable
  * Routes are `@Serializable` so Navigation Compose's type-safe API can carry the
  * arguments — no string route templates and no manual argument parsing.
  *
- * Argument types stay primitive for now. README §17 types the exercise arguments as
- * `ExerciseId`; that enum is Phase 2 work, so these hold the raw id and get swapped
- * over when the domain model lands (tracked in docs/follow-ups.md).
+ * Exercise arguments are typed as [ExerciseId] rather than `String` (README §17), so an
+ * unknown exercise cannot be navigated to. `workoutDayId` stays a `String` because
+ * [com.jgv.workoutplanner.domain.model.WorkoutDay] ids are generated per plan, not
+ * enumerated.
  */
 @Serializable
 sealed interface AppRoute {
@@ -54,14 +56,14 @@ sealed interface AppRoute {
     /** Details for a single exercise. */
     @Serializable
     data class ExerciseDetails(
-        val exerciseId: String,
+        val exerciseId: ExerciseId,
     ) : AppRoute
 
     /** Alternatives for one exercise within one day of the plan. */
     @Serializable
     data class ExerciseReplacement(
         val workoutDayId: String,
-        val exerciseId: String,
+        val exerciseId: ExerciseId,
     ) : AppRoute
 
     /** Saved profile: preferences, injuries, limitations. */
