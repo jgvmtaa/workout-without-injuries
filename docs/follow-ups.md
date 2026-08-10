@@ -143,12 +143,14 @@ anything on a device — hence the list below.
 
 ## Environment / FYI (no code change expected)
 
-- Command-line Gradle cannot run on the primary scaffolding Mac (endpoint policy
-  blocks shell-launched JVM TCP, so the Gradle daemon can't start). Re-confirmed
-  during Phase 3: `./gradlew --version` works, `./gradlew test` fails with "Could not
-  connect to the Gradle daemon", with or without `--no-daemon`. Build via Android
-  Studio or CI, and use [`tools/verify-no-gradle.sh`](../tools/verify-no-gradle.sh) for
-  a fast compile-and-unit-test check in between. See [toolchain.md](toolchain.md).
+- Gradle works from an interactive terminal on the scaffolding Mac, but **not from a
+  shell spawned by tooling** (coding agents, hooks): the endpoint policy grants network
+  per process tree, and those trees do not get it, so the client cannot reach the daemon
+  over loopback. Symptom: `./gradlew --version` succeeds, the daemon logs "Daemon server
+  started", and the build fails with "Could not connect to the Gradle daemon" — with or
+  without `--no-daemon`. Nothing is wrong with the project.
+  [`tools/verify-no-gradle.sh`](../tools/verify-no-gradle.sh) exists for that case and
+  needs no sockets. See [toolchain.md](toolchain.md).
 - Emulator install gotchas: a full `/data` makes `install-create` fail with a
   generic "Unknown failure" (wipe AVD data / size up userdata); IDE debug APKs
   are `testOnly`, so manual `adb install` needs `-t`. See [toolchain.md](toolchain.md).

@@ -65,21 +65,27 @@ at KSP. Before treating either phase as done, run `./gradlew test assembleDebug`
 Android Studio and work through the checklist in
 [follow-ups.md](follow-ups.md#pending-verification).
 
-### Environment caveat (command-line Gradle on the scaffolding host)
+### Environment caveat (Gradle from an automation-spawned shell)
 
-The machine this project was scaffolded on enforces an endpoint network policy
-that **denies shell-launched JVMs all outbound TCP `connect()` — including
-loopback** (verified: `curl`/Python reach the corporate proxy at
-`localhost:10054`, but any JVM started from the shell — Temurin 17 *and* Android
-Studio's bundled JBR 21 — gets `SocketException: Operation not permitted` on
-every connect, even to `127.0.0.1`). Network access is granted to the Android
-Studio *GUI app's* process tree, not to shell-spawned java.
+**This does not apply to a normal interactive terminal.** `./gradlew test` works fine
+from Terminal/iTerm on the scaffolding Mac. What follows applies to shells spawned by
+tooling — coding agents, hooks, scripts launched outside the user's own session — whose
+process tree the endpoint policy has not granted network access.
 
-Because Gradle runs the build in a separate daemon JVM reached over a loopback
-socket, `./gradlew assembleDebug` from a terminal cannot start a build on this
-host. **Use Android Studio (or a CI runner) to build here.** On a developer
-machine / CI with normal JVM networking, the command-line `./gradlew` commands
-above work directly.
+In such a shell, the endpoint policy denies the JVM all outbound TCP `connect()` —
+**including loopback**. `curl` and Python reach the corporate proxy at
+`localhost:10054`, but a JVM started there — Temurin 17 *and* Android Studio's bundled
+JBR 21 — gets `SocketException: Operation not permitted` on every connect, even to
+`127.0.0.1`.
+
+Gradle runs the build in a separate daemon JVM reached over a loopback socket, so the
+symptom is distinctive: `./gradlew --version` succeeds (no daemon needed), the daemon
+process starts and logs `Daemon server started`, and the client then fails with
+`Could not connect to the Gradle daemon`. `--no-daemon` does not help — it still forks.
+
+If you hit that, you are in the wrong kind of shell. Build from your own terminal,
+Android Studio, or CI; or use the script below for a fast compile-and-unit-test check
+that needs no sockets at all.
 
 ### Workaround: compiling and running JVM tests without Gradle
 
