@@ -1,6 +1,6 @@
 # Task Breakdown — Workout Planner (Android MVP)
 
-This directory decomposes the [root README](../README.md) into a hierarchical,
+This directory decomposes the [specification](../docs/spec.md) into a hierarchical,
 **sequentially workable** task list. Each phase builds on the previous one, so
 work them top-to-bottom. Within a phase, tasks are ordered by dependency.
 
@@ -8,7 +8,9 @@ work them top-to-bottom. Within a phase, tasks are ordered by dependency.
 
 - Each phase lives in its own file (`phase-N-*.md`).
 - Tasks use `- [ ]` checkboxes. Check them off as you complete them.
-- Every task references the source section(s) in the root README, e.g. `(README §5.3)`.
+- Every task references the source section(s) of the spec, e.g. `(README §5.3)`.
+  Those `README §N` citations point at [`docs/spec.md`](../docs/spec.md), which was
+  the root README until it was replaced by a short product summary.
 - A phase is **done** only when its *Completion criteria* (last section of each
   phase file) are all satisfied.
 

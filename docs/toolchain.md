@@ -49,19 +49,21 @@ SDK.
 on an Android 14 emulator: AGP produced `app-debug.apk`, it installed, and
 `MainActivity` rendered the placeholder surface with no crash.
 
-**Phase 2 — not yet verified by a real build.** It was written on the host described
-in the caveat below, where Gradle cannot run, so nothing in it has been through AGP,
-KSP, Hilt code generation, aapt, or lint. What *was* verified, using the kotlinc
-workaround further down:
+**Phases 2 and 3 — not yet verified by a real build.** Both were written on the host
+described in the caveat below, where Gradle cannot run, so nothing in them has been
+through AGP, KSP, Hilt code generation, aapt, lint, or a device. What *was* verified,
+with [`tools/verify-no-gradle.sh`](../tools/verify-no-gradle.sh):
 
-- the domain models, both catalogs, and both repositories compile clean;
-- their 36 unit tests pass;
-- the whole `app/src/main/java` tree type-checks, including the Compose and DI files
-  (bytecode generation then fails inside the hand-assembled classpath, which is a
-  limitation of the workaround rather than a problem in the source).
+- every file under `app/src/main`, `app/src/test` and `app/src/androidTest` compiles,
+  Compose screens included, using the real Compose and kotlinx-serialization compiler
+  plugins;
+- all 155 JVM unit tests pass.
 
-Before treating Phase 2 as done, run `./gradlew test assembleDebug` in Android Studio
-and work through the checklist in [follow-ups.md](follow-ups.md#pending-verification).
+That covers compilation and logic, and nothing else. Hilt's dependency graph in
+particular is unvalidated — a missing binding compiles clean under the script and fails
+at KSP. Before treating either phase as done, run `./gradlew test assembleDebug` in
+Android Studio and work through the checklist in
+[follow-ups.md](follow-ups.md#pending-verification).
 
 ### Environment caveat (command-line Gradle on the scaffolding host)
 
@@ -79,43 +81,42 @@ host. **Use Android Studio (or a CI runner) to build here.** On a developer
 machine / CI with normal JVM networking, the command-line `./gradlew` commands
 above work directly.
 
-### Workaround: type-checking and running JVM tests without Gradle
+### Workaround: compiling and running JVM tests without Gradle
 
 The block is on *socket connect*, not on running a JVM, so the Kotlin compiler can be
-invoked directly. Android Studio bundles kotlinc 2.0.21 — the version this project
-pins — and every dependency is already extracted in the Gradle cache. That is enough
-to compile the pure-Kotlin layers (domain, catalogs, repositories) and run their JUnit
-tests on this host:
+invoked directly. Everything needed is already on the machine: Android Studio ships
+kotlinc 2.0.21 — the version this project pins — and a Gradle sync leaves every
+dependency, both compiler plugins, and `kotlin-compiler-embeddable` in the module cache.
+
+[`tools/verify-no-gradle.sh`](../tools/verify-no-gradle.sh) does this. Run it from the
+repo root:
 
 ```bash
-JAVA="/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java"
-KOTLINC="/Applications/Android Studio.app/Contents/plugins/Kotlin/kotlinc"
-CACHE=~/.gradle/caches/modules-2/files-2.1
-
-# Dependency jars (junit, hamcrest, javax.inject, coroutines, androidx.annotation)
-# live under $CACHE; find them with:
-#   find $CACHE -name '*.jar' | grep -vE 'sources|javadoc'
-
-"$JAVA" -cp "$KOTLINC/lib/kotlin-compiler.jar" \
-  org.jetbrains.kotlin.cli.jvm.K2JVMCompiler \
-  -jvm-target 17 -classpath "$DEPS" -d out \
-  path/to/R-stub app/src/main/java/com/jgv/workoutplanner/domain \
-  app/src/main/java/com/jgv/workoutplanner/data app/src/test/java/...
-
-"$JAVA" -cp "out:$DEPS:$KOTLINC/lib/kotlin-stdlib.jar" \
-  org.junit.runner.JUnitCore com.jgv.workoutplanner.data.catalog.ExerciseCatalogTest
+tools/verify-no-gradle.sh           # compile everything, then run the unit tests
+tools/verify-no-gradle.sh --quiet   # same, without the toolchain banner
 ```
 
-Catalog code references `R.string.*`, which aapt normally generates. Generate a
-stand-in instead — an `object R { object string { const val <name> = <n> } }` built by
-parsing `res/values/strings.xml`. It costs nothing and adds a real check: a reference
-to a string that does not exist becomes a compile error.
+It compiles `app/src/main`, `app/src/test` and `app/src/androidTest` in one pass with
+the Compose and serialization compiler plugins, then runs every JUnit class in
+`app/src/test`. Roughly 30 seconds from cold.
 
-**Limits.** This does not run aapt, KSP, Hilt code generation, lint, or the Compose
-compiler plugin, so it does not replace a build. Compose sources type-check under this
-setup but fail during bytecode generation (the hand-assembled classpath is not the one
-AGP builds). Treat it as a fast correctness check for the non-Android layers, and
-still build in Android Studio or CI before calling something verified.
+Two details worth knowing if it ever needs fixing:
+
+- **`R` is generated from `strings.xml`** by a Python block in the script, standing in
+  for aapt. That is not just scaffolding — a reference to a string that does not exist
+  becomes a compile error, which is a check the IDE would otherwise be the only one
+  doing.
+- **Embeddable everything.** The compiler is `kotlin-compiler-embeddable` from the
+  Gradle cache, not `kotlinc/lib/kotlin-compiler.jar`, because the Compose plugin
+  published to Maven is built against the shaded compiler. Mixing the two fails with
+  "the provided plugin ... is not compatible with this version of compiler". The
+  embeddable compiler also bundles none of its own runtime dependencies, so the script
+  supplies stdlib, reflect, script-runtime, trove4j, annotations and coroutines by hand.
+
+**Limits.** No aapt, no KSP, no Hilt code generation, no lint, no packaging, and nothing
+on a device. A missing Hilt binding or a resource that only exists in a preview will get
+through. It is a fast correctness check, not a build — still build in Android Studio or
+CI before calling something verified.
 
 ### Note on emulator installs
 

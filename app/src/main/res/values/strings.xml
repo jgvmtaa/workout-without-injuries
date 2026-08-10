@@ -35,6 +35,131 @@
     <!-- Shared states -->
     <string name="state_loading">Loading…</string>
 
+    <!--
+        Onboarding copy (README §4.1–§4.5).
+
+        Two rules run through all of it. It describes what the app does rather than what
+        the user's body is doing — "the app filters", never "you have". And it never
+        implies a limitation has been applied on the user's behalf: suggestions are
+        phrased as questions to answer, because the user's confirmation is the only thing
+        that reaches the filter (README §2).
+    -->
+
+    <!-- Welcome (README §4.1) -->
+    <string name="welcome_headline">Build workouts around your preferences and movement limitations.</string>
+    <string name="welcome_body">The app filters exercises based on the information you provide. It does not diagnose injuries or replace professional medical advice.</string>
+    <string name="welcome_steps_title">What setup covers</string>
+    <string name="welcome_step_preferences">How you want to train — goal, experience, schedule, and equipment.</string>
+    <string name="welcome_step_injuries">Any injury history you want to take into account.</string>
+    <string name="welcome_step_limitations">Which movements you need to avoid right now. You choose these; nothing is decided for you.</string>
+
+    <!-- Safety notice (README §4.2) -->
+    <string name="safety_intro">Read these before you continue. They apply to everything the app suggests.</string>
+    <string name="safety_ack_not_medical_advice">This app is not medical advice. It does not diagnose injuries or prescribe rehabilitation.</string>
+    <string name="safety_ack_stop_on_pain">Stop any exercise that causes pain.</string>
+    <string name="safety_ack_follow_clinician">If you have a recent injury, recent surgery, or a restriction from a clinician, follow their guidance instead of anything shown here.</string>
+    <string name="safety_ack_filters_are_general">The exercise filters are general and may not match your individual case.</string>
+    <string name="safety_confirm_label">I have read and understood these points</string>
+
+    <!-- Training preferences (README §4.3) -->
+    <string name="preferences_intro">Tell us how you want to train. All of it can be changed later.</string>
+    <string name="preferences_goal_title">Primary goal</string>
+    <string name="preferences_experience_title">Experience level</string>
+    <string name="preferences_days_title">Training days per week</string>
+    <string name="preferences_duration_title">Session length</string>
+    <string name="preferences_duration_value">%1$d minutes</string>
+    <string name="preferences_equipment_title">Available equipment</string>
+    <string name="preferences_equipment_description">Select everything you can train with. Anything you leave out is treated as unavailable rather than unsafe.</string>
+    <string name="preferences_equipment_always_available">Always available</string>
+    <string name="preferences_split_title">Your weekly split</string>
+    <string name="preferences_split_derived">Chosen from your training frequency.</string>
+    <plurals name="preferences_days_value">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+
+    <!-- Goals (README §4.3) -->
+    <string name="goal_general_fitness">General fitness</string>
+    <string name="goal_build_muscle">Build muscle</string>
+    <string name="goal_build_strength">Build strength</string>
+    <string name="goal_improve_endurance">Improve endurance</string>
+
+    <!-- Experience levels (README §4.3) -->
+    <string name="experience_beginner">Beginner</string>
+    <string name="experience_intermediate">Intermediate</string>
+    <string name="experience_advanced">Advanced</string>
+
+    <!-- Equipment (README §4.3) -->
+    <string name="equipment_bodyweight">Bodyweight</string>
+    <string name="equipment_dumbbells">Dumbbells</string>
+    <string name="equipment_barbell">Barbell</string>
+    <string name="equipment_bench">Bench</string>
+    <string name="equipment_cable_machine">Cable machine</string>
+    <string name="equipment_selectorized_machine">Weight machines</string>
+    <string name="equipment_pull_up_bar">Pull-up bar</string>
+    <string name="equipment_resistance_band">Resistance bands</string>
+    <string name="equipment_cardio_machine">Cardio machine</string>
+
+    <!-- Workout splits (README §4.3, §12.1) -->
+    <string name="split_full_body">Full body</string>
+    <string name="split_upper_lower">Upper / lower</string>
+    <string name="split_push_pull_legs">Push / pull / legs</string>
+
+    <!-- Body regions (README §4.4) -->
+    <string name="body_region_neck">Neck</string>
+    <string name="body_region_shoulder">Shoulder</string>
+    <string name="body_region_elbow">Elbow</string>
+    <string name="body_region_wrist_hand">Wrist and hand</string>
+    <string name="body_region_upper_back">Upper back</string>
+    <string name="body_region_lower_back">Lower back</string>
+    <string name="body_region_hip">Hip</string>
+    <string name="body_region_knee">Knee</string>
+    <string name="body_region_ankle_foot">Ankle and foot</string>
+
+    <!-- Injury history (README §4.4) -->
+    <string name="injuries_intro">Select anything that applies to you, or none of it. Injury history never excludes an exercise on its own — it only decides which movements you are asked about on the next screen.</string>
+    <string name="injuries_status_title">How is it now?</string>
+    <string name="injuries_selected_count">%1$d selected</string>
+    <string name="injury_status_currently_symptomatic">It bothers me now</string>
+    <string name="injury_status_recovering">Recovering</string>
+    <string name="injury_status_historical">In the past</string>
+    <string name="injury_status_not_specified">Prefer not to say</string>
+
+    <!-- Movement limitations (README §4.5) -->
+    <string name="limitations_intro">Based on the history you selected, consider whether any of these movements should be excluded.\n\nSelect only the limitations that currently apply to you.</string>
+    <string name="limitations_suggested_title">Worth considering</string>
+    <string name="limitations_suggested_description">Suggested by the injuries you selected. None of them is applied until you select it here.</string>
+    <string name="limitations_no_suggestions_title">Nothing to suggest</string>
+    <string name="limitations_no_suggestions_description">You did not select any injury history, so there is nothing to suggest. You can still add limitations below.</string>
+    <string name="limitations_all_title">All movement limitations</string>
+    <string name="limitations_all_description">Add anything else you need to avoid, whether or not it relates to an injury you selected.</string>
+    <string name="limitations_selected_count">%1$d selected</string>
+    <string name="limitation_group_impact">Impact and locomotion</string>
+    <string name="limitation_group_knee">Knee</string>
+    <string name="limitation_group_spine">Spine</string>
+    <string name="limitation_group_shoulder">Shoulder</string>
+    <string name="limitation_group_elbow">Elbow</string>
+    <string name="limitation_group_wrist_grip">Wrist and grip</string>
+    <string name="limitation_group_hip">Hip</string>
+
+    <!-- Profile review (README §3, §4) -->
+    <string name="review_intro">Check this over before we build your plan. Everything here can be changed later.</string>
+    <string name="review_section_training">Training</string>
+    <string name="review_section_equipment">Equipment</string>
+    <string name="review_section_injuries">Injury history</string>
+    <string name="review_section_limitations">Confirmed movement limitations</string>
+    <string name="review_label_goal">Goal</string>
+    <string name="review_label_experience">Experience</string>
+    <string name="review_label_days">Days per week</string>
+    <string name="review_label_duration">Session length</string>
+    <string name="review_label_split">Split</string>
+    <string name="review_value_missing">Not set</string>
+    <string name="review_no_injuries">None selected</string>
+    <string name="review_no_limitations">None confirmed. No exercise will be excluded for movement reasons.</string>
+    <string name="review_limitations_note">These are the only limitations used to filter exercises.</string>
+    <string name="review_injury_with_status">%1$s — %2$s</string>
+    <string name="review_incomplete">Some answers are still missing. Go back and complete them to finish setup.</string>
+
     <!-- Phase 1 scaffolding. Removed as the real screens land in Phases 3–6. -->
     <string name="placeholder_screen_note">Placeholder screen. The real content arrives in a later phase.</string>
     <string name="placeholder_exercise_id">Exercise: %1$s</string>

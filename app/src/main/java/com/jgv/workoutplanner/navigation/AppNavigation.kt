@@ -11,11 +11,11 @@ import com.jgv.workoutplanner.domain.model.ExerciseId
 import com.jgv.workoutplanner.feature.exercisedetails.ExerciseDetailsScreen
 import com.jgv.workoutplanner.feature.exerciselibrary.ExerciseLibraryScreen
 import com.jgv.workoutplanner.feature.home.HomeRoute
-import com.jgv.workoutplanner.feature.onboarding.injuries.InjuryHistoryScreen
-import com.jgv.workoutplanner.feature.onboarding.limitations.MovementLimitationsScreen
-import com.jgv.workoutplanner.feature.onboarding.preferences.PreferencesScreen
-import com.jgv.workoutplanner.feature.onboarding.review.ProfileReviewScreen
-import com.jgv.workoutplanner.feature.onboarding.safety.SafetyNoticeScreen
+import com.jgv.workoutplanner.feature.onboarding.injuries.InjuryHistoryRoute
+import com.jgv.workoutplanner.feature.onboarding.limitations.MovementLimitationsRoute
+import com.jgv.workoutplanner.feature.onboarding.preferences.PreferencesRoute
+import com.jgv.workoutplanner.feature.onboarding.review.ProfileReviewRoute
+import com.jgv.workoutplanner.feature.onboarding.safety.SafetyNoticeRoute
 import com.jgv.workoutplanner.feature.onboarding.welcome.WelcomeScreen
 import com.jgv.workoutplanner.feature.plan.ExerciseReplacementScreen
 import com.jgv.workoutplanner.feature.plan.PlanScreen
@@ -34,11 +34,15 @@ private const val PLACEHOLDER_WORKOUT_DAY_ID = "day-1"
  * The `NavController` lives here and nowhere else: screens are handed plain lambdas,
  * which keeps them previewable and testable in isolation (README §20).
  *
- * Onboarding is the entry flow for now. Phase 3 decides the start destination from
- * the persisted onboarding-completion flag instead.
+ * @param startDestination decided by
+ *   [com.jgv.workoutplanner.MainViewModel] from the stored profile — Welcome on first
+ *   launch, Home for a returning user (README §3). Passed in rather than read here so
+ *   this stays a pure function of its arguments, and because changing it after
+ *   composition would rebuild the graph and discard the back stack.
  */
 @Composable
 fun AppNavigation(
+    startDestination: AppRoute,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
 ) {
@@ -46,7 +50,7 @@ fun AppNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = AppRoute.Welcome,
+        startDestination = startDestination,
         modifier = modifier,
     ) {
         composable<AppRoute.Welcome> {
@@ -57,40 +61,40 @@ fun AppNavigation(
         }
 
         composable<AppRoute.SafetyNotice> {
-            SafetyNoticeScreen(
-                onAccept = { navController.navigate(AppRoute.Preferences) },
+            SafetyNoticeRoute(
+                onContinue = { navController.navigate(AppRoute.Preferences) },
                 onBack = goBack,
             )
         }
 
         composable<AppRoute.Preferences> {
-            PreferencesScreen(
+            PreferencesRoute(
                 onContinue = { navController.navigate(AppRoute.InjuryHistory) },
                 onBack = goBack,
             )
         }
 
         composable<AppRoute.InjuryHistory> {
-            InjuryHistoryScreen(
+            InjuryHistoryRoute(
                 onContinue = { navController.navigate(AppRoute.MovementLimitations) },
                 onBack = goBack,
             )
         }
 
         composable<AppRoute.MovementLimitations> {
-            MovementLimitationsScreen(
+            MovementLimitationsRoute(
                 onContinue = { navController.navigate(AppRoute.ProfileReview) },
                 onBack = goBack,
             )
         }
 
         composable<AppRoute.ProfileReview> {
-            ProfileReviewScreen(
+            ProfileReviewRoute(
                 onFinish = {
                     // Onboarding is done: drop it from the back stack so the system
                     // back button from Home exits instead of re-entering the flow.
                     navController.navigate(AppRoute.Home) {
-                        popUpTo(AppRoute.Welcome) { inclusive = true }
+                        popUpTo(navController.graph.id) { inclusive = true }
                     }
                 },
                 onBack = goBack,

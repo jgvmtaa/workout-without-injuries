@@ -35,4 +35,10 @@ object Dimens {
 
     /** Size of the illustrative icon in empty/loading states. */
     val PlaceholderIconSize = 48.dp
+
+    /**
+     * Tonal elevation for a bottom bar holding a primary action, so it reads as a layer
+     * above the content it scrolls over rather than as the end of the page.
+     */
+    val BottomBarElevation = 3.dp
 }

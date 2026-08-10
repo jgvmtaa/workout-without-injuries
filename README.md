@@ -41,4 +41,6 @@ The initial app works locally and does not require an account, cloud service,
 subscription, social features, or AI-generated recommendations.
 
 This repository currently contains the implementation plan for the Android MVP.
-See the [task breakdown](tasks/README.md) for project phases and progress.
+See the [task breakdown](tasks/README.md) for project phases and progress, and
+the [specification](docs/spec.md) for the numbered sections (`§1`–`§31`) that the
+tasks and the code comments reference.

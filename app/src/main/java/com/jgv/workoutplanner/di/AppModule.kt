@@ -1,20 +1,68 @@
 package com.jgv.workoutplanner.di
 
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
+import androidx.datastore.dataStoreFile
+import com.jgv.workoutplanner.data.local.PersistedStateSerializer
+import com.jgv.workoutplanner.data.local.ProfileDataStore
+import com.jgv.workoutplanner.data.local.model.PersistedState
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import javax.inject.Singleton
 
 /**
  * Application-scoped bindings that need constructing rather than binding (README §22).
  *
- * Still empty. The catalog-backed repositories added in Phase 2 are constructor-
- * injectable, so they are bound in [RepositoryModule] with `@Binds` instead — nothing
- * about them needs a `@Provides` function. Phase 3's DataStore instances will need one,
- * and this is where they go.
- *
- * Use cases are constructor-injected and need no entry here. ViewModels are provided
- * by `@HiltViewModel` and obtained with `hiltViewModel()`.
+ * Repositories are constructor-injectable and bound with `@Binds` in [RepositoryModule];
+ * use cases are constructor-injected and need no entry anywhere. What lands here is the
+ * DataStore, because building one needs the application `Context`, a coroutine scope,
+ * and a serializer — none of which a constructor can supply on its own.
  */
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule
+object AppModule {
+
+    /**
+     * A scope that outlives every screen, for work that must not be cancelled when the
+     * caller goes away.
+     *
+     * [SupervisorJob] so one failed write cannot take the store down with it, and
+     * [Dispatchers.IO] because everything it does is file access.
+     */
+    @Provides
+    @Singleton
+    @ApplicationScope
+    fun provideApplicationScope(): CoroutineScope =
+        CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    /**
+     * The typed profile store (README §21).
+     *
+     * [ReplaceFileCorruptionHandler] resets the file to the serializer's default if it
+     * cannot be read. That loses the stored profile, which is bad — but the alternative
+     * is an app that throws on every launch and cannot be recovered without clearing app
+     * data, which is worse. The draft goes with it, so the user restarts onboarding
+     * rather than resuming a flow backed by a file nothing can read.
+     */
+    @Provides
+    @Singleton
+    fun provideProfileDataStore(
+        @ApplicationContext context: Context,
+        @ApplicationScope scope: CoroutineScope,
+    ): DataStore<PersistedState> = DataStoreFactory.create(
+        serializer = PersistedStateSerializer,
+        corruptionHandler = ReplaceFileCorruptionHandler {
+            PersistedStateSerializer.defaultValue
+        },
+        scope = scope,
+        produceFile = { context.dataStoreFile(ProfileDataStore.FILE_NAME) },
+    )
+}
