@@ -11,7 +11,6 @@
     <string name="screen_home">Home</string>
     <string name="screen_plan">Your plan</string>
     <string name="screen_exercise_library">Exercise library</string>
-    <string name="screen_exercise_details">Exercise details</string>
     <string name="screen_exercise_replacement">Replace exercise</string>
     <string name="screen_profile">Profile</string>
 
@@ -162,7 +161,6 @@
 
     <!-- Phase 1 scaffolding. Removed as the real screens land in Phases 3–6. -->
     <string name="placeholder_screen_note">Placeholder screen. The real content arrives in a later phase.</string>
-    <string name="placeholder_exercise_id">Exercise: %1$s</string>
     <string name="placeholder_replacement_context">Replacing %1$s in day %2$s.</string>
 
     <!--
@@ -403,4 +401,102 @@
     <string name="limitation_avoid_deep_hip_flexion">Avoid deep hip bending</string>
     <string name="limitation_avoid_wide_hip_abduction">Avoid taking the legs wide apart</string>
     <string name="limitation_avoid_unilateral_balance_demand">Avoid balancing on one leg</string>
+
+    <!-- Muscle groups (README §5.1, §14) -->
+    <string name="muscle_chest">Chest</string>
+    <string name="muscle_back">Back</string>
+    <string name="muscle_shoulders">Shoulders</string>
+    <string name="muscle_biceps">Biceps</string>
+    <string name="muscle_triceps">Triceps</string>
+    <string name="muscle_quadriceps">Quadriceps</string>
+    <string name="muscle_hamstrings">Hamstrings</string>
+    <string name="muscle_glutes">Glutes</string>
+    <string name="muscle_calves">Calves</string>
+    <string name="muscle_core">Core</string>
+    <string name="muscle_all">All</string>
+
+    <!-- Movement patterns (README §5.2) -->
+    <string name="movement_horizontal_push">Horizontal push</string>
+    <string name="movement_vertical_push">Vertical push</string>
+    <string name="movement_horizontal_pull">Horizontal pull</string>
+    <string name="movement_vertical_pull">Vertical pull</string>
+    <string name="movement_squat">Squat</string>
+    <string name="movement_lunge">Lunge</string>
+    <string name="movement_hip_hinge">Hip hinge</string>
+    <string name="movement_knee_flexion">Knee flexion</string>
+    <string name="movement_hip_extension">Hip extension</string>
+    <string name="movement_hip_abduction">Hip abduction</string>
+    <string name="movement_hip_adduction">Hip adduction</string>
+    <string name="movement_elbow_flexion">Elbow flexion</string>
+    <string name="movement_elbow_extension">Elbow extension</string>
+    <string name="movement_shoulder_abduction">Shoulder abduction</string>
+    <string name="movement_shoulder_external_rotation">Shoulder external rotation</string>
+    <string name="movement_calf_raise">Calf raise</string>
+    <string name="movement_core_anti_extension">Core anti-extension</string>
+    <string name="movement_core_anti_rotation">Core anti-rotation</string>
+    <string name="movement_core_flexion">Core flexion</string>
+    <string name="movement_carry">Carry</string>
+
+    <!-- Exercise tags (README §5.3) -->
+    <string name="tag_compound">Compound</string>
+    <string name="tag_isolation">Isolation</string>
+    <string name="tag_unilateral">Unilateral</string>
+    <string name="tag_bilateral">Bilateral</string>
+    <string name="tag_machine_supported">Machine-supported</string>
+    <string name="tag_chest_supported">Chest-supported</string>
+    <string name="tag_requires_balance">Requires balance</string>
+    <string name="tag_high_impact">High impact</string>
+    <string name="tag_bodyweight">Bodyweight</string>
+    <string name="tag_free_weight">Free weight</string>
+
+    <!-- Exercise difficulty -->
+    <string name="difficulty_beginner">Beginner</string>
+    <string name="difficulty_intermediate">Intermediate</string>
+    <string name="difficulty_advanced">Advanced</string>
+
+    <!-- Availability -->
+    <string name="availability_available">Available</string>
+    <string name="availability_excluded">Excluded</string>
+    <string name="availability_unavailable">Unavailable</string>
+
+    <!-- Exercise library (README §14) -->
+    <string name="library_search_hint">Search exercises</string>
+    <string name="library_filter_muscle_title">Muscle group</string>
+    <string name="library_filter_equipment_all">All equipment</string>
+    <string name="library_filter_equipment_title">Equipment</string>
+    <string name="library_empty">No exercises match your filters.</string>
+    <plurals name="library_excluded_by_count_plural">
+        <item quantity="one">Excluded by %1$d limitation</item>
+        <item quantity="other">Excluded by %1$d limitations</item>
+    </plurals>
+    <string name="library_available_count">%1$d available</string>
+    <string name="library_excluded_count">%1$d excluded</string>
+    <string name="library_unavailable_count">%1$d unavailable</string>
+    <string name="library_subtitle_format">%1$s · %2$s · %3$s</string>
+    <string name="library_clear_filters">Clear filters</string>
+
+    <!-- Exercise detail (README §15) -->
+    <string name="detail_section_overview">Overview</string>
+    <string name="detail_section_muscles">Muscles</string>
+    <string name="detail_section_movement">Movement</string>
+    <string name="detail_section_equipment">Equipment</string>
+    <string name="detail_section_prescription">Prescription</string>
+    <string name="detail_section_availability">Availability</string>
+    <string name="detail_primary_muscle">Primary: %1$s</string>
+    <string name="detail_secondary_muscles">Secondary: %1$s</string>
+    <string name="detail_no_secondary">No secondary muscles</string>
+    <string name="detail_prescription_format">%1$s sets · %2$s reps · %3$d s rest</string>
+    <string name="detail_prescription_range">%1$d–%2$d</string>
+    <string name="detail_available_message">This exercise is available for your current profile.</string>
+    <string name="detail_excluded_title">Excluded from your plan</string>
+    <string name="detail_excluded_message">You selected movement limitations that conflict with this exercise:</string>
+    <string name="detail_unavailable_title">Unavailable with your current setup</string>
+    <string name="detail_missing_equipment_reason">Missing equipment: %1$s</string>
+    <string name="detail_experience_reason">Requires %1$s experience, you are %2$s</string>
+    <string name="detail_experience_reason_requires_only">Requires %1$s experience</string>
+    <string name="detail_conflicting_limitation_reason">Conflicts with: %1$s</string>
+    <string name="detail_availability_onboarding_required">Complete onboarding to see availability for your profile.</string>
+
+    <!-- Actions -->
+    <string name="action_clear_search">Clear search</string>
 </resources>

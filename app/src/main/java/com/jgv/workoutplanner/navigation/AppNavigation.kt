@@ -7,9 +7,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.jgv.workoutplanner.domain.model.ExerciseId
-import com.jgv.workoutplanner.feature.exercisedetails.ExerciseDetailsScreen
-import com.jgv.workoutplanner.feature.exerciselibrary.ExerciseLibraryScreen
+import com.jgv.workoutplanner.feature.exercisedetails.ExerciseDetailsRoute
+import com.jgv.workoutplanner.feature.exerciselibrary.ExerciseLibraryRoute
 import com.jgv.workoutplanner.feature.home.HomeRoute
 import com.jgv.workoutplanner.feature.onboarding.injuries.InjuryHistoryRoute
 import com.jgv.workoutplanner.feature.onboarding.limitations.MovementLimitationsRoute
@@ -21,12 +20,10 @@ import com.jgv.workoutplanner.feature.plan.ExerciseReplacementScreen
 import com.jgv.workoutplanner.feature.plan.PlanScreen
 import com.jgv.workoutplanner.feature.profile.ProfileScreen
 
-// A real catalog exercise, but still a stand-in: the Plan and Library screens are
-// placeholders until Phases 4–6, so nothing can yet report which exercise was tapped.
-private val SAMPLE_EXERCISE_ID = ExerciseId.MACHINE_CHEST_PRESS
-
 // Workout day ids are generated with the plan, so this stays a stand-in until Phase 5.
 private const val PLACEHOLDER_WORKOUT_DAY_ID = "day-1"
+
+private val SAMPLE_EXERCISE_ID = com.jgv.workoutplanner.domain.model.ExerciseId.MACHINE_CHEST_PRESS
 
 /**
  * Navigation shell wiring every destination in [AppRoute] (README §17).
@@ -127,18 +124,16 @@ fun AppNavigation(
         }
 
         composable<AppRoute.ExerciseLibrary> {
-            ExerciseLibraryScreen(
-                onOpenExerciseDetails = {
-                    navController.navigate(AppRoute.ExerciseDetails(SAMPLE_EXERCISE_ID))
+            ExerciseLibraryRoute(
+                onOpenExerciseDetails = { exerciseId ->
+                    navController.navigate(AppRoute.ExerciseDetails(exerciseId))
                 },
                 onBack = goBack,
             )
         }
 
-        composable<AppRoute.ExerciseDetails> { backStackEntry ->
-            val route = backStackEntry.toRoute<AppRoute.ExerciseDetails>()
-            ExerciseDetailsScreen(
-                exerciseId = route.exerciseId,
+        composable<AppRoute.ExerciseDetails> {
+            ExerciseDetailsRoute(
                 onBack = goBack,
             )
         }

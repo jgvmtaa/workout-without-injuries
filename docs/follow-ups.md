@@ -110,6 +110,21 @@ assumed from a green build.
   nav-graph change (an edit sub-graph) or a mode flag on the shared screens.
   _(Phase 1, sharpened in Phase 3)_
 
+## Address during Phase 4 (filtering) — found and fixed
+
+- [x] **Search matched `ExerciseId.name` with underscores.** `ExerciseLibraryViewModel.matchesQuery` did `lowercase().contains(lower)` on `MACHINE_CHEST_PRESS`, so multi-word query "chest press" returned nothing. Fixed to normalize underscores to spaces on both haystack and query (`replace('_',' ')`) and added `ExerciseLibraryViewModelTest` with two-word "chest press" and "chest_press" cases. _(Phase 4)_
+- [x] **Plural never fired.** `ExerciseLibraryScreen` used `if (count==1) R.string.library_excluded_by_count else R.string.library_excluded_by_count` — same id both branches, and `R.plurals.library_excluded_by_count_plural` existed but was unused. Fixed to `pluralStringResource(R.plurals...., count, count)`. _(Phase 4)_
+- [x] **Hardcoded literal "yours" in `ExerciseDetailsScreen`.** `AboveExperienceLevel` reason formatted with `"yours"` literal, producing "you are yours". Fixed by adding `currentExperienceLevel` to `ExerciseDetailsUiState` via `ProfileRepository` and resolving both required and current via `labelRes`. _(Phase 4)_
+- [x] **FlowRow experimental + `stringResource` inside `joinToString` / `try/catch`.** Compile errors: `FlowRow` is `ExperimentalLayoutApi`, and Compose disallows `stringResource` inside `joinToString` lambda and inside `try/catch` around composable. Fixed with `@OptIn(ExperimentalLayoutApi)` and pre-resolving labels outside lambdas. _(Phase 4)_
+
+## Decisions taken in Phase 4, recorded because they affect Phase 5–6
+
+- **Experience level uses strict exclusion for MVP.** `ExperienceLevel.supports()` : BEGINNER→only BEGINNER, INTERMEDIATE→!=ADVANCED, ADVANCED→all. `EvaluateExerciseEligibilityUseCase` adds `AboveExperienceLevel` and `GetEligibleExercisesUseCase` buckets it as UNAVAILABLE. README §8 notes rank-only as alternative — deterministic strict exclusion chosen for §27 Phase 4 criteria and testability; ranking may reconsider in Phase 5 generator. _(Phase 4)_
+- **Three-category priority: limitation outranks equipment.** `EXCLUDED` if any `ConflictingLimitation`, else `UNAVAILABLE` if `MissingEquipment` or `AboveExperienceLevel`. This matches README §2 safety priority and keeps "excluded" meaning safety-relevant. Tested. _(Phase 4)_
+- **Exercise library search is id-based, not display-name-based.** ViewModel cannot resolve `@StringRes` without Context, so search is on `ExerciseId.name` normalized. Display-name search would require Context or repository exposing search string — deferred to polish, documented in ViewModel KDoc. _(Phase 4)_
+- **Maven Central rate-limited via fwdproxy (429).** `repo.maven.apache.org` / `repo1.maven.org` hit global RPS limit (`[Raindrop] Ratelimit by OnRequestRateLimitFilter`). Workaround in this environment: set proxy in `~/.gradle/gradle.properties` (`fwdproxy:8080`) and warm cache in one pass with sleeps (`./gradlew testDebugUnitTest --refresh-dependencies` retries). Successful build now has `junit`, `turbine`, `kotlin-parcelize-runtime-1.9.22`, `kotlin-android-extensions-runtime-1.9.22` cached after wait. _(Phase 4)_
+- **JDK 17 required, default is Java 8.** AGP 8.7.3 requires JVM 11+. `/usr/local/bin/java` points to 8, so builds need `export JAVA_HOME=/usr/local/fbprojects/packages/java-runtime/prod/impl/17`. Use the `prod` alias, not a version number — the numbered directories are fbpkg releases that are deleted as they roll (524 was replaced by 525 overnight, breaking every pinned path). Documented in toolchain and Phase 4 task completion notes. _(Phase 4)_
+
 ## Decisions taken in Phase 3, recorded here because they are worth revisiting
 
 - **Onboarding completion is derived, not stored.** README §21 lists it as its own
