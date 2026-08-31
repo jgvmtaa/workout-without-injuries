@@ -1,7 +1,9 @@
 package com.jgv.workoutplanner.domain.usecase
 
 import com.jgv.workoutplanner.domain.model.ExerciseDefinition
+import com.jgv.workoutplanner.domain.model.ExerciseDifficulty
 import com.jgv.workoutplanner.domain.model.ExerciseTag
+import com.jgv.workoutplanner.domain.model.ExperienceLevel
 import com.jgv.workoutplanner.domain.model.MovementLimitation
 import com.jgv.workoutplanner.domain.model.MovementPattern
 import com.jgv.workoutplanner.domain.model.PlanWarning
@@ -153,9 +155,20 @@ class GenerateWorkoutPlanUseCase @Inject constructor(
         // so this is the base score for belonging to the slot.
         score += 5
 
-        // +2 beginner-friendly
-        if (def.difficulty == com.jgv.workoutplanner.domain.model.ExerciseDifficulty.BEGINNER) {
-            score += 2
+        // +2 experience-matched difficulty — prefer exercises whose difficulty matches the user's level.
+        // Previously this unconditionally awarded +2 to BEGINNER exercises, ignoring the user's actual level.
+        // Now ranking respects experience:
+        //   BEGINNER → +2 BEGINNER
+        //   INTERMEDIATE → +2 INTERMEDIATE
+        //   ADVANCED → +2 ADVANCED, +1 INTERMEDIATE (so ADV > INT > BEG for advanced users)
+        score += when (profile.experienceLevel) {
+            ExperienceLevel.BEGINNER -> if (def.difficulty == ExerciseDifficulty.BEGINNER) 2 else 0
+            ExperienceLevel.INTERMEDIATE -> if (def.difficulty == ExerciseDifficulty.INTERMEDIATE) 2 else 0
+            ExperienceLevel.ADVANCED -> when (def.difficulty) {
+                ExerciseDifficulty.ADVANCED -> 2
+                ExerciseDifficulty.INTERMEDIATE -> 1
+                ExerciseDifficulty.BEGINNER -> 0
+            }
         }
 
         // +2 machine-supported when balance limitations exist
