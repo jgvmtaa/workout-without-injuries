@@ -80,13 +80,32 @@ assumed from a green build.
 - [ ] **Isometric holds have no duration field.** `ExercisePrescription` models
   sets/reps/rest, so `FRONT_PLANK` and `SIDE_PLANK` use `reps = 1..1` and state the
   hold duration in their description. Fine for reading, awkward for a plan UI that
-  renders "1 rep". Add a duration to the prescription when Phase 5 or 6 needs to show
-  or edit it. _(Phase 2)_
-- [ ] **`WorkoutPlanRepository` has no implementation.** Interface only, as in Phase 2.
-  Nothing generates a plan yet and README §27 lists plan persistence as Phase 5 work, so
-  `RepositoryModule` binds no implementation. Add one alongside the generator. _(Phase 2)_
-- [ ] **`PLACEHOLDER_WORKOUT_DAY_ID` in `AppNavigation`.** Still a stand-in; real day
-  ids come from the generated plan. _(Phase 1)_
+  renders "1..1 reps". Phase 5 kept catalog defaults verbatim for MVP (task decision);
+  add a duration to the prescription when Phase 6 editing or Phase 7 polish needs to
+  show or edit it. _(Phase 2, still open after Phase 5)_
+- [x] **`WorkoutPlanRepository` has no implementation.** Implemented in Phase 5:
+  `WorkoutPlanDataStore` + `PersistedWorkoutPlanSerializer` + `StoredWorkoutPlan` backed
+  by separate `workout_plan.json` (not `profile.json`). `DefaultWorkoutPlanRepository`
+  with `Flow<WorkoutPlan?>` + `savePlan`/`clearPlan`, bound in `RepositoryModule`,
+  DataStore provided in `AppModule` with same corruption handler as profile. Mapping
+  tolerant: unknown ExerciseId dropped, unknown focus dropped day, not crash.
+  _(Phase 2 → done in Phase 5)_
+- [x] **`PLACEHOLDER_WORKOUT_DAY_ID` in `AppNavigation`.** Removed in Phase 5: `PlanRoute`
+  generates real day ids `${planId}-day-${index}-${focus.lowercase()}` and passes them to
+  `ExerciseReplacement`. `SAMPLE_EXERCISE_ID` also removed. _(Phase 1 → done in Phase 5)_
+
+## Decisions taken in Phase 5, recorded because they affect Phase 6–7
+
+- **Catalog has 59 exercises, not 57.** The task file said 57 but `ExerciseCatalog.exercises.size` is 59 at Phase 5 start. Verified via test count. All phase docs updated to 59. _(Phase 5)_
+- **Split distribution (confirmed):** 2→FULL_BODY × days, 3→PUSH/PULL/LEGS (task 5.1), 4→Upper/Lower/Upper/Lower, 5→Upper/Lower/Upper/Lower/FullBody (option a, confirmed). `PUSH`=5 slots (h-push, v-push, shoulder-iso, triceps, secondary-push), `PULL`=5 slots, `LEGS`/`LOWER`=6 slots, `UPPER`=7 slots, `FULL`=6 slots. Deterministic day names include occurrence count when focus repeats. _(Phase 5)_
+- **Scoring: +3 preferred equipment dropped.** Post-filter all candidates already satisfy equipment availability, so +3 is vacuous. Confirmed to drop term entirely. Final scoring: +5 exact pattern (base), +2 BEGINNER, +2 MACHINE_SUPPORTED/CHEST_SUPPORTED when balance limitation present (AVOID_UNILATERAL_BALANCE_DEMAND or AVOID_SINGLE_LEG_LOADING), +1 COMPOUND early slot (first 2 slots), -2 duplicate movement pattern, -3 second UNILATERAL. Tie-break stable on `ExerciseId.name`. _(Phase 5)_
+- **Prescription uses catalog defaults directly.** `sets = prescription.sets.first`, `repRange = full range`, `restSeconds` as-is. No goal-based adjustment in MVP (confirmed). Keeps generation deterministic and explainable. _(Phase 5)_
+- **Plan IDs deterministic:** `plan-${daysPerWeek}-${split.name}`, day `${planId}-day-${index}-${focus.lowercase()}` (confirmed). No UUID, no timestamp, same profile ⇒ same IDs ⇒ same plan (README §12.5 + task). _(Phase 5)_
+- **Separate `workout_plan.json` DataStore.** Not mixed into `profile.json`. `StoredWorkoutPlan(plan?)` wrapper with nullable plan, `PersistedWorkoutPlanSerializer` (ignoreUnknownKeys, encodeDefaults, prettyPrint) + corruption handler resetting to empty. `AppModule` provides second DataStore, `RepositoryModule` binds repo. Mapping round-trip tested. _(Phase 5)_
+- **Partial-plan handling via warnings, not crash.** `WorkoutPlanGenerationResult(plan, warnings, eligibleCount)` where `PlanWarning(dayIndex, dayFocus, slotId, reason)` for each unfillable slot. UI shows warning card with README §25 copy "No matching exercise was found...". Extremely restrictive profile (BEGINNER+BODYWEIGHT+all limitations) yields valid partial result with warnings, not exception – tested in `GenerateWorkoutPlanUseCaseTest`. _(Phase 5)_
+- **Generation trigger: Home button + auto-generate on Plan entry.** `HomeScreen` shows Generate (no plan) vs View (has plan). `PlanRoute` `LaunchedEffect` calls `viewModel.autoGenerateIfNeeded()` when `hasNoPlan`. `PlanViewModel` combines profile + currentPlan + warningsFlow + generatingFlow into `PlanUiState`. Regenerate available via TopBar action. _(Phase 5)_
+- **Placeholder screens remaining:** Home, Plan now real. Still placeholder: Profile, ExerciseReplacement (Phase 6 will finish replacement), but ExerciseDetails and ExerciseLibrary are real since Phase 4. `PlaceholderScreen.kt` kept until last caller gone – currently 2 callers (Profile, ExerciseReplacement). _(Phase 5)_
+- **Build verification:** `./gradlew :app:testDebugUnitTest` 203 tests, 0 failures (14 new `GenerateWorkoutPlanUseCaseTest` + 3 `PersistedWorkoutPlanMappingTest`). `./gradlew :app:assembleDebug` BUILD SUCCESSFUL. _(Phase 5)_
 
 ## Address before/during Phases 4–6 (feature work)
 

@@ -1,23 +1,54 @@
 package com.jgv.workoutplanner.feature.home
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.jgv.workoutplanner.domain.repository.ProfileRepository
+import com.jgv.workoutplanner.domain.repository.WorkoutPlanRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 /**
- * Reference ViewModel for the architecture baseline (README §18, §22).
+ * ViewModel that combines profile + current plan for Home screen (README §16, task 5.8).
  *
- * It holds no business logic — Phase 1 deliberately has none. What it does establish
- * is the wiring every later screen copies: `@HiltViewModel` construction injection,
- * a single immutable [HomeUiState] exposed as a [StateFlow], and a screen that reads
- * that state rather than owning it.
+ * Home shows:
+ * - Current plan (View plan) if exists, otherwise ability to generate on Plan screen.
+ * - Profile summary: days, goal, experience, split.
+ * - Active limitations count.
+ * - Library browse entry.
+ *
+ * Deterministic: profile and plan are flows, no randomness.
  */
 @HiltViewModel
-class HomeViewModel @Inject constructor() : ViewModel() {
+class HomeViewModel @Inject constructor(
+    profileRepository: ProfileRepository,
+    workoutPlanRepository: WorkoutPlanRepository,
+) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(HomeUiState())
-    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<HomeUiState> = combine(
+        profileRepository.profile,
+        workoutPlanRepository.currentPlan,
+    ) { profile, plan ->
+        if (profile == null) {
+            HomeUiState(isLoading = false, hasPlan = false)
+        } else {
+            HomeUiState(
+                isLoading = false,
+                daysPerWeek = profile.daysPerWeek,
+                goalDisplay = profile.goal.name,
+                experienceDisplay = profile.experienceLevel.name,
+                split = profile.preferredSplit,
+                limitationsCount = profile.movementLimitations.size,
+                hasPlan = plan != null,
+                planName = plan?.name,
+            )
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = HomeUiState(isLoading = true),
+    )
 }

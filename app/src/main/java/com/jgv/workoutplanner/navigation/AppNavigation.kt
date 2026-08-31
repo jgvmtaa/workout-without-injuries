@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.jgv.workoutplanner.domain.model.ExerciseId
 import com.jgv.workoutplanner.feature.exercisedetails.ExerciseDetailsRoute
 import com.jgv.workoutplanner.feature.exerciselibrary.ExerciseLibraryRoute
 import com.jgv.workoutplanner.feature.home.HomeRoute
@@ -17,13 +18,8 @@ import com.jgv.workoutplanner.feature.onboarding.review.ProfileReviewRoute
 import com.jgv.workoutplanner.feature.onboarding.safety.SafetyNoticeRoute
 import com.jgv.workoutplanner.feature.onboarding.welcome.WelcomeScreen
 import com.jgv.workoutplanner.feature.plan.ExerciseReplacementScreen
-import com.jgv.workoutplanner.feature.plan.PlanScreen
+import com.jgv.workoutplanner.feature.plan.PlanRoute
 import com.jgv.workoutplanner.feature.profile.ProfileScreen
-
-// Workout day ids are generated with the plan, so this stays a stand-in until Phase 5.
-private const val PLACEHOLDER_WORKOUT_DAY_ID = "day-1"
-
-private val SAMPLE_EXERCISE_ID = com.jgv.workoutplanner.domain.model.ExerciseId.MACHINE_CHEST_PRESS
 
 /**
  * Navigation shell wiring every destination in [AppRoute] (README §17).
@@ -107,15 +103,15 @@ fun AppNavigation(
         }
 
         composable<AppRoute.Plan> {
-            PlanScreen(
-                onOpenExerciseDetails = {
-                    navController.navigate(AppRoute.ExerciseDetails(SAMPLE_EXERCISE_ID))
+            PlanRoute(
+                onOpenExerciseDetails = { exerciseId ->
+                    navController.navigate(AppRoute.ExerciseDetails(exerciseId))
                 },
-                onReplaceExercise = {
+                onReplaceExercise = { dayId, exerciseId ->
                     navController.navigate(
                         AppRoute.ExerciseReplacement(
-                            workoutDayId = PLACEHOLDER_WORKOUT_DAY_ID,
-                            exerciseId = SAMPLE_EXERCISE_ID,
+                            workoutDayId = dayId,
+                            exerciseId = exerciseId,
                         ),
                     )
                 },

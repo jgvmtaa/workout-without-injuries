@@ -6,8 +6,11 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.dataStoreFile
 import com.jgv.workoutplanner.data.local.PersistedStateSerializer
+import com.jgv.workoutplanner.data.local.PersistedWorkoutPlanSerializer
 import com.jgv.workoutplanner.data.local.ProfileDataStore
+import com.jgv.workoutplanner.data.local.WorkoutPlanDataStore
 import com.jgv.workoutplanner.data.local.model.PersistedState
+import com.jgv.workoutplanner.data.local.model.StoredWorkoutPlan
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -64,5 +67,25 @@ object AppModule {
         },
         scope = scope,
         produceFile = { context.dataStoreFile(ProfileDataStore.FILE_NAME) },
+    )
+
+    /**
+     * The typed workout-plan store (README §21, task 5.7).
+     *
+     * Separate file `workout_plan.json` from profile. Same corruption policy: losing a
+     * generated plan is recoverable by re-generating, crashing on launch is not.
+     */
+    @Provides
+    @Singleton
+    fun provideWorkoutPlanDataStore(
+        @ApplicationContext context: Context,
+        @ApplicationScope scope: CoroutineScope,
+    ): DataStore<StoredWorkoutPlan> = DataStoreFactory.create(
+        serializer = PersistedWorkoutPlanSerializer,
+        corruptionHandler = ReplaceFileCorruptionHandler {
+            PersistedWorkoutPlanSerializer.defaultValue
+        },
+        scope = scope,
+        produceFile = { context.dataStoreFile(WorkoutPlanDataStore.FILE_NAME) },
     )
 }

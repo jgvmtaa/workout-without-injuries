@@ -499,4 +499,22 @@
 
     <!-- Actions -->
     <string name="action_clear_search">Clear search</string>
+    <string name="action_regenerate_plan">Regenerate</string>
+    <string name="action_generate_plan">Generate plan</string>
+    <string name="action_replace_exercise_short">Replace</string>
+    <string name="action_open_exercise_details_short">Details</string>
+
+    <!-- Plan screen (Phase 5) -->
+    <string name="plan_empty_title">No plan yet</string>
+    <string name="plan_empty_body">Generate a workout plan from your profile. The same profile always produces the same plan, and your limitations are respected.</string>
+    <string name="plan_warnings_title">Some sections could not be filled</string>
+    <string name="plan_slot_no_match">No matching exercise was found for this section using your current equipment and movement limitations.</string>
+
+    <!-- Home screen (Phase 5) -->
+    <string name="home_section_current_plan">Current plan</string>
+    <string name="home_section_profile">Profile summary</string>
+    <string name="home_section_limitations">Active limitations</string>
+    <string name="home_plan_ready">Your plan is ready</string>
+    <string name="home_plan_empty">No plan generated yet. Generate one from your preferences.</string>
+    <string name="home_limitations_count">%1$d selected</string>
 </resources>
