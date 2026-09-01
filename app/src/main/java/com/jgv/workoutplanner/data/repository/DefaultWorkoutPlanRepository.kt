@@ -3,7 +3,9 @@ package com.jgv.workoutplanner.data.repository
 import com.jgv.workoutplanner.data.local.WorkoutPlanDataStore
 import com.jgv.workoutplanner.data.local.model.StoredWorkoutPlan
 import com.jgv.workoutplanner.data.local.model.toDomain
+import com.jgv.workoutplanner.data.local.model.toDomainWarnings
 import com.jgv.workoutplanner.data.local.model.toPersisted
+import com.jgv.workoutplanner.domain.model.PlanWarning
 import com.jgv.workoutplanner.domain.model.WorkoutPlan
 import com.jgv.workoutplanner.domain.repository.WorkoutPlanRepository
 import kotlinx.coroutines.flow.Flow
@@ -17,6 +19,9 @@ import javax.inject.Singleton
  *
  * One plan at a time – MVP has no history (README §29). Stores the whole plan; Phase 6
  * edits rewrite the whole record, which is fine for a few dozen exercises.
+ *
+ * Also persists generation warnings (README §25) alongside the plan so they survive
+ * process death – previously they lived only in PlanViewModel's in-memory flow.
  */
 @Singleton
 class DefaultWorkoutPlanRepository @Inject constructor(
@@ -28,15 +33,23 @@ class DefaultWorkoutPlanRepository @Inject constructor(
             .map { it.toDomain() }
             .distinctUntilChanged()
 
-    override suspend fun savePlan(plan: WorkoutPlan) {
+    override val currentWarnings: Flow<List<PlanWarning>> =
+        dataStore.state
+            .map { it.toDomainWarnings() }
+            .distinctUntilChanged()
+
+    override suspend fun savePlan(plan: WorkoutPlan, warnings: List<PlanWarning>) {
         dataStore.update { _ ->
-            StoredWorkoutPlan(plan = plan.toPersisted())
+            StoredWorkoutPlan(
+                plan = plan.toPersisted(),
+                warnings = warnings.map { it.toPersisted() },
+            )
         }
     }
 
     override suspend fun clearPlan() {
         dataStore.update { _ ->
-            StoredWorkoutPlan(plan = null)
+            StoredWorkoutPlan(plan = null, warnings = emptyList())
         }
     }
 }

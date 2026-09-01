@@ -1,6 +1,7 @@
 package com.jgv.workoutplanner.data.local.model
 
 import com.jgv.workoutplanner.domain.model.ExerciseId
+import com.jgv.workoutplanner.domain.model.PlanWarning
 import com.jgv.workoutplanner.domain.model.PlannedExercise
 import com.jgv.workoutplanner.domain.model.WorkoutDay
 import com.jgv.workoutplanner.domain.model.WorkoutDayFocus
@@ -9,6 +10,9 @@ import com.jgv.workoutplanner.domain.model.WorkoutPlan
 // ---------------------------------------------------------------- Domain ← storage (tolerant)
 
 fun StoredWorkoutPlan.toDomain(): WorkoutPlan? = plan?.toDomain()
+
+fun StoredWorkoutPlan.toDomainWarnings(): List<PlanWarning> =
+    warnings.mapNotNull { it.toDomain() }
 
 fun PersistedWorkoutPlan.toDomain(): WorkoutPlan? {
     val mappedDays = days.mapNotNull { it.toDomain() }
@@ -65,6 +69,23 @@ private fun PlannedExercise.toPersisted(): PersistedPlannedExercise = PersistedP
     restSeconds = restSeconds,
     order = order,
 )
+
+fun PlanWarning.toPersisted(): PersistedPlanWarning = PersistedPlanWarning(
+    dayIndex = dayIndex,
+    dayFocus = dayFocus.name,
+    slotId = slotId,
+    reason = reason,
+)
+
+private fun PersistedPlanWarning.toDomain(): PlanWarning? {
+    val focus = dayFocus.toEnumOrNull<WorkoutDayFocus>() ?: return null
+    return PlanWarning(
+        dayIndex = dayIndex,
+        dayFocus = focus,
+        slotId = slotId,
+        reason = reason,
+    )
+}
 
 // ---------------------------------------------------------------- Internals
 

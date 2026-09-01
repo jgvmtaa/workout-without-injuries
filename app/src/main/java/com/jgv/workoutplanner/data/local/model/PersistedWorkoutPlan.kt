@@ -18,6 +18,15 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class StoredWorkoutPlan(
     val plan: PersistedWorkoutPlan? = null,
+    val warnings: List<PersistedPlanWarning> = emptyList(),
+)
+
+@Serializable
+data class PersistedPlanWarning(
+    val dayIndex: Int,
+    val dayFocus: String,
+    val slotId: String,
+    val reason: String,
 )
 
 @Serializable

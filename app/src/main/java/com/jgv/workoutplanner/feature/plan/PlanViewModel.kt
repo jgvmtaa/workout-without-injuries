@@ -2,8 +2,6 @@ package com.jgv.workoutplanner.feature.plan
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jgv.workoutplanner.domain.model.PlanWarning
-import com.jgv.workoutplanner.domain.model.WorkoutPlan
 import com.jgv.workoutplanner.domain.repository.ExerciseRepository
 import com.jgv.workoutplanner.domain.repository.ProfileRepository
 import com.jgv.workoutplanner.domain.repository.WorkoutPlanRepository
@@ -21,10 +19,11 @@ import javax.inject.Inject
 /**
  * ViewModel for the plan screen (README §18, §20, task 5.8).
  *
- * - Observes profile + current plan + exercise catalog.
+ * - Observes profile + current plan + exercise catalog + persisted warnings.
  * - Auto-generates on entry if no plan exists (per Phase 5 decision: Home button + auto-gen).
  * - Generation is deterministic and never crashes on restrictive profiles – unfillable slots
- *   become warnings (README §25, task 5.6).
+ *   become warnings (README §25, task 5.6). Warnings are now persisted alongside the plan
+ *   in [WorkoutPlanRepository] so they survive process death / navigation.
  */
 @HiltViewModel
 class PlanViewModel @Inject constructor(
@@ -36,13 +35,12 @@ class PlanViewModel @Inject constructor(
 
     private val exercisesById = exerciseRepository.getAllExercises().associateBy { it.id }
 
-    private val warningsFlow = MutableStateFlow<List<PlanWarning>>(emptyList())
     private val generatingFlow = MutableStateFlow(false)
 
     val uiState: StateFlow<PlanUiState> = combine(
         profileRepository.profile,
         workoutPlanRepository.currentPlan,
-        warningsFlow,
+        workoutPlanRepository.currentWarnings,
         generatingFlow,
     ) { profile, plan, warnings, generating ->
         when {
@@ -97,8 +95,7 @@ class PlanViewModel @Inject constructor(
             if (plan == null) {
                 generatingFlow.value = true
                 val result = generateWorkoutPlanUseCase(profile)
-                warningsFlow.value = result.warnings
-                workoutPlanRepository.savePlan(result.plan)
+                workoutPlanRepository.savePlan(result.plan, result.warnings)
                 generatingFlow.value = false
             }
         }
@@ -109,8 +106,7 @@ class PlanViewModel @Inject constructor(
             val profile = profileRepository.profile.first() ?: return@launch
             generatingFlow.value = true
             val result = generateWorkoutPlanUseCase(profile)
-            warningsFlow.value = result.warnings
-            workoutPlanRepository.savePlan(result.plan)
+            workoutPlanRepository.savePlan(result.plan, result.warnings)
             generatingFlow.value = false
         }
     }
