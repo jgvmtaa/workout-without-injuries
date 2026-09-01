@@ -2,6 +2,7 @@ package com.jgv.workoutplanner.feature.plan
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +27,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -200,7 +203,11 @@ private fun WorkoutDayCard(
 ) {
     Card(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Text(text = day.name, style = MaterialTheme.typography.titleMedium)
                 Text(text = day.focus.name, style = MaterialTheme.typography.labelMedium)
             }
@@ -210,7 +217,10 @@ private fun WorkoutDayCard(
                     style = MaterialTheme.typography.bodySmall,
                 )
             } else {
-                day.exercises.forEach { ex ->
+                day.exercises.forEachIndexed { index, ex ->
+                    if (index > 0) {
+                        HorizontalDivider(modifier = Modifier.padding(top = 4.dp))
+                    }
                     PlannedExerciseRow(
                         exercise = ex,
                         onOpenDetails = onOpenDetails,
@@ -229,23 +239,58 @@ private fun PlannedExerciseRow(
     onReplace: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            val nameText = exercise.definition?.let { def ->
-                runCatching { stringResource(def.nameRes) }.getOrNull()
-            } ?: exercise.exerciseId.name
-            Text(text = "${exercise.order + 1}. $nameText", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
-            TextButton(onClick = onReplace) {
-                Text(text = stringResource(R.string.action_replace_exercise_short))
-            }
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        val nameText = exercise.definition?.let { def ->
+            runCatching { stringResource(def.nameRes) }.getOrNull()
+        } ?: exercise.exerciseId.name
+
+        // Line 1: Exercise name - full width, up to 2 lines, no competing button
+        Text(
+            text = "${exercise.order + 1}. $nameText",
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        // Line 2: Sets/reps + actions aligned in one row
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Text(
                 text = "${exercise.sets} x ${exercise.repRange.first}..${exercise.repRange.last} • ${exercise.restSeconds}s rest",
                 style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f),
             )
-            TextButton(onClick = { onOpenDetails(exercise.exerciseId) }) {
-                Text(text = stringResource(R.string.action_open_exercise_details_short))
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                TextButton(
+                    onClick = { onOpenDetails(exercise.exerciseId) },
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                ) {
+                    Text(
+                        text = stringResource(R.string.action_open_exercise_details_short),
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
+                TextButton(
+                    onClick = onReplace,
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                ) {
+                    Text(
+                        text = stringResource(R.string.action_replace_exercise_short),
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
             }
         }
     }
