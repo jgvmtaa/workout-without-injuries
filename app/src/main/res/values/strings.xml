@@ -517,4 +517,48 @@
     <string name="home_plan_ready">Your plan is ready</string>
     <string name="home_plan_empty">No plan generated yet. Generate one from your preferences.</string>
     <string name="home_limitations_count">%1$d selected</string>
+
+    <!-- Plan editing (Phase 6 §6.2, §6.6) -->
+    <string name="plan_outdated_banner">Your profile has changed. Regenerate the plan to apply the new limitations.</string>
+    <string name="plan_empty_day">No exercises in this workout</string>
+    <string name="plan_action_remove">Remove</string>
+    <string name="plan_action_move_up">Move up</string>
+    <string name="plan_action_move_down">Move down</string>
+    <string name="plan_action_details">Details</string>
+    <string name="plan_action_add_exercise">Add exercise</string>
+    <plurals name="plan_add_row">
+        <item quantity="one">Add 1 more exercise to this workout</item>
+        <item quantity="other">Add %1$d more exercises to this workout</item>
+    </plurals>
+    <string name="plan_regenerate_confirm_title">Regenerate plan?</string>
+    <string name="plan_regenerate_confirm_body">Existing manual removals, replacements, additions, and ordering will be lost. This cannot be undone.</string>
+    <string name="plan_regenerate_confirm_ok">Regenerate</string>
+    <string name="plan_regenerate_confirm_cancel">Cancel</string>
+    <string name="plan_edit_failed_plan_outdated">Your profile changed. Regenerate the plan before editing.</string>
+    <string name="plan_edit_failed_capacity">This day cannot contain more exercises.</string>
+    <string name="plan_edit_failed_duplicate">This exercise is already in this workout.</string>
+    <string name="plan_edit_failed_ineligible">Selected exercise is not eligible for your current profile.</string>
+    <string name="plan_edit_failed_invalid">Cannot complete this edit.</string>
+    <string name="plan_edit_failed_generic">Could not apply edit.</string>
+
+    <!-- Exercise replacement (Phase 6 §6.3) -->
+    <string name="replacement_title">Replace exercise</string>
+    <string name="replacement_select_prompt">Choose a replacement. Names only, ordered by match.</string>
+    <string name="replacement_confirm">Confirm replacement</string>
+    <string name="replacement_empty">No eligible alternatives for your current profile and equipment.</string>
+
+    <!-- Exercise picker (Phase 6 §6.4) -->
+    <string name="picker_title">Add exercises</string>
+    <string name="picker_confirm">Add selected</string>
+    <string name="picker_search_hint">Search exercises</string>
+    <string name="picker_selection_count">%1$d selected</string>
+    <string name="picker_capacity_remaining">%1$d of %2$d slots available</string>
+
+    <!-- Profile (Phase 6 §6.5) -->
+    <string name="profile_section_preferences">Training preferences</string>
+    <string name="profile_section_injuries">Injury history</string>
+    <string name="profile_section_limitations">Movement limitations</string>
+    <string name="profile_summary_empty">Not set</string>
+    <string name="profile_action_cancel">Cancel</string>
+    <string name="profile_action_save">Save</string>
 </resources>

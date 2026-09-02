@@ -61,6 +61,7 @@ fun InjuryHistoryScreen(
     state: InjuryHistoryUiState,
     onEvent: (InjuryHistoryEvent) -> Unit,
     modifier: Modifier = Modifier,
+    onCancel: (() -> Unit)? = null,
 ) {
     if (state.isLoading) {
         LoadingContent(modifier = modifier)
@@ -73,6 +74,7 @@ fun InjuryHistoryScreen(
         onContinue = { onEvent(InjuryHistoryEvent.Continue) },
         modifier = modifier,
         onBack = { onEvent(InjuryHistoryEvent.Back) },
+        onCancel = onCancel,
         continueEnabled = state.canContinue,
     ) {
         StepIntroduction(text = stringResource(R.string.injuries_intro))

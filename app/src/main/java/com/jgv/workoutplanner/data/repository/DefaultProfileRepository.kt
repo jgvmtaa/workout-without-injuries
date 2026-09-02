@@ -54,6 +54,17 @@ class DefaultProfileRepository @Inject constructor(
         }
     }
 
+    override suspend fun resetDraftFromProfile() {
+        dataStore.update { stored ->
+            val profile = stored.profile?.toDomain()
+            if (profile != null) {
+                stored.copy(draft = OnboardingDraft.from(profile).toPersisted())
+            } else {
+                stored.copy(draft = OnboardingDraft().toPersisted())
+            }
+        }
+    }
+
     override suspend fun clearProfile() {
         dataStore.update { stored ->
             stored.copy(profile = null, draft = OnboardingDraft().toPersisted())

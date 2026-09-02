@@ -1,5 +1,7 @@
 package com.jgv.workoutplanner.domain.model
 
+import androidx.annotation.Keep
+
 /**
  * Stable identifier for every exercise in the catalog (README §5.3, §6).
  *
@@ -12,6 +14,7 @@ package com.jgv.workoutplanner.domain.model
  * [name], so plan generation stays deterministic regardless of how this list grows
  * (README §12.5).
  */
+@Keep
 enum class ExerciseId {
     // Chest
     PUSH_UP,

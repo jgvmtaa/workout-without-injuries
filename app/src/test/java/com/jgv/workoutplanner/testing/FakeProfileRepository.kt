@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 class FakeProfileRepository(
     initialProfile: UserProfile? = null,
     initialDraft: OnboardingDraft = OnboardingDraft(),
+    private val operationLog: MutableList<String>? = null,
 ) : ProfileRepository {
 
     private val _profile = MutableStateFlow(initialProfile)
@@ -39,9 +40,15 @@ class FakeProfileRepository(
     }
 
     override suspend fun saveProfile(profile: UserProfile) {
+        operationLog?.add("saveProfile")
         savedProfiles += profile
         _profile.value = profile
         _draft.value = OnboardingDraft.from(profile)
+    }
+
+    override suspend fun resetDraftFromProfile() {
+        val p = _profile.value
+        _draft.value = if (p != null) OnboardingDraft.from(p) else OnboardingDraft()
     }
 
     override suspend fun clearProfile() {

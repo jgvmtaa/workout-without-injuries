@@ -31,9 +31,10 @@ class HomeViewModel @Inject constructor(
     val uiState: StateFlow<HomeUiState> = combine(
         profileRepository.profile,
         workoutPlanRepository.currentPlan,
-    ) { profile, plan ->
+        workoutPlanRepository.requiresRegeneration,
+    ) { profile, plan, requiresRegeneration ->
         if (profile == null) {
-            HomeUiState(isLoading = false, hasPlan = false)
+            HomeUiState(isLoading = false, hasPlan = false, requiresRegeneration = false)
         } else {
             HomeUiState(
                 isLoading = false,
@@ -44,6 +45,7 @@ class HomeViewModel @Inject constructor(
                 limitationsCount = profile.movementLimitations.size,
                 hasPlan = plan != null,
                 planName = plan?.name,
+                requiresRegeneration = requiresRegeneration,
             )
         }
     }.stateIn(

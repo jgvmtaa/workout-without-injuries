@@ -69,6 +69,8 @@ fun ProfileReviewScreen(
     state: ProfileReviewUiState,
     onEvent: (ProfileReviewEvent) -> Unit,
     modifier: Modifier = Modifier,
+    onCancel: (() -> Unit)? = null,
+    continueLabel: String = stringResource(R.string.action_finish_setup),
 ) {
     if (state.isLoading) {
         LoadingContent(modifier = modifier)
@@ -77,10 +79,11 @@ fun ProfileReviewScreen(
 
     OnboardingScaffold(
         title = stringResource(R.string.screen_profile_review),
-        continueLabel = stringResource(R.string.action_finish_setup),
+        continueLabel = continueLabel,
         onContinue = { onEvent(ProfileReviewEvent.Confirm) },
         modifier = modifier,
         onBack = { onEvent(ProfileReviewEvent.Back) },
+        onCancel = onCancel,
         continueEnabled = state.canContinue,
     ) {
         StepIntroduction(text = stringResource(R.string.review_intro))

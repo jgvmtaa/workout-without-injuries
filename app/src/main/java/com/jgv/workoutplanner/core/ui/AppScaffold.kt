@@ -21,12 +21,13 @@ fun AppScaffold(
     title: String,
     modifier: Modifier = Modifier,
     onBack: (() -> Unit)? = null,
+    actions: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        topBar = { AppTopBar(title = title, onBack = onBack) },
+        topBar = { AppTopBar(title = title, onBack = onBack, actions = actions) },
         bottomBar = bottomBar,
         content = content,
     )

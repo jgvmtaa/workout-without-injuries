@@ -1,5 +1,6 @@
 package com.jgv.workoutplanner.navigation
 
+import androidx.annotation.Keep
 import com.jgv.workoutplanner.domain.model.ExerciseId
 import kotlinx.serialization.Serializable
 
@@ -69,4 +70,36 @@ sealed interface AppRoute {
     /** Saved profile: preferences, injuries, limitations. */
     @Serializable
     data object Profile : AppRoute
+
+    // ----------------------------------------------------------------
+    // Profile editing dedicated destinations (Phase 6 §6.5)
+
+    @Serializable
+    data object ProfileEditPreferences : AppRoute
+
+    @Serializable
+    data object ProfileEditInjuryHistory : AppRoute
+
+    @Serializable
+    @Keep
+    enum class ProfileEditOrigin {
+        Profile,
+        InjuryHistory,
+    }
+
+    @Serializable
+    data class ProfileEditMovementLimitations(
+        val origin: ProfileEditOrigin,
+    ) : AppRoute
+
+    @Serializable
+    data object ProfileEditReview : AppRoute
+
+    // ----------------------------------------------------------------
+    // Plan editing (Phase 6 §6.4)
+
+    @Serializable
+    data class ExercisePicker(
+        val workoutDayId: String,
+    ) : AppRoute
 }

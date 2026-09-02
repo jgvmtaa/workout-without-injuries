@@ -56,6 +56,13 @@ interface ProfileRepository {
     suspend fun saveProfile(profile: UserProfile)
 
     /**
+     * Atomically re-seeds draft from the saved profile.
+     * Used before starting an edit session and on cancel/back-from-first-destination
+     * so stale draft changes cannot leak (Phase 6 §6.5).
+     */
+    suspend fun resetDraftFromProfile()
+
+    /**
      * Removes the stored profile *and* the draft, returning the app to its
      * pre-onboarding state.
      */

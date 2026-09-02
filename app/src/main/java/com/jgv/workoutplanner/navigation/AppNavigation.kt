@@ -6,10 +6,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
-import com.jgv.workoutplanner.domain.model.ExerciseId
 import com.jgv.workoutplanner.feature.exercisedetails.ExerciseDetailsRoute
 import com.jgv.workoutplanner.feature.exerciselibrary.ExerciseLibraryRoute
+import com.jgv.workoutplanner.feature.exercisepicker.ExercisePickerRoute
 import com.jgv.workoutplanner.feature.home.HomeRoute
 import com.jgv.workoutplanner.feature.onboarding.injuries.InjuryHistoryRoute
 import com.jgv.workoutplanner.feature.onboarding.limitations.MovementLimitationsRoute
@@ -17,9 +16,14 @@ import com.jgv.workoutplanner.feature.onboarding.preferences.PreferencesRoute
 import com.jgv.workoutplanner.feature.onboarding.review.ProfileReviewRoute
 import com.jgv.workoutplanner.feature.onboarding.safety.SafetyNoticeRoute
 import com.jgv.workoutplanner.feature.onboarding.welcome.WelcomeScreen
-import com.jgv.workoutplanner.feature.plan.ExerciseReplacementScreen
+import com.jgv.workoutplanner.feature.plan.ExerciseReplacementRoute
 import com.jgv.workoutplanner.feature.plan.PlanRoute
-import com.jgv.workoutplanner.feature.profile.ProfileScreen
+import com.jgv.workoutplanner.feature.profile.ProfileRoute
+import com.jgv.workoutplanner.feature.profile.edit.ProfileEditInjuryHistoryRoute
+import com.jgv.workoutplanner.feature.profile.edit.ProfileEditMovementLimitationsRoute
+import com.jgv.workoutplanner.feature.profile.edit.ProfileEditPreferencesRoute
+import com.jgv.workoutplanner.feature.profile.edit.ProfileEditReviewRoute
+import com.jgv.workoutplanner.navigation.AppRoute.ProfileEditOrigin
 
 /**
  * Navigation shell wiring every destination in [AppRoute] (README §17).
@@ -115,6 +119,9 @@ fun AppNavigation(
                         ),
                     )
                 },
+                onOpenExercisePicker = { dayId ->
+                    navController.navigate(AppRoute.ExercisePicker(workoutDayId = dayId))
+                },
                 onBack = goBack,
             )
         }
@@ -134,22 +141,74 @@ fun AppNavigation(
             )
         }
 
-        composable<AppRoute.ExerciseReplacement> { backStackEntry ->
-            val route = backStackEntry.toRoute<AppRoute.ExerciseReplacement>()
-            ExerciseReplacementScreen(
-                workoutDayId = route.workoutDayId,
-                exerciseId = route.exerciseId,
-                onReplacementChosen = goBack,
+        composable<AppRoute.ExerciseReplacement> {
+            ExerciseReplacementRoute(
+                onBack = goBack,
+            )
+        }
+
+        composable<AppRoute.ExercisePicker> {
+            ExercisePickerRoute(
                 onBack = goBack,
             )
         }
 
         composable<AppRoute.Profile> {
-            ProfileScreen(
-                onEditPreferences = { navController.navigate(AppRoute.Preferences) },
-                onEditInjuries = { navController.navigate(AppRoute.InjuryHistory) },
-                onEditLimitations = { navController.navigate(AppRoute.MovementLimitations) },
+            ProfileRoute(
+                onEditPreferences = { navController.navigate(AppRoute.ProfileEditPreferences) },
+                onEditInjuries = { navController.navigate(AppRoute.ProfileEditInjuryHistory) },
+                onEditLimitations = {
+                    navController.navigate(
+                        AppRoute.ProfileEditMovementLimitations(origin = ProfileEditOrigin.Profile),
+                    )
+                },
                 onBack = goBack,
+            )
+        }
+
+        // ---- Profile editing dedicated destinations (Phase 6 §6.5)
+
+        composable<AppRoute.ProfileEditPreferences> {
+            ProfileEditPreferencesRoute(
+                onContinueToReview = { navController.navigate(AppRoute.ProfileEditReview) },
+                onCancel = {
+                    navController.popBackStack(AppRoute.Profile, inclusive = false)
+                },
+            )
+        }
+
+        composable<AppRoute.ProfileEditInjuryHistory> {
+            ProfileEditInjuryHistoryRoute(
+                onContinueToLimitations = {
+                    navController.navigate(
+                        AppRoute.ProfileEditMovementLimitations(origin = ProfileEditOrigin.InjuryHistory),
+                    )
+                },
+                onCancel = {
+                    navController.popBackStack(AppRoute.Profile, inclusive = false)
+                },
+            )
+        }
+
+        composable<AppRoute.ProfileEditMovementLimitations> {
+            ProfileEditMovementLimitationsRoute(
+                onContinueToReview = { navController.navigate(AppRoute.ProfileEditReview) },
+                onCancelToProfile = {
+                    navController.popBackStack(AppRoute.Profile, inclusive = false)
+                },
+                onBackToInjuries = goBack,
+            )
+        }
+
+        composable<AppRoute.ProfileEditReview> {
+            ProfileEditReviewRoute(
+                onFinishedToProfile = {
+                    navController.popBackStack(AppRoute.Profile, inclusive = false)
+                },
+                onBack = goBack,
+                onCancelToProfile = {
+                    navController.popBackStack(AppRoute.Profile, inclusive = false)
+                },
             )
         }
     }

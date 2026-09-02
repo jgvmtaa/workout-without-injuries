@@ -17,4 +17,5 @@ data class HomeUiState(
     val limitationsCount: Int = 0,
     val hasPlan: Boolean = false,
     val planName: String? = null,
+    val requiresRegeneration: Boolean = false,
 )

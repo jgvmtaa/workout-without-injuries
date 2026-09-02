@@ -62,6 +62,7 @@ fun MovementLimitationsScreen(
     state: MovementLimitationsUiState,
     onEvent: (MovementLimitationsEvent) -> Unit,
     modifier: Modifier = Modifier,
+    onCancel: (() -> Unit)? = null,
 ) {
     if (state.isLoading) {
         LoadingContent(modifier = modifier)
@@ -74,6 +75,7 @@ fun MovementLimitationsScreen(
         onContinue = { onEvent(MovementLimitationsEvent.Continue) },
         modifier = modifier,
         onBack = { onEvent(MovementLimitationsEvent.Back) },
+        onCancel = onCancel,
         continueEnabled = state.canContinue,
     ) {
         StepIntroduction(text = stringResource(R.string.limitations_intro))
