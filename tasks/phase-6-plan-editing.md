@@ -15,6 +15,9 @@ silently changing the plan generated from the previous profile.
 
 - Manual plan mutations go through one `UpdateWorkoutExerciseUseCase` with sealed
   operations. The UI does not edit or persist a `WorkoutPlan` directly.
+- The repository's atomic manual-edit API may replace only the domain
+  `WorkoutPlan`. It exposes the outdated flag read-only to the transaction and
+  preserves warnings and all metadata internally.
 - Plans keep the Phase 5 template capacity for each day focus. Manual edits may
   remove, replace, reorder, or add exercises up to that capacity.
 - Every replacement and addition must satisfy the current profile's limitation,
@@ -22,7 +25,8 @@ silently changing the plan generated from the previous profile.
 - Profile editing uses dedicated edit destinations while reusing the existing
   onboarding screen composables. Onboarding navigation remains unchanged.
 - A profile change leaves the existing plan untouched and marks it outdated.
-  Manual editing is unavailable until that plan is regenerated.
+  Manual editing is unavailable until that plan is regenerated. This is enforced
+  by the domain use case as well as by hidden UI controls.
 - Regeneration replaces the entire plan, including prior manual customizations.
   Phase 6 owns the confirmation for this destructive action; Phase 7 may polish it.
 - Phase 6 adds domain, persistence, and ViewModel tests. The end-to-end Compose
@@ -37,13 +41,39 @@ silently changing the plan generated from the previous profile.
   - `Move(workoutDayId, exerciseId, targetIndex)`
   - `AddExercises(workoutDayId, exerciseIds)`
 - [ ] Return a typed result rather than throwing or silently ignoring an edit. Cover:
-      `Updated`, `Unchanged`, missing plan/day/exercise, invalid target index,
-      ineligible replacement/addition, duplicate exercise, and exceeded capacity.
-- [ ] Add an atomic update API to `WorkoutPlanRepository`, implemented with the
-      existing `DataStore.updateData` transaction. Do not implement edits as
-      `currentPlan.first()` followed by `savePlan()`.
-- [ ] Preserve stored generation warnings and `requiresRegeneration` during manual
-      plan mutations.
+      `Updated`, `Unchanged`, `PlanNotFound`, `PlanOutdated`, missing day/exercise,
+      invalid target index, ineligible replacement/addition, duplicate exercise,
+      and exceeded capacity.
+- [ ] Add this domain-only atomic mutation contract (names may follow local style,
+      but its capabilities must not be widened):
+  ```kotlin
+  data class WorkoutPlanSnapshot(
+      val plan: WorkoutPlan?,
+      val requiresRegeneration: Boolean,
+  )
+
+  sealed interface AtomicPlanMutation<out T> {
+      data class Commit<T>(val plan: WorkoutPlan, val result: T) : AtomicPlanMutation<T>
+      data class Reject<T>(val result: T) : AtomicPlanMutation<T>
+  }
+
+  suspend fun <T> updatePlanAtomically(
+      transform: (WorkoutPlanSnapshot) -> AtomicPlanMutation<T>,
+  ): T
+  ```
+- [ ] Implement that contract with the existing `DataStore.updateData` transaction.
+      A commit replaces only `StoredWorkoutPlan.plan`; a rejection writes nothing.
+      The repository implementation always preserves stored warnings and
+      `requiresRegeneration`. Neither `StoredWorkoutPlan` nor another persisted type
+      may appear in the domain repository interface.
+- [ ] Do not expose a generic state transform that lets callers write warnings or
+      `requiresRegeneration`. Do not implement edits as `currentPlan.first()` followed
+      by `savePlan()`.
+- [ ] `UpdateWorkoutExerciseUseCase` reads the latest profile immediately before the
+      atomic plan transaction. Inside the transaction it checks
+      `snapshot.requiresRegeneration` first and returns `PlanOutdated` before applying
+      any edit. The mark-before-profile-save ordering in 6.6 closes the cross-store
+      race around that profile read.
 - [ ] Enforce these invariants inside the use case, not only in the UI:
   - A workout day contains no duplicate `ExerciseId` values.
   - `PlannedExercise.order` is normalized to contiguous `0..lastIndex` after remove
@@ -52,7 +82,8 @@ silently changing the plan generated from the previous profile.
   - Additions cannot exceed `WorkoutPlanTemplate.slotsFor(day.focus).size`.
   - Multi-exercise addition is all-or-nothing.
 - [ ] Convert typed edit failures into a brief recoverable UI message and refresh the
-      displayed plan.
+      displayed plan. Emit a typed one-shot effect through `Channel`/`SharedFlow`;
+      do not store a raw message or pending effect in durable `UiState`.
 
 ## 6.2 Plan-screen actions (README §13)
 
@@ -68,6 +99,11 @@ silently changing the plan generated from the previous profile.
 - [ ] Commit the regenerated plan, new warnings, and
       `requiresRegeneration = false` together. Do not clear the outdated state until
       the new plan is successfully persisted.
+- [ ] Give that operation a dedicated repository API such as
+      `saveGeneratedPlan(plan, warnings)`. It is the only operation allowed to retain
+      a plan while clearing `requiresRegeneration`; `clearPlan()` clears the entire
+      stored state. Do not expose a caller-controlled Boolean or retain a
+      `savePlan(..., requiresRegeneration = false)` default.
 - [ ] Allow a user to remove the last exercise in a day. Render an empty manually
       edited day as "No exercises in this workout," not as a filtering failure.
 
@@ -120,7 +156,8 @@ silently changing the plan generated from the previous profile.
 - [ ] Reuse catalog search, muscle-group filters, and equipment filters in the picker.
       Show exercise names only and retain selections when filters change.
 - [ ] Allow selection of multiple exercises up to remaining capacity, then confirm
-      once.
+      once. Store the selection as an ordered `List<ExerciseId>`; a derived `Set` may
+      be used only for membership checks. Filtering must not alter selection order.
 - [ ] Apply the selection with one atomic `AddExercises` operation. Use each
       exercise's catalog-default prescription and append exercises in selection order.
 - [ ] Revalidate eligibility, day-focus compatibility, duplicates, and capacity at
@@ -132,7 +169,8 @@ silently changing the plan generated from the previous profile.
       `ProfileViewModel`, and a previewable `ProfileScreen`.
 - [ ] Show saved summaries for goal, schedule, experience, equipment, injuries, and
       confirmed limitations, with section-specific Edit actions. Keep preferred split
-      derived/read-only, as in onboarding.
+      derived/read-only, as in onboarding. Derive these summaries only from the saved
+      profile, never from an unfinished edit draft.
 - [ ] Add dedicated typed destinations for editing Preferences, Injury History,
       Movement Limitations, and Profile Review. Reuse the onboarding screen
       composables with edit-specific navigation callbacks instead of adding mode
@@ -144,9 +182,17 @@ silently changing the plan generated from the previous profile.
 - [ ] Add atomic `ProfileRepository.resetDraftFromProfile()`. Call it before starting
       an edit session and when cancelling one so stale draft changes cannot leak into
       a later session.
+- [ ] `ProfileViewModel` must await that reset before emitting the navigation effect
+      for the first edit destination. Do not reset from an edit-destination ViewModel
+      initializer.
 - [ ] Treat the persisted draft as the edit session so changes survive process death.
       Back navigates within the edit flow; a separate Cancel action discards the whole
       session and returns to Profile.
+- [ ] Treat Back from the first destination in an edit flow as Cancel: reset the draft
+      before returning to Profile. Because Movement Limitations may be either the first
+      destination or follow Injury History, carry the edit-entry context in its typed
+      route (or an equivalent navigation-scoped coordinator). Intermediate Back must
+      not reset the draft.
 - [ ] Add `ProfileEditReviewViewModel` and reuse `ProfileReviewScreen`. Saving uses
       `SaveProfileEditsUseCase`; it must not run onboarding completion navigation.
 - [ ] After saving, return to Profile. Do not clear the application back stack or send
@@ -156,16 +202,20 @@ silently changing the plan generated from the previous profile.
 
 - [ ] Add `requiresRegeneration: Boolean = false` to the persisted workout-plan
       wrapper and expose it through `WorkoutPlanRepository`.
+- [ ] Add a dedicated `suspend fun markRequiresRegeneration(): Boolean` repository
+      operation. It atomically sets the flag only when a plan exists, reports whether
+      a plan was present, and never clears the flag. Do not expose a general
+      `setRequiresRegeneration(Boolean)` API.
 - [ ] Implement `SaveProfileEditsUseCase(ProfileRepository, WorkoutPlanRepository)`.
       It coordinates the cross-repository rule instead of putting plan behavior in
       `ProfileRepository` or a ViewModel.
 - [ ] Compare the old and edited profiles before writing. Any changed `UserProfile`
       field except `hasAcceptedSafetyNotice` requires regeneration. An identical save
       is `Unchanged` and must not invalidate the plan.
-- [ ] If a plan exists and the profile changed, persist
-      `requiresRegeneration = true` before saving the profile. The stores are separate,
-      so this ordering may produce a safe false-positive after failure but must never
-      expose a changed profile with a falsely current plan.
+- [ ] When the profile changed, call `markRequiresRegeneration()` before saving the
+      profile; the repository determines atomically whether a plan exists. The stores
+      are separate, so this ordering may produce a safe false-positive after failure
+      but must never expose a changed profile with a falsely current plan.
 - [ ] Do not create an outdated state when no plan exists.
 - [ ] Show outdated-plan status on both Home and Plan. The Plan banner must say:
       "Your profile has changed. Regenerate the plan to apply the new limitations."
@@ -187,20 +237,25 @@ silently changing the plan generated from the previous profile.
       patterns, duplicate exclusion, and deterministic ordering.
 - [ ] `UpdateWorkoutExerciseUseCase` tests cover remove, replace, move, atomic
       multi-add, default replacement/addition prescriptions, normalized order, capacity,
-      duplicate rejection, ineligible choices, invalid IDs/indices, and no-op results.
+      duplicate rejection, ineligible choices, invalid IDs/indices, no-op results,
+      and atomic `PlanOutdated` rejection.
 - [ ] Repository/persistence tests prove remove, replace, reorder, additions, warnings,
-      and `requiresRegeneration` survive reconstruction from local storage.
+      and `requiresRegeneration` survive reconstruction from local storage. Tests must
+      also prove the manual-edit API cannot change warnings or invalidation metadata,
+      and only `saveGeneratedPlan` clears the outdated flag.
 - [x] The Phase 5 generation test proves equivalent input produces an equivalent
       deterministic plan.
 - [ ] Plan ViewModel tests prove regeneration replaces the stored plan and warnings,
       clears the outdated flag only after success, and exposes recoverable edit errors.
 - [ ] Profile-edit tests cover draft initialization, cancellation, identical saves,
       changes with and without an existing plan, mark-before-save ordering, persisted
-      invalidation, and returning to Profile.
+      invalidation, returning to Profile, and root Back resetting the draft without
+      resetting it during intermediate navigation.
 - [ ] Home and Plan ViewModel tests cover outdated status, hidden stale warnings, and
       disabled editing.
 - [ ] Exercise picker ViewModel tests cover search, muscle/equipment filters,
-      selection retention across filters, capacity enforcement, and atomic confirmation.
+      ordered selection retention across filters, capacity enforcement, and atomic
+      confirmation in selection order.
 - [ ] Keep full Compose journeys (including replace exercise) in Phase 7 as specified
       by README §24.6.
 
