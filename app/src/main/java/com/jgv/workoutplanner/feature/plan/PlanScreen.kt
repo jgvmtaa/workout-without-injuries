@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -360,91 +361,87 @@ private fun PlannedExerciseRow(
     modifier: Modifier = Modifier,
 ) {
     var showMenu by remember { mutableStateOf(false) }
+    val nameText = exercise.definition?.let { def ->
+        runCatching { stringResource(def.nameRes) }.getOrNull()
+    } ?: exercise.exerciseId.name
 
-    Column(
+    Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.Top,
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            val nameText = exercise.definition?.let { def ->
-                runCatching { stringResource(def.nameRes) }.getOrNull()
-            } ?: exercise.exerciseId.name
+        Text(
+            text = "${exercise.order + 1}.",
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.widthIn(min = 28.dp),
+        )
 
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
             Text(
-                text = "${exercise.order + 1}. $nameText",
+                text = nameText,
                 style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.weight(1f),
             )
 
-            if (canEdit) {
-                IconButton(onClick = { showMenu = true }) {
-                    Icon(
-                        imageVector = Icons.Filled.MoreVert,
-                        contentDescription = "More",
-                    )
-                }
-                DropdownMenu(
-                    expanded = showMenu,
-                    onDismissRequest = { showMenu = false },
-                ) {
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.plan_action_details)) },
-                        onClick = {
-                            showMenu = false
-                            onOpenDetails(exercise.exerciseId)
-                        },
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.action_replace_exercise_short)) },
-                        onClick = {
-                            showMenu = false
-                            onReplace()
-                        },
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.plan_action_move_up)) },
-                        onClick = {
-                            showMenu = false
-                            onMoveUp()
-                        },
-                        enabled = !isFirst,
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.plan_action_move_down)) },
-                        onClick = {
-                            showMenu = false
-                            onMoveDown()
-                        },
-                        enabled = !isLast,
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.plan_action_remove)) },
-                        onClick = {
-                            showMenu = false
-                            onRemove()
-                        },
-                    )
-                }
-            }
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
             Text(
                 text = "${exercise.sets} x ${exercise.repRange.first}..${exercise.repRange.last} • ${exercise.restSeconds}s rest",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.weight(1f),
             )
+        }
+
+        if (canEdit) {
+            IconButton(onClick = { showMenu = true }) {
+                Icon(
+                    imageVector = Icons.Filled.MoreVert,
+                    contentDescription = "More",
+                )
+            }
+            DropdownMenu(
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false },
+            ) {
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.plan_action_details)) },
+                    onClick = {
+                        showMenu = false
+                        onOpenDetails(exercise.exerciseId)
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.action_replace_exercise_short)) },
+                    onClick = {
+                        showMenu = false
+                        onReplace()
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.plan_action_move_up)) },
+                    onClick = {
+                        showMenu = false
+                        onMoveUp()
+                    },
+                    enabled = !isFirst,
+                )
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.plan_action_move_down)) },
+                    onClick = {
+                        showMenu = false
+                        onMoveDown()
+                    },
+                    enabled = !isLast,
+                )
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.plan_action_remove)) },
+                    onClick = {
+                        showMenu = false
+                        onRemove()
+                    },
+                )
+            }
         }
     }
 }
