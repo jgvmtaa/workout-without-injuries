@@ -15,13 +15,15 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * [WorkoutPlanRepository] backed by [WorkoutPlanDataStore] (README §19, §21, task 5.7).
+ * [WorkoutPlanRepository] backed by [WorkoutPlanDataStore] (README §19, §21, §25, Phase 6).
  *
- * One plan at a time – MVP has no history (README §29). Stores the whole plan; Phase 6
- * edits rewrite the whole record, which is fine for a few dozen exercises.
+ * One plan at a time – MVP has no history (README §29).
  *
- * Also persists generation warnings (README §25) alongside the plan so they survive
- * process death – previously they lived only in PlanViewModel's in-memory flow.
+ * Manual edits use [updatePlanAtomically] which runs inside DataStore.updateData transaction.
+ * Commit replaces only WorkoutPlan; warnings and requiresRegeneration are preserved internally.
+ *
+ * Only [saveGeneratedPlan] may clear requiresRegeneration, and only together with persisting
+ * new plan+warnings.
  */
 @Singleton
 class DefaultWorkoutPlanRepository @Inject constructor(
@@ -38,18 +40,72 @@ class DefaultWorkoutPlanRepository @Inject constructor(
             .map { it.toDomainWarnings() }
             .distinctUntilChanged()
 
-    override suspend fun savePlan(plan: WorkoutPlan, warnings: List<PlanWarning>) {
+    override val requiresRegeneration: Flow<Boolean> =
+        dataStore.state
+            .map { it.requiresRegeneration }
+            .distinctUntilChanged()
+
+    override suspend fun <T> updatePlanAtomically(
+        transform: (WorkoutPlanRepository.WorkoutPlanSnapshot) -> WorkoutPlanRepository.AtomicPlanMutation<T>,
+    ): T {
+        var resultToReturn: T? = null
+        var resolved = false
+
+        dataStore.update { stored ->
+            val snapshot = WorkoutPlanRepository.WorkoutPlanSnapshot(
+                plan = stored.toDomain(),
+                requiresRegeneration = stored.requiresRegeneration,
+            )
+            when (val mutation = transform(snapshot)) {
+                is WorkoutPlanRepository.AtomicPlanMutation.Commit -> {
+                    @Suppress("UNCHECKED_CAST")
+                    resultToReturn = mutation.result as T
+                    resolved = true
+                    // Preserve warnings and requiresRegeneration
+                    stored.copy(
+                        plan = mutation.plan.toPersisted(),
+                    )
+                }
+                is WorkoutPlanRepository.AtomicPlanMutation.Reject -> {
+                    @Suppress("UNCHECKED_CAST")
+                    resultToReturn = mutation.result as T
+                    resolved = true
+                    stored // no write
+                }
+            }
+        }
+        check(resolved) { "transform must return Commit or Reject" }
+        @Suppress("UNCHECKED_CAST")
+        return resultToReturn as T
+    }
+
+    override suspend fun saveGeneratedPlan(plan: WorkoutPlan, warnings: List<PlanWarning>) {
         dataStore.update { _ ->
             StoredWorkoutPlan(
                 plan = plan.toPersisted(),
                 warnings = warnings.map { it.toPersisted() },
+                requiresRegeneration = false,
             )
         }
     }
 
+    override suspend fun markRequiresRegeneration(): Boolean {
+        var hadPlan = false
+        dataStore.update { stored ->
+            if (stored.plan == null) {
+                hadPlan = false
+                stored
+            } else {
+                hadPlan = true
+                if (stored.requiresRegeneration) stored else stored.copy(requiresRegeneration = true)
+            }
+        }
+        return hadPlan
+    }
+
     override suspend fun clearPlan() {
         dataStore.update { _ ->
-            StoredWorkoutPlan(plan = null, warnings = emptyList())
+            StoredWorkoutPlan(plan = null, warnings = emptyList(), requiresRegeneration = false)
         }
     }
 }

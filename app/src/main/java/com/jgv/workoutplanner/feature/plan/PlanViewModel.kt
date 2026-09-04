@@ -2,28 +2,35 @@ package com.jgv.workoutplanner.feature.plan
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jgv.workoutplanner.domain.model.WorkoutDayFocus
+import com.jgv.workoutplanner.domain.model.WorkoutExerciseEdit
+import com.jgv.workoutplanner.domain.model.WorkoutExerciseEditResult
+import com.jgv.workoutplanner.domain.model.WorkoutPlanTemplate
 import com.jgv.workoutplanner.domain.repository.ExerciseRepository
 import com.jgv.workoutplanner.domain.repository.ProfileRepository
 import com.jgv.workoutplanner.domain.repository.WorkoutPlanRepository
 import com.jgv.workoutplanner.domain.usecase.GenerateWorkoutPlanUseCase
+import com.jgv.workoutplanner.domain.usecase.UpdateWorkoutExerciseUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
- * ViewModel for the plan screen (README §18, §20, task 5.8).
+ * ViewModel for the plan screen (README §18, §20, task 5.8, Phase 6).
  *
- * - Observes profile + current plan + exercise catalog + persisted warnings.
- * - Auto-generates on entry if no plan exists (per Phase 5 decision: Home button + auto-gen).
- * - Generation is deterministic and never crashes on restrictive profiles – unfillable slots
- *   become warnings (README §25, task 5.6). Warnings are now persisted alongside the plan
- *   in [WorkoutPlanRepository] so they survive process death / navigation.
+ * - Observes profile + current plan + warnings + requiresRegeneration.
+ * - Auto-generates on entry if no plan exists.
+ * - Manual edits go through [UpdateWorkoutExerciseUseCase] — typed results, one-shot effects.
+ * - While outdated, editing is disabled, warnings hidden, existing plan visible.
+ * - Regeneration uses [WorkoutPlanRepository.saveGeneratedPlan] which clears outdated only after success.
  */
 @HiltViewModel
 class PlanViewModel @Inject constructor(
@@ -31,21 +38,39 @@ class PlanViewModel @Inject constructor(
     private val workoutPlanRepository: WorkoutPlanRepository,
     private val exerciseRepository: ExerciseRepository,
     private val generateWorkoutPlanUseCase: GenerateWorkoutPlanUseCase,
+    private val updateWorkoutExerciseUseCase: UpdateWorkoutExerciseUseCase,
 ) : ViewModel() {
 
     private val exercisesById = exerciseRepository.getAllExercises().associateBy { it.id }
 
     private val generatingFlow = MutableStateFlow(false)
+    private val showRegenerateConfirmFlow = MutableStateFlow(false)
+
+    private val _effects = Channel<PlanEffect>(Channel.BUFFERED)
+    val effects = _effects.receiveAsFlow()
 
     val uiState: StateFlow<PlanUiState> = combine(
         profileRepository.profile,
         workoutPlanRepository.currentPlan,
         workoutPlanRepository.currentWarnings,
+        workoutPlanRepository.requiresRegeneration,
         generatingFlow,
-    ) { profile, plan, warnings, generating ->
+    ) { profile, plan, warnings, requiresRegeneration, generating ->
         when {
-            profile == null -> PlanUiState(isLoading = false, hasNoPlan = true, isGenerating = generating)
-            plan == null -> PlanUiState(isLoading = false, hasNoPlan = true, isGenerating = generating, warnings = warnings)
+            profile == null -> PlanUiState(
+                isLoading = false,
+                hasNoPlan = true,
+                isGenerating = generating,
+                requiresRegeneration = false,
+                warnings = emptyList(),
+            )
+            plan == null -> PlanUiState(
+                isLoading = false,
+                hasNoPlan = true,
+                isGenerating = generating,
+                requiresRegeneration = requiresRegeneration,
+                warnings = if (requiresRegeneration) emptyList() else warnings,
+            )
             else -> {
                 val dayUiModels = plan.days.map { day ->
                     val exerciseModels = day.exercises.sortedBy { it.order }.map { pe ->
@@ -58,11 +83,13 @@ class PlanViewModel @Inject constructor(
                             order = pe.order,
                         )
                     }
+                    val capacity = WorkoutPlanTemplate.slotsFor(day.focus).size
                     WorkoutDayUiModel(
                         id = day.id,
                         name = day.name,
                         focus = day.focus,
                         exercises = exerciseModels,
+                        remainingCapacity = (capacity - exerciseModels.size).coerceAtLeast(0),
                     )
                 }
                 PlanUiState(
@@ -70,8 +97,10 @@ class PlanViewModel @Inject constructor(
                     isGenerating = generating,
                     planName = plan.name,
                     days = dayUiModels,
-                    warnings = warnings,
+                    // Preserve in storage but hide in UI when outdated
+                    warnings = if (requiresRegeneration) emptyList() else warnings,
                     hasNoPlan = false,
+                    requiresRegeneration = requiresRegeneration,
                 )
             }
         }
@@ -81,10 +110,61 @@ class PlanViewModel @Inject constructor(
         initialValue = PlanUiState(isLoading = true),
     )
 
+    val showRegenerateConfirm: StateFlow<Boolean> = showRegenerateConfirmFlow.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = false,
+    )
+
     fun onEvent(event: PlanEvent) {
         when (event) {
-            PlanEvent.GeneratePlan, PlanEvent.RegeneratePlan -> generatePlan()
-            is PlanEvent.OpenExerciseDetails, is PlanEvent.ReplaceExercise, PlanEvent.Back -> Unit
+            PlanEvent.GeneratePlan -> generatePlan()
+            PlanEvent.RegeneratePlan -> {
+                showRegenerateConfirmFlow.value = true
+            }
+            PlanEvent.ConfirmRegeneration -> {
+                showRegenerateConfirmFlow.value = false
+                generatePlan()
+            }
+            PlanEvent.DismissRegenerationConfirm -> {
+                showRegenerateConfirmFlow.value = false
+            }
+            is PlanEvent.RemoveExercise -> {
+                viewModelScope.launch {
+                    val result = updateWorkoutExerciseUseCase(
+                        WorkoutExerciseEdit.Remove(event.dayId, event.exerciseId),
+                    )
+                    handleEditResult(result)
+                }
+            }
+            is PlanEvent.MoveUp -> {
+                viewModelScope.launch {
+                    val current = workoutPlanRepository.currentPlan.first() ?: return@launch
+                    val day = current.days.firstOrNull { it.id == event.dayId } ?: return@launch
+                    val idx = day.exercises.indexOfFirst { it.exerciseId == event.exerciseId }
+                    if (idx <= 0) return@launch
+                    val result = updateWorkoutExerciseUseCase(
+                        WorkoutExerciseEdit.Move(event.dayId, event.exerciseId, idx - 1),
+                    )
+                    handleEditResult(result)
+                }
+            }
+            is PlanEvent.MoveDown -> {
+                viewModelScope.launch {
+                    val current = workoutPlanRepository.currentPlan.first() ?: return@launch
+                    val day = current.days.firstOrNull { it.id == event.dayId } ?: return@launch
+                    val idx = day.exercises.indexOfFirst { it.exerciseId == event.exerciseId }
+                    if (idx == -1 || idx >= day.exercises.size - 1) return@launch
+                    val result = updateWorkoutExerciseUseCase(
+                        WorkoutExerciseEdit.Move(event.dayId, event.exerciseId, idx + 1),
+                    )
+                    handleEditResult(result)
+                }
+            }
+            is PlanEvent.OpenExerciseDetails,
+            is PlanEvent.ReplaceExercise,
+            is PlanEvent.OpenExercisePicker,
+            PlanEvent.Back -> Unit
         }
     }
 
@@ -95,7 +175,7 @@ class PlanViewModel @Inject constructor(
             if (plan == null) {
                 generatingFlow.value = true
                 val result = generateWorkoutPlanUseCase(profile)
-                workoutPlanRepository.savePlan(result.plan, result.warnings)
+                workoutPlanRepository.saveGeneratedPlan(result.plan, result.warnings)
                 generatingFlow.value = false
             }
         }
@@ -106,8 +186,15 @@ class PlanViewModel @Inject constructor(
             val profile = profileRepository.profile.first() ?: return@launch
             generatingFlow.value = true
             val result = generateWorkoutPlanUseCase(profile)
-            workoutPlanRepository.savePlan(result.plan, result.warnings)
+            workoutPlanRepository.saveGeneratedPlan(result.plan, result.warnings)
             generatingFlow.value = false
+        }
+    }
+
+    private suspend fun handleEditResult(result: WorkoutExerciseEditResult) {
+        when (result) {
+            WorkoutExerciseEditResult.Updated, WorkoutExerciseEditResult.Unchanged -> Unit
+            else -> _effects.send(PlanEffect.EditFailed(result))
         }
     }
 }

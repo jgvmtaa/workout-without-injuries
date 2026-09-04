@@ -9,26 +9,39 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,47 +50,81 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jgv.workoutplanner.R
 import com.jgv.workoutplanner.core.designsystem.AppTheme
 import com.jgv.workoutplanner.core.ui.LoadingContent
+import com.jgv.workoutplanner.domain.model.ExerciseDefinition
 import com.jgv.workoutplanner.domain.model.ExerciseDifficulty
 import com.jgv.workoutplanner.domain.model.ExerciseId
 import com.jgv.workoutplanner.domain.model.ExercisePrescription
-import com.jgv.workoutplanner.domain.model.ExerciseDefinition
 import com.jgv.workoutplanner.domain.model.ExerciseTag
 import com.jgv.workoutplanner.domain.model.MovementPattern
 import com.jgv.workoutplanner.domain.model.MuscleGroup
 import com.jgv.workoutplanner.domain.model.WorkoutDayFocus
-import com.jgv.workoutplanner.domain.model.WorkoutPlan
-import com.jgv.workoutplanner.domain.model.PlannedExercise
-import com.jgv.workoutplanner.domain.model.WorkoutDay
+import com.jgv.workoutplanner.domain.model.WorkoutExerciseEditResult
 
 /**
- * Stateful entry point for the plan destination (README §20, task 5.8).
+ * Stateful entry point for the plan destination (README §20, Phase 5/6).
  *
- * Route resolves ViewModel and collects state; screen below is stateless and previewable.
- * Auto-generates on entry if no plan exists (Home button + auto-generate decision).
+ * - Auto-generates if no plan.
+ * - Collects typed one-shot effects (PlanEffect.EditFailed) and maps to localized text.
+ * - Handles navigation for details / replace / picker.
  */
 @Composable
 fun PlanRoute(
     onOpenExerciseDetails: (ExerciseId) -> Unit,
     onReplaceExercise: (workoutDayId: String, exerciseId: ExerciseId) -> Unit,
+    onOpenExercisePicker: (workoutDayId: String) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PlanViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val showConfirm by viewModel.showRegenerateConfirm.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    // Auto-generate once when screen appears and no plan exists.
+    val outdatedMessage = stringResource(R.string.plan_outdated_banner)
+    val capMsg = stringResource(R.string.plan_edit_failed_capacity)
+    val dupMsg = stringResource(R.string.plan_edit_failed_duplicate)
+    val ineligibleMsg = stringResource(R.string.plan_edit_failed_ineligible)
+    val invalidMsg = stringResource(R.string.plan_edit_failed_invalid)
+    val genericMsg = stringResource(R.string.plan_edit_failed_generic)
+    val outdatedEditMsg = stringResource(R.string.plan_edit_failed_plan_outdated)
+
     LaunchedEffect(state.hasNoPlan, state.isLoading) {
         if (!state.isLoading && state.hasNoPlan) {
             viewModel.autoGenerateIfNeeded()
         }
     }
 
+    LaunchedEffect(viewModel) {
+        viewModel.effects.collect { effect ->
+            val msg = when (effect) {
+                is PlanEffect.EditFailed -> when (effect.result) {
+                    WorkoutExerciseEditResult.PlanOutdated -> outdatedEditMsg
+                    WorkoutExerciseEditResult.CapacityExceeded -> capMsg
+                    WorkoutExerciseEditResult.DuplicateExercise -> dupMsg
+                    WorkoutExerciseEditResult.IneligibleExercise -> ineligibleMsg
+                    WorkoutExerciseEditResult.InvalidTargetIndex,
+                    WorkoutExerciseEditResult.DayNotFound,
+                    WorkoutExerciseEditResult.ExerciseNotFound,
+                    WorkoutExerciseEditResult.PlanNotFound -> invalidMsg
+                    WorkoutExerciseEditResult.Unchanged -> ""
+                    WorkoutExerciseEditResult.Updated -> ""
+                }
+            }
+            if (msg.isNotBlank()) {
+                snackbarHostState.showSnackbar(msg)
+            }
+        }
+    }
+
     PlanScreen(
         state = state,
+        showRegenerateConfirm = showConfirm,
+        snackbarHostState = snackbarHostState,
         onEvent = { event ->
             when (event) {
                 is PlanEvent.OpenExerciseDetails -> onOpenExerciseDetails(event.exerciseId)
                 is PlanEvent.ReplaceExercise -> onReplaceExercise(event.dayId, event.exerciseId)
+                is PlanEvent.OpenExercisePicker -> onOpenExercisePicker(event.dayId)
                 PlanEvent.Back -> onBack()
                 else -> viewModel.onEvent(event)
             }
@@ -87,15 +134,14 @@ fun PlanRoute(
 }
 
 /**
- * The current workout plan (README §11–§13, task 5.8).
- *
- * Renders generated plan by day with sets/reps/rest. Follows §20: immutable UiState,
- * sealed PlanEvent, no NavController passed in.
+ * The current workout plan (README §11–§13, Phase 5/6).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlanScreen(
     state: PlanUiState,
+    showRegenerateConfirm: Boolean,
+    snackbarHostState: SnackbarHostState,
     onEvent: (PlanEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -126,6 +172,7 @@ fun PlanScreen(
                 },
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { paddingValues ->
         if (state.hasNoPlan) {
             Column(
@@ -161,7 +208,26 @@ fun PlanScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                if (state.warnings.isNotEmpty()) {
+                if (state.requiresRegeneration) {
+                    item {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer,
+                            ),
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    text = stringResource(R.string.plan_outdated_banner),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onErrorContainer,
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (!state.requiresRegeneration && state.warnings.isNotEmpty()) {
                     item {
                         Card(modifier = Modifier.fillMaxWidth()) {
                             Column(modifier = Modifier.padding(16.dp)) {
@@ -185,11 +251,34 @@ fun PlanScreen(
                 items(state.days) { day ->
                     WorkoutDayCard(
                         day = day,
+                        canEdit = !state.requiresRegeneration,
                         onOpenDetails = { id -> onEvent(PlanEvent.OpenExerciseDetails(id)) },
                         onReplace = { dayId, exId -> onEvent(PlanEvent.ReplaceExercise(dayId, exId)) },
+                        onRemove = { dayId, exId -> onEvent(PlanEvent.RemoveExercise(dayId, exId)) },
+                        onMoveUp = { dayId, exId -> onEvent(PlanEvent.MoveUp(dayId, exId)) },
+                        onMoveDown = { dayId, exId -> onEvent(PlanEvent.MoveDown(dayId, exId)) },
+                        onAddExercise = { dayId -> onEvent(PlanEvent.OpenExercisePicker(dayId)) },
                     )
                 }
             }
+        }
+
+        if (showRegenerateConfirm) {
+            AlertDialog(
+                onDismissRequest = { onEvent(PlanEvent.DismissRegenerationConfirm) },
+                title = { Text(text = stringResource(R.string.plan_regenerate_confirm_title)) },
+                text = { Text(text = stringResource(R.string.plan_regenerate_confirm_body)) },
+                confirmButton = {
+                    TextButton(onClick = { onEvent(PlanEvent.ConfirmRegeneration) }) {
+                        Text(text = stringResource(R.string.plan_regenerate_confirm_ok))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { onEvent(PlanEvent.DismissRegenerationConfirm) }) {
+                        Text(text = stringResource(R.string.plan_regenerate_confirm_cancel))
+                    }
+                },
+            )
         }
     }
 }
@@ -197,8 +286,13 @@ fun PlanScreen(
 @Composable
 private fun WorkoutDayCard(
     day: WorkoutDayUiModel,
+    canEdit: Boolean,
     onOpenDetails: (ExerciseId) -> Unit,
     onReplace: (String, ExerciseId) -> Unit,
+    onRemove: (String, ExerciseId) -> Unit,
+    onMoveUp: (String, ExerciseId) -> Unit,
+    onMoveDown: (String, ExerciseId) -> Unit,
+    onAddExercise: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(modifier = modifier.fillMaxWidth()) {
@@ -213,7 +307,7 @@ private fun WorkoutDayCard(
             }
             if (day.exercises.isEmpty()) {
                 Text(
-                    text = stringResource(R.string.plan_slot_no_match),
+                    text = stringResource(R.string.plan_empty_day),
                     style = MaterialTheme.typography.bodySmall,
                 )
             } else {
@@ -223,9 +317,30 @@ private fun WorkoutDayCard(
                     }
                     PlannedExerciseRow(
                         exercise = ex,
+                        canEdit = canEdit,
+                        isFirst = index == 0,
+                        isLast = index == day.exercises.lastIndex,
                         onOpenDetails = onOpenDetails,
                         onReplace = { onReplace(day.id, ex.exerciseId) },
+                        onRemove = { onRemove(day.id, ex.exerciseId) },
+                        onMoveUp = { onMoveUp(day.id, ex.exerciseId) },
+                        onMoveDown = { onMoveDown(day.id, ex.exerciseId) },
                     )
+                }
+            }
+
+            if (canEdit && day.remainingCapacity > 0) {
+                HorizontalDivider()
+                val addLabel = pluralStringResource(
+                    R.plurals.plan_add_row,
+                    day.remainingCapacity,
+                    day.remainingCapacity,
+                )
+                OutlinedButton(
+                    onClick = { onAddExercise(day.id) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(text = addLabel)
                 }
             }
         }
@@ -235,62 +350,97 @@ private fun WorkoutDayCard(
 @Composable
 private fun PlannedExerciseRow(
     exercise: PlannedExerciseUiModel,
+    canEdit: Boolean,
+    isFirst: Boolean,
+    isLast: Boolean,
     onOpenDetails: (ExerciseId) -> Unit,
     onReplace: () -> Unit,
+    onRemove: () -> Unit,
+    onMoveUp: () -> Unit,
+    onMoveDown: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
+    var showMenu by remember { mutableStateOf(false) }
+    val nameText = exercise.definition?.let { def ->
+        runCatching { stringResource(def.nameRes) }.getOrNull()
+    } ?: exercise.exerciseId.name
+
+    Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.Top,
     ) {
-        val nameText = exercise.definition?.let { def ->
-            runCatching { stringResource(def.nameRes) }.getOrNull()
-        } ?: exercise.exerciseId.name
-
-        // Line 1: Exercise name - full width, up to 2 lines, no competing button
         Text(
-            text = "${exercise.order + 1}. $nameText",
+            text = "${exercise.order + 1}.",
             style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.widthIn(min = 28.dp),
         )
 
-        // Line 2: Sets/reps + actions aligned in one row
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
+            Text(
+                text = nameText,
+                style = MaterialTheme.typography.titleSmall,
+            )
+
             Text(
                 text = "${exercise.sets} x ${exercise.repRange.first}..${exercise.repRange.last} • ${exercise.restSeconds}s rest",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.weight(1f),
             )
+        }
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically,
+        if (canEdit) {
+            IconButton(onClick = { showMenu = true }) {
+                Icon(
+                    imageVector = Icons.Filled.MoreVert,
+                    contentDescription = "More",
+                )
+            }
+            DropdownMenu(
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false },
             ) {
-                TextButton(
-                    onClick = { onOpenDetails(exercise.exerciseId) },
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
-                ) {
-                    Text(
-                        text = stringResource(R.string.action_open_exercise_details_short),
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                }
-                TextButton(
-                    onClick = onReplace,
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
-                ) {
-                    Text(
-                        text = stringResource(R.string.action_replace_exercise_short),
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                }
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.plan_action_details)) },
+                    onClick = {
+                        showMenu = false
+                        onOpenDetails(exercise.exerciseId)
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.action_replace_exercise_short)) },
+                    onClick = {
+                        showMenu = false
+                        onReplace()
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.plan_action_move_up)) },
+                    onClick = {
+                        showMenu = false
+                        onMoveUp()
+                    },
+                    enabled = !isFirst,
+                )
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.plan_action_move_down)) },
+                    onClick = {
+                        showMenu = false
+                        onMoveDown()
+                    },
+                    enabled = !isLast,
+                )
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.plan_action_remove)) },
+                    onClick = {
+                        showMenu = false
+                        onRemove()
+                    },
+                )
             }
         }
     }
@@ -304,6 +454,8 @@ private fun PlanScreenEmptyPreview() {
     AppTheme {
         PlanScreen(
             state = PlanUiState(isLoading = false, hasNoPlan = true),
+            showRegenerateConfirm = false,
+            snackbarHostState = SnackbarHostState(),
             onEvent = {},
         )
     }
@@ -339,11 +491,43 @@ private fun PlanScreenWithDataPreview() {
                             PlannedExerciseUiModel(ExerciseId.MACHINE_CHEST_PRESS, def, 3, 8..12, 90, 0),
                             PlannedExerciseUiModel(ExerciseId.LAT_PULLDOWN, def, 3, 8..12, 90, 1),
                         ),
+                        remainingCapacity = 1,
                     ),
                 ),
                 warnings = emptyList(),
                 hasNoPlan = false,
+                requiresRegeneration = false,
             ),
+            showRegenerateConfirm = false,
+            snackbarHostState = SnackbarHostState(),
+            onEvent = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PlanScreenOutdatedPreview() {
+    AppTheme {
+        PlanScreen(
+            state = PlanUiState(
+                isLoading = false,
+                planName = "UPPER_LOWER - 4 days",
+                days = listOf(
+                    WorkoutDayUiModel(
+                        id = "day-0",
+                        name = "Upper 1",
+                        focus = WorkoutDayFocus.UPPER_BODY,
+                        exercises = emptyList(),
+                        remainingCapacity = 0,
+                    ),
+                ),
+                warnings = emptyList(),
+                hasNoPlan = false,
+                requiresRegeneration = true,
+            ),
+            showRegenerateConfirm = false,
+            snackbarHostState = SnackbarHostState(),
             onEvent = {},
         )
     }

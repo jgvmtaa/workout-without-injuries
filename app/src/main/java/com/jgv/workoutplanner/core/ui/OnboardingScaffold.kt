@@ -13,6 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -38,6 +39,7 @@ fun OnboardingScaffold(
     onContinue: () -> Unit,
     modifier: Modifier = Modifier,
     onBack: (() -> Unit)? = null,
+    onCancel: (() -> Unit)? = null,
     continueEnabled: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -45,6 +47,13 @@ fun OnboardingScaffold(
         title = title,
         modifier = modifier,
         onBack = onBack,
+        actions = {
+            if (onCancel != null) {
+                TextButton(onClick = onCancel) {
+                    Text(text = stringResource(R.string.profile_action_cancel))
+                }
+            }
+        },
         bottomBar = {
             Surface(tonalElevation = Dimens.BottomBarElevation) {
                 Button(

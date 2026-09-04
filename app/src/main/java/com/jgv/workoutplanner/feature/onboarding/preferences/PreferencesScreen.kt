@@ -67,6 +67,7 @@ fun PreferencesScreen(
     state: PreferencesUiState,
     onEvent: (PreferencesEvent) -> Unit,
     modifier: Modifier = Modifier,
+    onCancel: (() -> Unit)? = null,
 ) {
     if (state.isLoading) {
         LoadingContent(modifier = modifier)
@@ -79,6 +80,7 @@ fun PreferencesScreen(
         onContinue = { onEvent(PreferencesEvent.Continue) },
         modifier = modifier,
         onBack = { onEvent(PreferencesEvent.Back) },
+        onCancel = onCancel,
         continueEnabled = state.canContinue,
     ) {
         StepIntroduction(text = stringResource(R.string.preferences_intro))

@@ -19,6 +19,7 @@ import kotlinx.serialization.Serializable
 data class StoredWorkoutPlan(
     val plan: PersistedWorkoutPlan? = null,
     val warnings: List<PersistedPlanWarning> = emptyList(),
+    val requiresRegeneration: Boolean = false,
 )
 
 @Serializable

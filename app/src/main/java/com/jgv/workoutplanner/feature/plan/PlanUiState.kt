@@ -21,6 +21,7 @@ data class PlanUiState(
     val days: List<WorkoutDayUiModel> = emptyList(),
     val warnings: List<PlanWarning> = emptyList(),
     val hasNoPlan: Boolean = false,
+    val requiresRegeneration: Boolean = false,
 )
 
 data class WorkoutDayUiModel(
@@ -28,6 +29,7 @@ data class WorkoutDayUiModel(
     val name: String,
     val focus: WorkoutDayFocus,
     val exercises: List<PlannedExerciseUiModel>,
+    val remainingCapacity: Int = 0,
 )
 
 data class PlannedExerciseUiModel(
@@ -38,3 +40,10 @@ data class PlannedExerciseUiModel(
     val restSeconds: Int,
     val order: Int,
 )
+
+/**
+ * One-shot effects for recoverable edit failures — typed, not raw String (Phase 6 §6.1).
+ */
+sealed interface PlanEffect {
+    data class EditFailed(val result: com.jgv.workoutplanner.domain.model.WorkoutExerciseEditResult) : PlanEffect
+}
