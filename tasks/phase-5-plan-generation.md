@@ -51,7 +51,7 @@
   - Deterministic IDs: `plan-${daysPerWeek}-${split}` and `${planId}-day-${index}-${focus.lowercase()}`.
   - Prescription = catalog defaults: sets = range.start, repRange = full range, restSeconds (no goal adjustment in MVP).
 - [x] Partial-plan handling: unfillable slot yields a warning, not a crash (README §12.4, §25)
-  - `PlanWarning(dayIndex, dayFocus, slotId, reason)` + `WorkoutPlanGenerationResult(plan, warnings, eligibleCount)`.
+  - `PlanWarning(dayIndex, dayFocus, slotId)` + `WorkoutPlanGenerationResult(plan, warnings, eligibleCount)`; Phase 7 moved warning copy to localized UI resources.
 
 ## 5.7 Persistence (README §21)
 - [x] `WorkoutPlanDataStore` + `DefaultWorkoutPlanRepository` persist the current plan
@@ -90,4 +90,3 @@
 - [x] Restrictive profiles do not crash generation. (extremely restrictive + missing categories → warnings)
 
 **Phase 5 is closed.** All templates, ranking with stable tie-break, partial handling with warnings, separate `workout_plan.json` DataStore, real Plan/Home screens, and full test coverage are in place. Phase 6 can build on it – replacing an exercise with an eligible alternative.
-

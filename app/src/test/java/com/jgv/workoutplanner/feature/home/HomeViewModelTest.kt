@@ -2,7 +2,9 @@ package com.jgv.workoutplanner.feature.home
 
 import app.cash.turbine.test
 import com.jgv.workoutplanner.domain.model.ExerciseId
+import com.jgv.workoutplanner.domain.model.ExperienceLevel
 import com.jgv.workoutplanner.domain.model.PlannedExercise
+import com.jgv.workoutplanner.domain.model.TrainingGoal
 import com.jgv.workoutplanner.domain.model.WorkoutDay
 import com.jgv.workoutplanner.domain.model.WorkoutDayFocus
 import com.jgv.workoutplanner.domain.model.WorkoutPlan
@@ -12,6 +14,7 @@ import com.jgv.workoutplanner.testing.MainDispatcherRule
 import com.jgv.workoutplanner.testing.userProfile
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -57,6 +60,26 @@ class HomeViewModelTest {
             var state = awaitItem()
             if (state.isLoading) state = awaitItem()
             assertFalse(state.requiresRegeneration)
+        }
+    }
+
+    @Test
+    fun `profile summary exposes typed values for localized rendering`() = runTest {
+        val profileRepo = FakeProfileRepository(
+            initialProfile = userProfile(
+                goal = TrainingGoal.BUILD_MUSCLE,
+                experienceLevel = ExperienceLevel.INTERMEDIATE,
+                daysPerWeek = 4,
+            ),
+        )
+        val vm = HomeViewModel(profileRepo, FakeWorkoutPlanRepository())
+
+        vm.uiState.test {
+            var state = awaitItem()
+            if (state.isLoading) state = awaitItem()
+            assertEquals(4, state.daysPerWeek)
+            assertEquals(TrainingGoal.BUILD_MUSCLE, state.goal)
+            assertEquals(ExperienceLevel.INTERMEDIATE, state.experienceLevel)
         }
     }
 }

@@ -31,7 +31,7 @@ class PersistedWorkoutPlanSerializerTest {
                     ),
                 ),
             ),
-            warnings = listOf(PersistedPlanWarning(0, "FULL_BODY", "core", "No match")),
+            warnings = listOf(PersistedPlanWarning(0, "FULL_BODY", "core")),
             requiresRegeneration = true,
         )
         val output = ByteArrayOutputStream()
@@ -56,5 +56,26 @@ class PersistedWorkoutPlanSerializerTest {
         )
 
         assertFalse(restored.requiresRegeneration)
+    }
+
+    @Test
+    fun `legacy warning reason is ignored`() = runTest {
+        val legacyJson = """
+            {
+              "plan": null,
+              "warnings": [{
+                "dayIndex": 0,
+                "dayFocus": "FULL_BODY",
+                "slotId": "core",
+                "reason": "Old hardcoded English copy"
+              }]
+            }
+        """.trimIndent()
+
+        val restored = PersistedWorkoutPlanSerializer.readFrom(
+            ByteArrayInputStream(legacyJson.encodeToByteArray()),
+        )
+
+        assertEquals(listOf(PersistedPlanWarning(0, "FULL_BODY", "core")), restored.warnings)
     }
 }

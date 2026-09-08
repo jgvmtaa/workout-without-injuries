@@ -1,14 +1,15 @@
 package com.jgv.workoutplanner.feature.plan
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -31,12 +32,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jgv.workoutplanner.R
 import com.jgv.workoutplanner.core.designsystem.AppTheme
+import com.jgv.workoutplanner.core.designsystem.Dimens
 import com.jgv.workoutplanner.core.ui.LoadingContent
 import com.jgv.workoutplanner.domain.model.ExerciseDefinition
 import com.jgv.workoutplanner.domain.model.ExerciseDifficulty
@@ -176,7 +179,12 @@ fun ExerciseReplacementScreen(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { onEvent(ExerciseReplacementEvent.SelectCandidate(def.id)) },
+                                .heightIn(min = Dimens.MinTouchTarget)
+                                .selectable(
+                                    selected = isSelected,
+                                    role = Role.RadioButton,
+                                    onClick = { onEvent(ExerciseReplacementEvent.SelectCandidate(def.id)) },
+                                ),
                             colors = if (isSelected) CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                             ) else CardDefaults.cardColors(),
@@ -189,13 +197,13 @@ fun ExerciseReplacementScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                             ) {
                                 Text(
-                                    text = runCatching { stringResource(def.nameRes) }.getOrNull() ?: def.id.name,
+                                    text = stringResource(def.nameRes),
                                     style = MaterialTheme.typography.titleSmall,
                                     modifier = Modifier.weight(1f),
                                 )
                                 RadioButton(
                                     selected = isSelected,
-                                    onClick = { onEvent(ExerciseReplacementEvent.SelectCandidate(def.id)) },
+                                    onClick = null,
                                 )
                             }
                         }

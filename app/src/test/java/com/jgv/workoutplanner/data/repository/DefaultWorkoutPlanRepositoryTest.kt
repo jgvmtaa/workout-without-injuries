@@ -64,7 +64,7 @@ class DefaultWorkoutPlanRepositoryTest {
 
     @Test
     fun `updatePlanAtomically preserves warnings and requiresRegeneration`() = runTest {
-        val warning = PlanWarning(0, WorkoutDayFocus.FULL_BODY, "slot", "reason")
+        val warning = PlanWarning(0, WorkoutDayFocus.FULL_BODY, "slot")
         val initial = StoredWorkoutPlan(
             plan = samplePlan().let { plan ->
                 com.jgv.workoutplanner.data.local.model.PersistedWorkoutPlan(
@@ -94,7 +94,6 @@ class DefaultWorkoutPlanRepositoryTest {
                     dayIndex = warning.dayIndex,
                     dayFocus = warning.dayFocus.name,
                     slotId = warning.slotId,
-                    reason = warning.reason,
                 ),
             ),
             requiresRegeneration = true,
@@ -116,7 +115,7 @@ class DefaultWorkoutPlanRepositoryTest {
         repo.currentWarnings.test {
             val w = awaitItem()
             assertEquals(1, w.size)
-            assertEquals("reason", w.first().reason)
+            assertEquals(warning, w.first())
         }
 
         // flag preserved (manual edit cannot clear)
@@ -186,7 +185,7 @@ class DefaultWorkoutPlanRepositoryTest {
                     )
                 },
                 warnings = listOf(
-                    com.jgv.workoutplanner.data.local.model.PersistedPlanWarning(0, "FULL_BODY", "s", "r"),
+                    com.jgv.workoutplanner.data.local.model.PersistedPlanWarning(0, "FULL_BODY", "s"),
                 ),
                 requiresRegeneration = true,
             ),

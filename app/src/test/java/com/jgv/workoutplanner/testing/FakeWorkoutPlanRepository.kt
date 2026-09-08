@@ -14,6 +14,7 @@ class FakeWorkoutPlanRepository(
     initialWarnings: List<PlanWarning> = emptyList(),
     initialRequiresRegeneration: Boolean = false,
     private val operationLog: MutableList<String>? = null,
+    private val failOnSaveGeneratedPlan: Boolean = false,
 ) : WorkoutPlanRepository {
 
     data class Stored(
@@ -61,6 +62,7 @@ class FakeWorkoutPlanRepository(
     }
 
     override suspend fun saveGeneratedPlan(plan: WorkoutPlan, warnings: List<PlanWarning>) = mutex.withLock {
+        if (failOnSaveGeneratedPlan) error("Simulated persistence failure")
         stored = Stored(plan = plan, warnings = warnings, requiresRegeneration = false)
         sync()
     }

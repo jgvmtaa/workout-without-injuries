@@ -27,7 +27,6 @@ data class PersistedPlanWarning(
     val dayIndex: Int,
     val dayFocus: String,
     val slotId: String,
-    val reason: String,
 )
 
 @Serializable

@@ -9,6 +9,7 @@ import com.jgv.workoutplanner.domain.model.InjuryStatus
 import com.jgv.workoutplanner.domain.model.LimitationGroup
 import com.jgv.workoutplanner.domain.model.TrainingGoal
 import com.jgv.workoutplanner.domain.model.WorkoutSplit
+import com.jgv.workoutplanner.domain.model.WorkoutDayFocus
 
 /**
  * Display labels for the domain enums the onboarding screens render (README §6).
@@ -63,6 +64,17 @@ val WorkoutSplit.labelRes: Int
         WorkoutSplit.FULL_BODY -> R.string.split_full_body
         WorkoutSplit.UPPER_LOWER -> R.string.split_upper_lower
         WorkoutSplit.PUSH_PULL_LEGS -> R.string.split_push_pull_legs
+    }
+
+@get:StringRes
+val WorkoutDayFocus.labelRes: Int
+    get() = when (this) {
+        WorkoutDayFocus.FULL_BODY -> R.string.focus_full_body
+        WorkoutDayFocus.UPPER_BODY -> R.string.focus_upper_body
+        WorkoutDayFocus.LOWER_BODY -> R.string.focus_lower_body
+        WorkoutDayFocus.PUSH -> R.string.focus_push
+        WorkoutDayFocus.PULL -> R.string.focus_pull
+        WorkoutDayFocus.LEGS -> R.string.focus_legs
     }
 
 @get:StringRes

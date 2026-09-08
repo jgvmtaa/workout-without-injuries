@@ -59,7 +59,7 @@ class PlanViewModelTest {
             availableEquipment = exerciseRepo.getAllExercises().flatMap { it.requiredEquipment }.toSet() + Equipment.BODYWEIGHT,
         )
         val profileRepo = FakeProfileRepository(initialProfile = profile)
-        val warning = PlanWarning(0, WorkoutDayFocus.PUSH, "old-slot", "old reason")
+        val warning = PlanWarning(0, WorkoutDayFocus.PUSH, "old-slot")
         val workoutRepo = FakeWorkoutPlanRepository(
             initialPlan = samplePlan(),
             initialWarnings = listOf(warning),
@@ -109,7 +109,7 @@ class PlanViewModelTest {
     @Test
     fun `outdated status disables editing and hides stale warnings`() = runTest {
         val profileRepo = FakeProfileRepository(initialProfile = userProfile())
-        val warning = PlanWarning(0, WorkoutDayFocus.FULL_BODY, "slot", "reason")
+        val warning = PlanWarning(0, WorkoutDayFocus.FULL_BODY, "slot")
         val workoutRepo = FakeWorkoutPlanRepository(
             initialPlan = samplePlan(),
             initialWarnings = listOf(warning),
@@ -159,11 +159,89 @@ class PlanViewModelTest {
         }
 
         // Try to remove non-existent day -> DayNotFound -> should emit EditFailed
-        viewModel.onEvent(PlanEvent.RemoveExercise("nonexistent", ExerciseId.PUSH_UP))
+        viewModel.onEvent(PlanEvent.RequestRemoveExercise("nonexistent", ExerciseId.PUSH_UP))
+        viewModel.onEvent(PlanEvent.ConfirmRemoveExercise)
 
         viewModel.effects.test {
             val effect = awaitItem()
             assertTrue(effect is PlanEffect.EditFailed)
+        }
+    }
+
+    @Test
+    fun `remove request does not mutate plan until confirmed`() = runTest {
+        val profileRepo = FakeProfileRepository(initialProfile = userProfile())
+        val workoutRepo = FakeWorkoutPlanRepository(initialPlan = samplePlan())
+        val viewModel = PlanViewModel(
+            profileRepository = profileRepo,
+            workoutPlanRepository = workoutRepo,
+            exerciseRepository = exerciseRepo,
+            generateWorkoutPlanUseCase = generate,
+            updateWorkoutExerciseUseCase = UpdateWorkoutExerciseUseCase(workoutRepo, profileRepo, eligible, exerciseRepo),
+        )
+        val exerciseId = ExerciseId.MACHINE_CHEST_PRESS
+        val dayId = samplePlan().days.single().id
+
+        viewModel.onEvent(PlanEvent.RequestRemoveExercise(dayId, exerciseId))
+
+        assertEquals(PendingExerciseRemoval(dayId, exerciseId), viewModel.pendingRemoval.value)
+        assertTrue(
+            workoutRepo.currentStored.plan!!.days.single().exercises.any { it.exerciseId == exerciseId },
+        )
+
+        viewModel.onEvent(PlanEvent.ConfirmRemoveExercise)
+
+        assertEquals(null, viewModel.pendingRemoval.value)
+        assertFalse(
+            workoutRepo.currentStored.plan!!.days.single().exercises.any { it.exerciseId == exerciseId },
+        )
+    }
+
+    @Test
+    fun `dismiss remove confirmation leaves plan unchanged`() = runTest {
+        val profileRepo = FakeProfileRepository(initialProfile = userProfile())
+        val workoutRepo = FakeWorkoutPlanRepository(initialPlan = samplePlan())
+        val viewModel = PlanViewModel(
+            profileRepository = profileRepo,
+            workoutPlanRepository = workoutRepo,
+            exerciseRepository = exerciseRepo,
+            generateWorkoutPlanUseCase = generate,
+            updateWorkoutExerciseUseCase = UpdateWorkoutExerciseUseCase(workoutRepo, profileRepo, eligible, exerciseRepo),
+        )
+        val exerciseId = ExerciseId.MACHINE_CHEST_PRESS
+        val dayId = samplePlan().days.single().id
+
+        viewModel.onEvent(PlanEvent.RequestRemoveExercise(dayId, exerciseId))
+        viewModel.onEvent(PlanEvent.DismissRemoveExerciseConfirm)
+
+        assertEquals(null, viewModel.pendingRemoval.value)
+        assertTrue(
+            workoutRepo.currentStored.plan!!.days.single().exercises.any { it.exerciseId == exerciseId },
+        )
+    }
+
+    @Test
+    fun `generation failure emits recoverable effect and leaves retry available`() = runTest {
+        val profileRepo = FakeProfileRepository(initialProfile = userProfile())
+        val workoutRepo = FakeWorkoutPlanRepository(failOnSaveGeneratedPlan = true)
+        val viewModel = PlanViewModel(
+            profileRepository = profileRepo,
+            workoutPlanRepository = workoutRepo,
+            exerciseRepository = exerciseRepo,
+            generateWorkoutPlanUseCase = generate,
+            updateWorkoutExerciseUseCase = UpdateWorkoutExerciseUseCase(workoutRepo, profileRepo, eligible, exerciseRepo),
+        )
+
+        viewModel.effects.test {
+            viewModel.onEvent(PlanEvent.GeneratePlan)
+            assertEquals(PlanEffect.GenerationFailed, awaitItem())
+        }
+
+        viewModel.uiState.test {
+            var state = awaitItem()
+            if (state.isLoading) state = awaitItem()
+            assertFalse(state.isGenerating)
+            assertTrue(state.hasNoPlan)
         }
     }
 }

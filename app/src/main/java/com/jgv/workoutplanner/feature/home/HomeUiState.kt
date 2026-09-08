@@ -1,5 +1,7 @@
 package com.jgv.workoutplanner.feature.home
 
+import com.jgv.workoutplanner.domain.model.ExperienceLevel
+import com.jgv.workoutplanner.domain.model.TrainingGoal
 import com.jgv.workoutplanner.domain.model.WorkoutSplit
 
 /**
@@ -11,8 +13,8 @@ import com.jgv.workoutplanner.domain.model.WorkoutSplit
 data class HomeUiState(
     val isLoading: Boolean = true,
     val daysPerWeek: Int? = null,
-    val goalDisplay: String? = null,
-    val experienceDisplay: String? = null,
+    val goal: TrainingGoal? = null,
+    val experienceLevel: ExperienceLevel? = null,
     val split: WorkoutSplit? = null,
     val limitationsCount: Int = 0,
     val hasPlan: Boolean = false,

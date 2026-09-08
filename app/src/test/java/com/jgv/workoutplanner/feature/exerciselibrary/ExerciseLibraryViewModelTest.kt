@@ -4,14 +4,19 @@ import app.cash.turbine.test
 import com.jgv.workoutplanner.data.catalog.ExerciseCatalog
 import com.jgv.workoutplanner.data.repository.DefaultExerciseRepository
 import com.jgv.workoutplanner.domain.model.Equipment
+import com.jgv.workoutplanner.domain.model.ExerciseAvailability
+import com.jgv.workoutplanner.domain.model.ExerciseEligibility
 import com.jgv.workoutplanner.domain.model.ExerciseId
+import com.jgv.workoutplanner.domain.model.ExclusionReason
 import com.jgv.workoutplanner.domain.model.ExperienceLevel
+import com.jgv.workoutplanner.domain.model.MovementLimitation
 import com.jgv.workoutplanner.domain.usecase.EvaluateExerciseEligibilityUseCase
 import com.jgv.workoutplanner.domain.usecase.GetEligibleExercisesUseCase
 import com.jgv.workoutplanner.testing.FakeProfileRepository
 import com.jgv.workoutplanner.testing.MainDispatcherRule
 import com.jgv.workoutplanner.testing.userProfile
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -99,5 +104,46 @@ class ExerciseLibraryViewModelTest {
                 filtered.filteredRows.isNotEmpty(),
             )
         }
+    }
+
+    @Test
+    fun `all filtered excluded is true only for limitation exclusions`() {
+        val exercise = ExerciseCatalog.exercises.first()
+        val excluded = ExerciseRowUiModel(
+            definition = exercise,
+            eligibility = ExerciseEligibility(
+                exercise = exercise,
+                isEligible = false,
+                exclusionReasons = setOf(
+                    ExclusionReason.ConflictingLimitation(MovementLimitation.AVOID_HIGH_IMPACT),
+                ),
+            ),
+            availability = ExerciseAvailability.EXCLUDED,
+        )
+        val unavailable = ExerciseRowUiModel(
+            definition = exercise,
+            eligibility = ExerciseEligibility(
+                exercise = exercise,
+                isEligible = false,
+                exclusionReasons = setOf(ExclusionReason.MissingEquipment(Equipment.DUMBBELLS)),
+            ),
+            availability = ExerciseAvailability.UNAVAILABLE,
+        )
+
+        assertTrue(
+            ExerciseLibraryUiState(isLoading = false, filteredRows = listOf(excluded))
+                .areAllFilteredExercisesExcluded,
+        )
+        assertFalse(
+            ExerciseLibraryUiState(isLoading = false, filteredRows = listOf(unavailable))
+                .areAllFilteredExercisesExcluded,
+        )
+        assertFalse(
+            ExerciseLibraryUiState(isLoading = false, filteredRows = listOf(excluded, unavailable))
+                .areAllFilteredExercisesExcluded,
+        )
+        assertFalse(
+            ExerciseLibraryUiState(isLoading = false).areAllFilteredExercisesExcluded,
+        )
     }
 }
