@@ -14,9 +14,8 @@ All of Phase 3's have since been cleared from an ordinary terminal and a device:
 `./gradlew test assembleDebug` and `./gradlew connectedDebugAndroidTest` both pass, and
 the flow has been walked by hand including a force-stop.
 
-Two Phase 2 spot-checks are still open. Both are a minute's work on a running app and
-neither blocks Phase 4 — but neither has been done, so they stay here rather than being
-assumed from a green build.
+One Phase 2 spot-check is still open. It needs Android Studio previews, not a device —
+so it stays here rather than being assumed from a green build.
 
 - [x] **Build it.** `./gradlew test assembleDebug` passes. Phases 2 and 3 have now been
   through AGP, KSP, Hilt code generation, aapt and lint — so the Hilt graph is valid,
@@ -33,11 +32,13 @@ assumed from a green build.
 - [ ] **Check the two changed previews render:** `ExerciseDetailsScreen` and
   `ExerciseReplacementScreen`. Both signatures changed from `String` to `ExerciseId`.
   _(Phase 2)_
-- [ ] **Walk the argument-carrying destinations:** Plan → exercise details, Plan →
-  replace exercise, Library → exercise details. Each should show
-  `Exercise: MACHINE_CHEST_PRESS`. Navigation 2.8.4 maps `SerialKind.ENUM` to
-  `NavType.EnumType` with no `typeMap` needed, but that was confirmed by reading the
-  library, not by running it. _(Phase 2)_
+- [x] **Walk the argument-carrying destinations:** Plan → exercise details, Plan →
+  replace exercise, Library → exercise details. Verified on the `workout-emulator`
+  AVD (Phase 7 session): Library → an excluded row opens details showing the
+  conflicting limitation + missing equipment; Plan → Push-up overflow → Replace →
+  Bodyweight squat lands in the plan; Plan → overflow → Details opens the
+  Bodyweight squat page showing "Available". Enum args arrive intact, no `typeMap`
+  needed. _(Phase 2 → done in Phase 7)_
 - [x] **~28 unused-resource lint warnings for `limitation_*`.** Resolved: the Phase 3
   limitations screen consumes all 27 via `MovementLimitationCatalog`, and a scan of
   `strings.xml` against the source finds no unreferenced string except `app_name`
@@ -45,10 +46,14 @@ assumed from a green build.
 
 ## Address before/ during Phase 7 (MVP polish)
 
-- [ ] **Real launcher icon.** The current icon (`app/src/main/res/mipmap*`,
-  `drawable/ic_launcher_*`) is a placeholder hand-drawn dumbbell vector with no
-  proper PNG densities. Replace with a designed app icon (adaptive + legacy
-  densities). _(Phase 0)_
+- [x] **Real launcher icon.** Resolved in Phase 7: replaced the placeholder with a
+  designed production set — adaptive icon (`mipmap-anydpi-v26`, background +
+  foreground + monochrome) plus self-contained legacy square/round vectors
+  (`mipmap/`), theme-matched background `@color/ic_launcher_background`
+  (`#2F6B4F`, = `PrimaryLight`) and a safe-zone-compliant rounded dumbbell
+  foreground. All 7 icon XML files parse. Vector adaptive + vector legacy is the
+  current production pattern (no PNG densities needed; they would only bloat the
+  APK). _(Phase 0 → done in Phase 7)_
 - [x] **App base theme.** Reviewed in Phase 7 and retained intentionally. The app is a
   single Compose activity, `AppTheme` owns every rendered surface, and
   `enableEdgeToEdge()` owns system-bar treatment. Pulling in the Views Material library

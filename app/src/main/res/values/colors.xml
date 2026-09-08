@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Launcher icon background. Matches PrimaryLight in core/designsystem/Color.kt
+        so the icon and the app's Material 3 theme read as one brand. -->
+    <color name="ic_launcher_background">#2F6B4F</color>
+</resources>
