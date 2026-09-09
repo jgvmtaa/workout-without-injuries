@@ -43,6 +43,16 @@ data class ExerciseLibraryUiState(
 ) {
     val isEmpty: Boolean get() = !isLoading && filteredRows.isEmpty()
 
+    /**
+     * True only when limitation conflicts exclude every row in the current category.
+     * Equipment- or experience-unavailable rows are intentionally not classified as
+     * limitation exclusions (README §25).
+     */
+    val areAllFilteredExercisesExcluded: Boolean
+        get() = !isLoading &&
+            filteredRows.isNotEmpty() &&
+            filteredRows.all { it.availability == ExerciseAvailability.EXCLUDED }
+
     // Instance getters delegate to shared constants to avoid per-emission allocation.
     // Previously these were per-instance vals: `MuscleGroup.entries` and
     // `Equipment.entries.filter {}` were re-allocated on every state emission.

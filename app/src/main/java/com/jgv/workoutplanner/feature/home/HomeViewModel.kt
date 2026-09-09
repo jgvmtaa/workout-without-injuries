@@ -39,8 +39,8 @@ class HomeViewModel @Inject constructor(
             HomeUiState(
                 isLoading = false,
                 daysPerWeek = profile.daysPerWeek,
-                goalDisplay = profile.goal.name,
-                experienceDisplay = profile.experienceLevel.name,
+                goal = profile.goal,
+                experienceLevel = profile.experienceLevel,
                 split = profile.preferredSplit,
                 limitationsCount = profile.movementLimitations.size,
                 hasPlan = plan != null,

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -62,7 +63,10 @@ fun OnboardingScaffold(
                     modifier = Modifier
                         .fillMaxWidth()
                         .navigationBarsPadding()
-                        .padding(Dimens.ScreenPadding),
+                        .padding(Dimens.ScreenPadding)
+                        // Material3 buttons default to 40.dp; the Phase 7 accessibility
+                        // bar is 48.dp (Dimens.MinTouchTarget, README §27 Phase 7).
+                        .heightIn(min = Dimens.MinTouchTarget),
                 ) {
                     Text(text = continueLabel)
                 }

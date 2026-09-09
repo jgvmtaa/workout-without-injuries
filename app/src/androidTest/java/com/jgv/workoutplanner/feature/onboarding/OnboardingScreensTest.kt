@@ -5,9 +5,17 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.test.platform.app.InstrumentationRegistry
 import com.jgv.workoutplanner.R
 import com.jgv.workoutplanner.core.designsystem.AppTheme
@@ -26,9 +34,20 @@ import com.jgv.workoutplanner.feature.onboarding.limitations.MovementLimitations
 import com.jgv.workoutplanner.feature.onboarding.safety.SafetyNoticeEvent
 import com.jgv.workoutplanner.feature.onboarding.safety.SafetyNoticeScreen
 import com.jgv.workoutplanner.feature.onboarding.safety.SafetyNoticeUiState
+import com.jgv.workoutplanner.feature.onboarding.preferences.PreferencesEvent
+import com.jgv.workoutplanner.feature.onboarding.preferences.PreferencesScreen
+import com.jgv.workoutplanner.feature.onboarding.preferences.PreferencesUiState
+import com.jgv.workoutplanner.feature.onboarding.review.ProfileReviewEvent
+import com.jgv.workoutplanner.feature.onboarding.review.ProfileReviewScreen
+import com.jgv.workoutplanner.feature.onboarding.review.ProfileReviewUiState
+import com.jgv.workoutplanner.feature.onboarding.welcome.WelcomeScreen
 import com.jgv.workoutplanner.domain.model.BodyRegion
+import com.jgv.workoutplanner.domain.model.Equipment
+import com.jgv.workoutplanner.domain.model.ExperienceLevel
 import com.jgv.workoutplanner.domain.model.InjuryId
 import com.jgv.workoutplanner.domain.model.InjuryStatus
+import com.jgv.workoutplanner.domain.model.TrainingGoal
+import com.jgv.workoutplanner.domain.model.WorkoutSplit
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -76,6 +95,8 @@ class OnboardingScreensTest {
         }
 
         composeRule.onNodeWithText(text(R.string.action_accept_safety)).assertIsNotEnabled()
+        composeRule.onNodeWithText(text(R.string.action_accept_safety)).assertHeightIsAtLeast(48.dp)
+        composeRule.onNodeWithText(text(R.string.safety_confirm_label)).assertHeightIsAtLeast(48.dp)
     }
 
     @Test
@@ -112,20 +133,43 @@ class OnboardingScreensTest {
     // ------------------------------------------------------------ Injury history
 
     @Test
-    fun injuryHistory_selectingAndDeselectingEmitsToggle() {
+    fun injuryHistory_selectsAndDeselectsInAStatefulFlow() {
         val events = mutableListOf<InjuryHistoryEvent>()
+        var selected by mutableStateOf(false)
         composeRule.setContent {
             AppTheme {
                 InjuryHistoryScreen(
-                    state = InjuryHistoryUiState(isLoading = false, injuryGroups = KNEE_GROUP),
-                    onEvent = { events += it },
+                    state = InjuryHistoryUiState(
+                        isLoading = false,
+                        injuryGroups = KNEE_GROUP,
+                        selectedInjuries = if (selected) {
+                            mapOf(InjuryId.KNEE_ACL to InjuryStatus.NOT_SPECIFIED)
+                        } else {
+                            emptyMap()
+                        },
+                    ),
+                    onEvent = { event ->
+                        events += event
+                        if (event == InjuryHistoryEvent.ToggleInjury(InjuryId.KNEE_ACL)) {
+                            selected = !selected
+                        }
+                    },
                 )
             }
         }
 
         composeRule.onNodeWithText(text(R.string.injury_knee_acl)).performClick()
+        composeRule.onNodeWithText(text(R.string.injury_knee_acl)).assertIsOn()
+        composeRule.onNodeWithText(text(R.string.injury_knee_acl)).performClick()
+        composeRule.onNodeWithText(text(R.string.injury_knee_acl)).assertIsOff()
 
-        assertEquals(listOf(InjuryHistoryEvent.ToggleInjury(InjuryId.KNEE_ACL)), events)
+        assertEquals(
+            listOf(
+                InjuryHistoryEvent.ToggleInjury(InjuryId.KNEE_ACL),
+                InjuryHistoryEvent.ToggleInjury(InjuryId.KNEE_ACL),
+            ),
+            events,
+        )
     }
 
     @Test
@@ -271,6 +315,83 @@ class OnboardingScreensTest {
         composeRule.onNodeWithText(text(R.string.action_continue)).performClick()
 
         assertTrue(MovementLimitationsEvent.Continue in events)
+    }
+
+    @Test
+    fun completeOnboarding_reachesHomeThroughEveryStep() {
+        var step by mutableIntStateOf(0)
+        var safetyAccepted by mutableStateOf(false)
+
+        composeRule.setContent {
+            AppTheme {
+                when (step) {
+                    0 -> WelcomeScreen(
+                        onGetStarted = { step = 1 },
+                        onReviewSafety = { step = 1 },
+                    )
+                    1 -> SafetyNoticeScreen(
+                        state = SafetyNoticeUiState(
+                            isLoading = false,
+                            isAcknowledged = safetyAccepted,
+                        ),
+                        onEvent = { event ->
+                            when (event) {
+                                is SafetyNoticeEvent.SetAcknowledged -> safetyAccepted = event.acknowledged
+                                SafetyNoticeEvent.Continue -> step = 2
+                                SafetyNoticeEvent.Back -> Unit
+                            }
+                        },
+                    )
+                    2 -> PreferencesScreen(
+                        state = PreferencesUiState(
+                            isLoading = false,
+                            goal = TrainingGoal.BUILD_MUSCLE,
+                            experienceLevel = ExperienceLevel.INTERMEDIATE,
+                            daysPerWeek = 3,
+                            sessionDurationMinutes = 45,
+                            selectedEquipment = setOf(Equipment.BODYWEIGHT),
+                            derivedSplit = WorkoutSplit.PUSH_PULL_LEGS,
+                        ),
+                        onEvent = { if (it == PreferencesEvent.Continue) step = 3 },
+                    )
+                    3 -> InjuryHistoryScreen(
+                        state = InjuryHistoryUiState(isLoading = false, injuryGroups = KNEE_GROUP),
+                        onEvent = { if (it == InjuryHistoryEvent.Continue) step = 4 },
+                    )
+                    4 -> MovementLimitationsScreen(
+                        state = MovementLimitationsUiState(
+                            isLoading = false,
+                            otherGroups = SHOULDER_GROUP,
+                        ),
+                        onEvent = { if (it == MovementLimitationsEvent.Continue) step = 5 },
+                    )
+                    5 -> ProfileReviewScreen(
+                        state = ProfileReviewUiState(
+                            isLoading = false,
+                            isComplete = true,
+                            goalRes = R.string.goal_build_muscle,
+                            experienceRes = R.string.experience_intermediate,
+                            daysPerWeek = 3,
+                            sessionDurationMinutes = 45,
+                            splitRes = R.string.split_push_pull_legs,
+                            equipment = listOf(R.string.equipment_bodyweight),
+                        ),
+                        onEvent = { if (it == ProfileReviewEvent.Confirm) step = 6 },
+                    )
+                    else -> Text(text = stringResource(R.string.screen_home))
+                }
+            }
+        }
+
+        composeRule.onNodeWithText(text(R.string.action_get_started)).performClick()
+        composeRule.onNodeWithText(text(R.string.safety_confirm_label)).performClick()
+        composeRule.onNodeWithText(text(R.string.action_accept_safety)).performClick()
+        repeat(3) {
+            composeRule.onNodeWithText(text(R.string.action_continue)).performClick()
+        }
+        composeRule.onNodeWithText(text(R.string.action_finish_setup)).performClick()
+
+        composeRule.onNodeWithText(text(R.string.screen_home)).assertIsDisplayed()
     }
 
     private companion object {

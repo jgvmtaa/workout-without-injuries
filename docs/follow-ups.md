@@ -14,9 +14,8 @@ All of Phase 3's have since been cleared from an ordinary terminal and a device:
 `./gradlew test assembleDebug` and `./gradlew connectedDebugAndroidTest` both pass, and
 the flow has been walked by hand including a force-stop.
 
-Two Phase 2 spot-checks are still open. Both are a minute's work on a running app and
-neither blocks Phase 4 — but neither has been done, so they stay here rather than being
-assumed from a green build.
+One Phase 2 spot-check is still open. It needs Android Studio previews, not a device —
+so it stays here rather than being assumed from a green build.
 
 - [x] **Build it.** `./gradlew test assembleDebug` passes. Phases 2 and 3 have now been
   through AGP, KSP, Hilt code generation, aapt and lint — so the Hilt graph is valid,
@@ -33,11 +32,13 @@ assumed from a green build.
 - [ ] **Check the two changed previews render:** `ExerciseDetailsScreen` and
   `ExerciseReplacementScreen`. Both signatures changed from `String` to `ExerciseId`.
   _(Phase 2)_
-- [ ] **Walk the argument-carrying destinations:** Plan → exercise details, Plan →
-  replace exercise, Library → exercise details. Each should show
-  `Exercise: MACHINE_CHEST_PRESS`. Navigation 2.8.4 maps `SerialKind.ENUM` to
-  `NavType.EnumType` with no `typeMap` needed, but that was confirmed by reading the
-  library, not by running it. _(Phase 2)_
+- [x] **Walk the argument-carrying destinations:** Plan → exercise details, Plan →
+  replace exercise, Library → exercise details. Verified on the `workout-emulator`
+  AVD (Phase 7 session): Library → an excluded row opens details showing the
+  conflicting limitation + missing equipment; Plan → Push-up overflow → Replace →
+  Bodyweight squat lands in the plan; Plan → overflow → Details opens the
+  Bodyweight squat page showing "Available". Enum args arrive intact, no `typeMap`
+  needed. _(Phase 2 → done in Phase 7)_
 - [x] **~28 unused-resource lint warnings for `limitation_*`.** Resolved: the Phase 3
   limitations screen consumes all 27 via `MovementLimitationCatalog`, and a scan of
   `strings.xml` against the source finds no unreferenced string except `app_name`
@@ -45,15 +46,20 @@ assumed from a green build.
 
 ## Address before/ during Phase 7 (MVP polish)
 
-- [ ] **Real launcher icon.** The current icon (`app/src/main/res/mipmap*`,
-  `drawable/ic_launcher_*`) is a placeholder hand-drawn dumbbell vector with no
-  proper PNG densities. Replace with a designed app icon (adaptive + legacy
-  densities). _(Phase 0)_
-- [ ] **App base theme.** `res/values/themes.xml` uses the framework
-  `android:Theme.Material.*` rather than a Material3 XML theme, deliberately to
-  avoid pulling in `com.google.android.material`. Revisit if we add a splash
-  screen (`androidx.core:core-splashscreen`) or need XML-level system-bar /
-  status-bar styling. _(Phase 0)_
+- [x] **Real launcher icon.** Resolved in Phase 7: replaced the placeholder with a
+  designed production set — adaptive icon (`mipmap-anydpi-v26`, background +
+  foreground + monochrome) plus self-contained legacy square/round vectors
+  (`mipmap/`), theme-matched background `@color/ic_launcher_background`
+  (`#2F6B4F`, = `PrimaryLight`) and a safe-zone-compliant rounded dumbbell
+  foreground. All 7 icon XML files parse. Vector adaptive + vector legacy is the
+  current production pattern (no PNG densities needed; they would only bloat the
+  APK). _(Phase 0 → done in Phase 7)_
+- [x] **App base theme.** Reviewed in Phase 7 and retained intentionally. The app is a
+  single Compose activity, `AppTheme` owns every rendered surface, and
+  `enableEdgeToEdge()` owns system-bar treatment. Pulling in the Views Material library
+  only to rename the otherwise invisible launch-window theme would add no user-facing
+  value. Revisit together with `androidx.core:core-splashscreen` if a branded launch
+  screen is added. _(Phase 0 → resolved in Phase 7)_
 - [ ] **The start-up loading state is a spinner.** `MainActivity` shows
   `LoadingContent` while the profile is read from disk. It is one or two frames in
   practice, so a spinner that flashes may read worse than nothing — consider
@@ -102,32 +108,25 @@ assumed from a green build.
 - **Prescription uses catalog defaults directly.** `sets = prescription.sets.first`, `repRange = full range`, `restSeconds` as-is. No goal-based adjustment in MVP (confirmed). Keeps generation deterministic and explainable. _(Phase 5)_
 - **Plan IDs deterministic:** `plan-${daysPerWeek}-${split.name}`, day `${planId}-day-${index}-${focus.lowercase()}` (confirmed). No UUID, no timestamp, same profile ⇒ same IDs ⇒ same plan (README §12.5 + task). _(Phase 5)_
 - **Separate `workout_plan.json` DataStore.** Not mixed into `profile.json`. `StoredWorkoutPlan(plan?)` wrapper with nullable plan, `PersistedWorkoutPlanSerializer` (ignoreUnknownKeys, encodeDefaults, prettyPrint) + corruption handler resetting to empty. `AppModule` provides second DataStore, `RepositoryModule` binds repo. Mapping round-trip tested. _(Phase 5)_
-- **Partial-plan handling via warnings, not crash.** `WorkoutPlanGenerationResult(plan, warnings, eligibleCount)` where `PlanWarning(dayIndex, dayFocus, slotId, reason)` for each unfillable slot. UI shows warning card with README §25 copy "No matching exercise was found...". Extremely restrictive profile (BEGINNER+BODYWEIGHT+all limitations) yields valid partial result with warnings, not exception – tested in `GenerateWorkoutPlanUseCaseTest`. _(Phase 5)_
+- **Partial-plan handling via warnings, not crash.** `WorkoutPlanGenerationResult(plan, warnings, eligibleCount)` where `PlanWarning(dayIndex, dayFocus, slotId)` identifies each unfillable slot. The UI resolves the README §25 copy from resources rather than persisting English text. Extremely restrictive profile (BEGINNER+BODYWEIGHT+all limitations) yields valid partial result with warnings, not exception – tested in `GenerateWorkoutPlanUseCaseTest`. _(Phase 5, localized in Phase 7)_
 - **Generation trigger: Home button + auto-generate on Plan entry.** `HomeScreen` shows Generate (no plan) vs View (has plan). `PlanRoute` `LaunchedEffect` calls `viewModel.autoGenerateIfNeeded()` when `hasNoPlan`. `PlanViewModel` combines profile + currentPlan + warningsFlow + generatingFlow into `PlanUiState`. Regenerate available via TopBar action. _(Phase 5)_
-- **Placeholder screens remaining:** Home, Plan now real. Still placeholder: Profile, ExerciseReplacement (Phase 6 will finish replacement), but ExerciseDetails and ExerciseLibrary are real since Phase 4. `PlaceholderScreen.kt` kept until last caller gone – currently 2 callers (Profile, ExerciseReplacement). _(Phase 5)_
+- **Placeholder screens after Phase 5:** Home and Plan were real; Profile and
+  ExerciseReplacement remained for Phase 6. Both became real in Phase 6, and Phase 7
+  removed the now-unused `PlaceholderScreen.kt`. _(Phase 5 → resolved in Phase 7)_
 - **Build verification:** `./gradlew :app:testDebugUnitTest` 203 tests, 0 failures (14 new `GenerateWorkoutPlanUseCaseTest` + 3 `PersistedWorkoutPlanMappingTest`). `./gradlew :app:assembleDebug` BUILD SUCCESSFUL. _(Phase 5)_
 
 ## Address before/during Phases 4–6 (feature work)
 
-- [ ] **Delete `core/ui/PlaceholderScreen.kt`.** Phase 3 removed six of its callers
-  (the onboarding screens). Six remain: Home, Plan, Exercise library, Exercise details,
-  Exercise replacement, and Profile. It and the `placeholder_*` strings should disappear
-  with the last of them. _(Phase 1)_
+- [x] **Delete `core/ui/PlaceholderScreen.kt`.** Removed after the final real feature
+  screens landed, along with the obsolete placeholder strings. _(Phase 1 → done in Phase 7)_
 - [x] **Decide the start destination.** Done in Phase 3: `MainViewModel` reads the
   stored profile once and `MainActivity` starts the graph at `Home` or `Welcome`
   accordingly. Deliberately decided once rather than observed — `NavHost` rebuilds its
   graph when `startDestination` changes, which would discard the back stack the moment
   onboarding saved a profile. _(Phase 1 → done in Phase 3)_
-- [ ] **Give profile editing its own exit path.** The Profile screen's edit actions reuse
-  the onboarding destinations (`Preferences`, `InjuryHistory`, `MovementLimitations`), so
-  "Continue" walks the user through the remainder of the onboarding flow instead of
-  returning to Profile. Phase 3 made this half-better and half-worse: the screens now
-  show the saved values rather than blank forms, because `saveProfile` re-seeds the
-  draft — but they are real editors now, so the wrong exit path is a visible bug rather
-  than a placeholder oddity. Editing needs to save and return to Profile and, per README
-  §13/§25, warn that the existing plan is now outdated. Decide whether that is a
-  nav-graph change (an edit sub-graph) or a mode flag on the shared screens.
-  _(Phase 1, sharpened in Phase 3)_
+- [x] **Give profile editing its own exit path.** Phase 6 added dedicated profile-edit
+  destinations and session state; save/cancel returns to Profile, and material changes
+  mark an existing plan outdated. _(Phase 1 → done in Phase 6)_
 
 ## Address during Phase 4 (filtering) — found and fixed
 

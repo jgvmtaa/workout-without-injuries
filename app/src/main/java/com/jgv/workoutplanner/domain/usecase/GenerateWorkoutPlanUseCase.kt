@@ -82,7 +82,6 @@ class GenerateWorkoutPlanUseCase @Inject constructor(
                             dayIndex = dayIndex,
                             dayFocus = focus,
                             slotId = slot.id,
-                            reason = "No matching exercise found for ${slot.description} using current equipment and movement limitations.",
                         ),
                     )
                     continue

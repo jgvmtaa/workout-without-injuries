@@ -4,26 +4,21 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Simple dumbbell mark centered within the adaptive-icon safe zone. -->
-    <group
-        android:scaleX="1.2"
-        android:scaleY="1.2"
-        android:pivotX="54"
-        android:pivotY="54">
-        <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M40,50h28v8h-28z" />
-        <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M33,42h7v24h-7z" />
-        <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M68,42h7v24h-7z" />
-        <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M27,47h6v14h-6z" />
-        <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M75,47h6v14h-6z" />
-    </group>
+    <!-- Production dumbbell mark, centered in the 66dp adaptive-icon safe zone
+        (x 26..82, y 43..65). Rounded 2dp corners; bar is a 32x6 pill. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M40,51h28a2,2 0 0 1 2,2v2a2,2 0 0 1 -2,2h-28a2,2 0 0 1 -2,-2v-2a2,2 0 0 1 2,-2z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,43h2a2,2 0 0 1 2,2v18a2,2 0 0 1 -2,2h-2a2,2 0 0 1 -2,-2v-18a2,2 0 0 1 2,-2z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M72,43h2a2,2 0 0 1 2,2v18a2,2 0 0 1 -2,2h-2a2,2 0 0 1 -2,-2v-18a2,2 0 0 1 2,-2z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M28,47h1a2,2 0 0 1 2,2v10a2,2 0 0 1 -2,2h-1a2,2 0 0 1 -2,-2v-10a2,2 0 0 1 2,-2z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M79,47h1a2,2 0 0 1 2,2v10a2,2 0 0 1 -2,2h-1a2,2 0 0 1 -2,-2v-10a2,2 0 0 1 2,-2z" />
 </vector>

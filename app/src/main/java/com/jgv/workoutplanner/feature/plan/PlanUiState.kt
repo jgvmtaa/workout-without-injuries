@@ -41,9 +41,16 @@ data class PlannedExerciseUiModel(
     val order: Int,
 )
 
+/** The exercise awaiting explicit destructive-action confirmation. */
+data class PendingExerciseRemoval(
+    val dayId: String,
+    val exerciseId: ExerciseId,
+)
+
 /**
  * One-shot effects for recoverable edit failures — typed, not raw String (Phase 6 §6.1).
  */
 sealed interface PlanEffect {
     data class EditFailed(val result: com.jgv.workoutplanner.domain.model.WorkoutExerciseEditResult) : PlanEffect
+    data object GenerationFailed : PlanEffect
 }

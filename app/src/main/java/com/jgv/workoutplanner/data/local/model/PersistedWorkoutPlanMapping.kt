@@ -74,7 +74,6 @@ fun PlanWarning.toPersisted(): PersistedPlanWarning = PersistedPlanWarning(
     dayIndex = dayIndex,
     dayFocus = dayFocus.name,
     slotId = slotId,
-    reason = reason,
 )
 
 private fun PersistedPlanWarning.toDomain(): PlanWarning? {
@@ -83,7 +82,6 @@ private fun PersistedPlanWarning.toDomain(): PlanWarning? {
         dayIndex = dayIndex,
         dayFocus = focus,
         slotId = slotId,
-        reason = reason,
     )
 }
 

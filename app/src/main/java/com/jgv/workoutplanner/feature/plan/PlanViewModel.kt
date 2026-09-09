@@ -6,6 +6,7 @@ import com.jgv.workoutplanner.domain.model.WorkoutDayFocus
 import com.jgv.workoutplanner.domain.model.WorkoutExerciseEdit
 import com.jgv.workoutplanner.domain.model.WorkoutExerciseEditResult
 import com.jgv.workoutplanner.domain.model.WorkoutPlanTemplate
+import com.jgv.workoutplanner.domain.model.UserProfile
 import com.jgv.workoutplanner.domain.repository.ExerciseRepository
 import com.jgv.workoutplanner.domain.repository.ProfileRepository
 import com.jgv.workoutplanner.domain.repository.WorkoutPlanRepository
@@ -13,6 +14,7 @@ import com.jgv.workoutplanner.domain.usecase.GenerateWorkoutPlanUseCase
 import com.jgv.workoutplanner.domain.usecase.UpdateWorkoutExerciseUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,6 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -45,6 +48,7 @@ class PlanViewModel @Inject constructor(
 
     private val generatingFlow = MutableStateFlow(false)
     private val showRegenerateConfirmFlow = MutableStateFlow(false)
+    private val pendingRemovalFlow = MutableStateFlow<PendingExerciseRemoval?>(null)
 
     private val _effects = Channel<PlanEffect>(Channel.BUFFERED)
     val effects = _effects.receiveAsFlow()
@@ -110,11 +114,8 @@ class PlanViewModel @Inject constructor(
         initialValue = PlanUiState(isLoading = true),
     )
 
-    val showRegenerateConfirm: StateFlow<Boolean> = showRegenerateConfirmFlow.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = false,
-    )
+    val showRegenerateConfirm: StateFlow<Boolean> = showRegenerateConfirmFlow.asStateFlow()
+    val pendingRemoval: StateFlow<PendingExerciseRemoval?> = pendingRemovalFlow.asStateFlow()
 
     fun onEvent(event: PlanEvent) {
         when (event) {
@@ -129,13 +130,16 @@ class PlanViewModel @Inject constructor(
             PlanEvent.DismissRegenerationConfirm -> {
                 showRegenerateConfirmFlow.value = false
             }
-            is PlanEvent.RemoveExercise -> {
-                viewModelScope.launch {
-                    val result = updateWorkoutExerciseUseCase(
-                        WorkoutExerciseEdit.Remove(event.dayId, event.exerciseId),
-                    )
-                    handleEditResult(result)
-                }
+            is PlanEvent.RequestRemoveExercise -> {
+                pendingRemovalFlow.value = PendingExerciseRemoval(event.dayId, event.exerciseId)
+            }
+            PlanEvent.ConfirmRemoveExercise -> {
+                val pending = pendingRemovalFlow.value ?: return
+                pendingRemovalFlow.value = null
+                removeExercise(pending)
+            }
+            PlanEvent.DismissRemoveExerciseConfirm -> {
+                pendingRemovalFlow.value = null
             }
             is PlanEvent.MoveUp -> {
                 viewModelScope.launch {
@@ -173,10 +177,7 @@ class PlanViewModel @Inject constructor(
             val profile = profileRepository.profile.first() ?: return@launch
             val plan = workoutPlanRepository.currentPlan.first()
             if (plan == null) {
-                generatingFlow.value = true
-                val result = generateWorkoutPlanUseCase(profile)
-                workoutPlanRepository.saveGeneratedPlan(result.plan, result.warnings)
-                generatingFlow.value = false
+                generateAndPersist(profile)
             }
         }
     }
@@ -184,10 +185,31 @@ class PlanViewModel @Inject constructor(
     private fun generatePlan() {
         viewModelScope.launch {
             val profile = profileRepository.profile.first() ?: return@launch
-            generatingFlow.value = true
+            generateAndPersist(profile)
+        }
+    }
+
+    private suspend fun generateAndPersist(profile: UserProfile) {
+        if (generatingFlow.value) return
+        generatingFlow.value = true
+        try {
             val result = generateWorkoutPlanUseCase(profile)
             workoutPlanRepository.saveGeneratedPlan(result.plan, result.warnings)
+        } catch (cancellation: CancellationException) {
+            throw cancellation
+        } catch (_: Exception) {
+            _effects.send(PlanEffect.GenerationFailed)
+        } finally {
             generatingFlow.value = false
+        }
+    }
+
+    private fun removeExercise(pending: PendingExerciseRemoval) {
+        viewModelScope.launch {
+            val result = updateWorkoutExerciseUseCase(
+                WorkoutExerciseEdit.Remove(pending.dayId, pending.exerciseId),
+            )
+            handleEditResult(result)
         }
     }
 

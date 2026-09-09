@@ -201,6 +201,23 @@ fun ExerciseLibraryScreen(
 
             Spacer(Modifier.height(12.dp))
 
+            if (state.areAllFilteredExercisesExcluded) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                    ),
+                ) {
+                    Text(
+                        text = stringResource(R.string.library_all_excluded),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.padding(Dimens.SpacingMedium),
+                    )
+                }
+                Spacer(Modifier.height(12.dp))
+            }
+
             if (state.isEmpty) {
                 EmptyContent(
                     title = stringResource(R.string.library_empty),

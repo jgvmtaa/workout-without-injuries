@@ -25,6 +25,9 @@ import com.jgv.workoutplanner.R
 import com.jgv.workoutplanner.core.designsystem.AppTheme
 import com.jgv.workoutplanner.core.ui.AppScaffold
 import com.jgv.workoutplanner.core.ui.LoadingContent
+import com.jgv.workoutplanner.core.ui.labelRes
+import com.jgv.workoutplanner.domain.model.ExperienceLevel
+import com.jgv.workoutplanner.domain.model.TrainingGoal
 import com.jgv.workoutplanner.domain.model.WorkoutSplit
 
 /**
@@ -119,12 +122,26 @@ fun HomeScreen(
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(text = stringResource(R.string.home_section_profile), style = MaterialTheme.typography.titleMedium)
-                val summary = buildString {
-                    state.daysPerWeek?.let { append("${it} days") }
-                    state.split?.let { append(" · ${it.name}") }
-                    state.goalDisplay?.let { append(" · $it") }
-                    state.experienceDisplay?.let { append(" · $it") }
-                }.ifEmpty { stringResource(R.string.review_value_missing) }
+                val days = state.daysPerWeek
+                val goal = state.goal
+                val experience = state.experienceLevel
+                val split = state.split
+                val summary = if (days != null && goal != null && experience != null && split != null) {
+                    val daysLabel = androidx.compose.ui.res.pluralStringResource(
+                        R.plurals.preferences_days_value,
+                        days,
+                        days,
+                    )
+                    stringResource(
+                        R.string.home_profile_summary,
+                        daysLabel,
+                        stringResource(goal.labelRes),
+                        stringResource(experience.labelRes),
+                        stringResource(split.labelRes),
+                    )
+                } else {
+                    stringResource(R.string.review_value_missing)
+                }
                 Text(text = summary, style = MaterialTheme.typography.bodyMedium)
             }
         }
@@ -160,8 +177,8 @@ private fun HomeScreenPreview() {
             state = HomeUiState(
                 isLoading = false,
                 daysPerWeek = 4,
-                goalDisplay = "BUILD_MUSCLE",
-                experienceDisplay = "INTERMEDIATE",
+                goal = TrainingGoal.BUILD_MUSCLE,
+                experienceLevel = ExperienceLevel.INTERMEDIATE,
                 split = WorkoutSplit.UPPER_LOWER,
                 limitationsCount = 2,
                 hasPlan = true,
@@ -195,8 +212,8 @@ private fun HomeScreenNoPlanPreview() {
             state = HomeUiState(
                 isLoading = false,
                 daysPerWeek = 3,
-                goalDisplay = "GENERAL_FITNESS",
-                experienceDisplay = "BEGINNER",
+                goal = TrainingGoal.GENERAL_FITNESS,
+                experienceLevel = ExperienceLevel.BEGINNER,
                 split = WorkoutSplit.PUSH_PULL_LEGS,
                 limitationsCount = 0,
                 hasPlan = false,

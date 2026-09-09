@@ -50,6 +50,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jgv.workoutplanner.R
 import com.jgv.workoutplanner.core.designsystem.AppTheme
 import com.jgv.workoutplanner.core.ui.LoadingContent
+import com.jgv.workoutplanner.core.ui.labelRes
 import com.jgv.workoutplanner.domain.model.ExerciseDefinition
 import com.jgv.workoutplanner.domain.model.ExerciseDifficulty
 import com.jgv.workoutplanner.domain.model.ExerciseId
@@ -78,15 +79,15 @@ fun PlanRoute(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val showConfirm by viewModel.showRegenerateConfirm.collectAsStateWithLifecycle()
+    val pendingRemoval by viewModel.pendingRemoval.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val outdatedMessage = stringResource(R.string.plan_outdated_banner)
     val capMsg = stringResource(R.string.plan_edit_failed_capacity)
     val dupMsg = stringResource(R.string.plan_edit_failed_duplicate)
     val ineligibleMsg = stringResource(R.string.plan_edit_failed_ineligible)
     val invalidMsg = stringResource(R.string.plan_edit_failed_invalid)
-    val genericMsg = stringResource(R.string.plan_edit_failed_generic)
     val outdatedEditMsg = stringResource(R.string.plan_edit_failed_plan_outdated)
+    val generationFailedMsg = stringResource(R.string.plan_generation_failed)
 
     LaunchedEffect(state.hasNoPlan, state.isLoading) {
         if (!state.isLoading && state.hasNoPlan) {
@@ -109,6 +110,7 @@ fun PlanRoute(
                     WorkoutExerciseEditResult.Unchanged -> ""
                     WorkoutExerciseEditResult.Updated -> ""
                 }
+                PlanEffect.GenerationFailed -> generationFailedMsg
             }
             if (msg.isNotBlank()) {
                 snackbarHostState.showSnackbar(msg)
@@ -119,6 +121,7 @@ fun PlanRoute(
     PlanScreen(
         state = state,
         showRegenerateConfirm = showConfirm,
+        pendingRemoval = pendingRemoval,
         snackbarHostState = snackbarHostState,
         onEvent = { event ->
             when (event) {
@@ -141,12 +144,20 @@ fun PlanRoute(
 fun PlanScreen(
     state: PlanUiState,
     showRegenerateConfirm: Boolean,
+    pendingRemoval: PendingExerciseRemoval?,
     snackbarHostState: SnackbarHostState,
     onEvent: (PlanEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (state.isLoading) {
-        LoadingContent(modifier = modifier)
+    if (state.isLoading || state.isGenerating) {
+        LoadingContent(
+            modifier = modifier,
+            message = if (state.isGenerating) {
+                stringResource(R.string.state_generating_plan)
+            } else {
+                stringResource(R.string.state_loading)
+            },
+        )
         return
     }
 
@@ -237,8 +248,15 @@ fun PlanScreen(
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 state.warnings.forEach { warning ->
+                                    val focusLabel = stringResource(warning.dayFocus.labelRes)
+                                    val noMatchMessage = stringResource(R.string.plan_slot_no_match)
                                     Text(
-                                        text = "Day ${warning.dayIndex + 1} (${warning.dayFocus.name}): ${warning.reason}",
+                                        text = stringResource(
+                                            R.string.plan_warning_item,
+                                            warning.dayIndex + 1,
+                                            focusLabel,
+                                            noMatchMessage,
+                                        ),
                                         style = MaterialTheme.typography.bodySmall,
                                         modifier = Modifier.padding(vertical = 2.dp),
                                     )
@@ -254,7 +272,7 @@ fun PlanScreen(
                         canEdit = !state.requiresRegeneration,
                         onOpenDetails = { id -> onEvent(PlanEvent.OpenExerciseDetails(id)) },
                         onReplace = { dayId, exId -> onEvent(PlanEvent.ReplaceExercise(dayId, exId)) },
-                        onRemove = { dayId, exId -> onEvent(PlanEvent.RemoveExercise(dayId, exId)) },
+                        onRemove = { dayId, exId -> onEvent(PlanEvent.RequestRemoveExercise(dayId, exId)) },
                         onMoveUp = { dayId, exId -> onEvent(PlanEvent.MoveUp(dayId, exId)) },
                         onMoveDown = { dayId, exId -> onEvent(PlanEvent.MoveDown(dayId, exId)) },
                         onAddExercise = { dayId -> onEvent(PlanEvent.OpenExercisePicker(dayId)) },
@@ -276,6 +294,24 @@ fun PlanScreen(
                 dismissButton = {
                     TextButton(onClick = { onEvent(PlanEvent.DismissRegenerationConfirm) }) {
                         Text(text = stringResource(R.string.plan_regenerate_confirm_cancel))
+                    }
+                },
+            )
+        }
+
+        if (pendingRemoval != null) {
+            AlertDialog(
+                onDismissRequest = { onEvent(PlanEvent.DismissRemoveExerciseConfirm) },
+                title = { Text(text = stringResource(R.string.plan_remove_confirm_title)) },
+                text = { Text(text = stringResource(R.string.plan_remove_confirm_body)) },
+                confirmButton = {
+                    TextButton(onClick = { onEvent(PlanEvent.ConfirmRemoveExercise) }) {
+                        Text(text = stringResource(R.string.plan_remove_confirm_ok))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { onEvent(PlanEvent.DismissRemoveExerciseConfirm) }) {
+                        Text(text = stringResource(R.string.plan_remove_confirm_cancel))
                     }
                 },
             )
@@ -303,7 +339,7 @@ private fun WorkoutDayCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(text = day.name, style = MaterialTheme.typography.titleMedium)
-                Text(text = day.focus.name, style = MaterialTheme.typography.labelMedium)
+                Text(text = stringResource(day.focus.labelRes), style = MaterialTheme.typography.labelMedium)
             }
             if (day.exercises.isEmpty()) {
                 Text(
@@ -361,9 +397,8 @@ private fun PlannedExerciseRow(
     modifier: Modifier = Modifier,
 ) {
     var showMenu by remember { mutableStateOf(false) }
-    val nameText = exercise.definition?.let { def ->
-        runCatching { stringResource(def.nameRes) }.getOrNull()
-    } ?: exercise.exerciseId.name
+    val nameText = exercise.definition?.let { def -> stringResource(def.nameRes) }
+        ?: exercise.exerciseId.name
 
     Row(
         modifier = modifier
@@ -387,7 +422,13 @@ private fun PlannedExerciseRow(
             )
 
             Text(
-                text = "${exercise.sets} x ${exercise.repRange.first}..${exercise.repRange.last} • ${exercise.restSeconds}s rest",
+                text = stringResource(
+                    R.string.plan_prescription,
+                    exercise.sets,
+                    exercise.repRange.first,
+                    exercise.repRange.last,
+                    exercise.restSeconds,
+                ),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -397,7 +438,7 @@ private fun PlannedExerciseRow(
             IconButton(onClick = { showMenu = true }) {
                 Icon(
                     imageVector = Icons.Filled.MoreVert,
-                    contentDescription = "More",
+                    contentDescription = stringResource(R.string.plan_more_actions, nameText),
                 )
             }
             DropdownMenu(
@@ -455,6 +496,7 @@ private fun PlanScreenEmptyPreview() {
         PlanScreen(
             state = PlanUiState(isLoading = false, hasNoPlan = true),
             showRegenerateConfirm = false,
+            pendingRemoval = null,
             snackbarHostState = SnackbarHostState(),
             onEvent = {},
         )
@@ -499,6 +541,7 @@ private fun PlanScreenWithDataPreview() {
                 requiresRegeneration = false,
             ),
             showRegenerateConfirm = false,
+            pendingRemoval = null,
             snackbarHostState = SnackbarHostState(),
             onEvent = {},
         )
@@ -527,6 +570,7 @@ private fun PlanScreenOutdatedPreview() {
                 requiresRegeneration = true,
             ),
             showRegenerateConfirm = false,
+            pendingRemoval = null,
             snackbarHostState = SnackbarHostState(),
             onEvent = {},
         )

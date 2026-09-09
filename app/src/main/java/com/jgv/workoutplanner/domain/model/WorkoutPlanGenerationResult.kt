@@ -22,11 +22,12 @@ data class WorkoutPlanGenerationResult(
  * @param dayIndex zero-based index inside the generated plan
  * @param dayFocus which day template this slot belongs to
  * @param slotId the [TemplateSlot.id] that could not be filled
- * @param reason human-readable explanation for UI (consumed by Plan screen)
+ * UI copy is deliberately not stored here: the Plan screen resolves the warning to a
+ * localized resource. Keeping this model structural also prevents stale English copy
+ * from being persisted across app updates.
  */
 data class PlanWarning(
     val dayIndex: Int,
     val dayFocus: WorkoutDayFocus,
     val slotId: String,
-    val reason: String,
 )
