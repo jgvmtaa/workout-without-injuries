@@ -515,7 +515,6 @@
     <string name="home_section_current_plan">Current plan</string>
     <string name="home_section_profile">Profile summary</string>
     <string name="home_section_limitations">Active limitations</string>
-    <string name="home_plan_ready">Your plan is ready</string>
     <string name="home_plan_empty">No plan generated yet. Generate one from your preferences.</string>
     <string name="home_limitations_count">%1$d selected</string>
     <string name="home_profile_summary">%1$s · %2$s · %3$s · %4$s</string>
@@ -557,6 +556,7 @@
 
     <!-- Exercise picker (Phase 6 §6.4) -->
     <string name="picker_title">Add exercises</string>
+    <string name="picker_title_for_day">Add to %1$s</string>
     <string name="picker_confirm">Add selected</string>
     <string name="picker_search_hint">Search exercises</string>
     <string name="picker_capacity_remaining">%1$d of %2$d slots available</string>

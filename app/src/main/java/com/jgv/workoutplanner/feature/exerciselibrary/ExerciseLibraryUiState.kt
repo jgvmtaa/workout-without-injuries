@@ -44,6 +44,17 @@ data class ExerciseLibraryUiState(
     val isEmpty: Boolean get() = !isLoading && filteredRows.isEmpty()
 
     /**
+     * Whether the query narrows anything. Blank, not empty: [buildFilteredState] treats a
+     * whitespace-only query as "match all", so every affordance that claims a search is
+     * active must agree with that or it will offer to clear a filter that is not there.
+     */
+    val hasSearchQuery: Boolean get() = searchQuery.isNotBlank()
+
+    /** Whether anything is narrowing the rows — gates the Clear filters action. */
+    val hasActiveFilters: Boolean
+        get() = hasSearchQuery || selectedMuscleGroup != null || selectedEquipment != null
+
+    /**
      * True only when limitation conflicts exclude every row in the current category.
      * Equipment- or experience-unavailable rows are intentionally not classified as
      * limitation exclusions (README §25).

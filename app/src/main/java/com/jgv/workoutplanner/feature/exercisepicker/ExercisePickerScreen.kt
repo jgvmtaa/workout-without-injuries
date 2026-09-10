@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -130,7 +132,15 @@ fun ExercisePickerScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(R.string.picker_title)) },
+                title = {
+                    // Which day the selection lands in is the one thing the picker
+                    // cannot infer from its own content.
+                    Text(
+                        text = state.dayName
+                            ?.let { stringResource(R.string.picker_title_for_day, it) }
+                            ?: stringResource(R.string.picker_title),
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { onEvent(ExercisePickerEvent.Back) }) {
                         Icon(
@@ -167,14 +177,25 @@ fun ExercisePickerScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Text(
-                text = stringResource(
-                    R.string.picker_capacity_remaining,
-                    state.selectedIdsOrdered.size,
-                    state.remainingCapacity,
-                ),
-                style = MaterialTheme.typography.bodySmall,
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(
+                        R.string.picker_capacity_remaining,
+                        state.selectedIdsOrdered.size,
+                        state.remainingCapacity,
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                if (state.hasActiveFilters) {
+                    TextButton(onClick = { onEvent(ExercisePickerEvent.ClearFilters) }) {
+                        Text(text = stringResource(R.string.library_clear_filters))
+                    }
+                }
+            }
 
             OutlinedTextField(
                 value = state.searchQuery,
@@ -182,6 +203,16 @@ fun ExercisePickerScreen(
                 label = { Text(text = stringResource(R.string.picker_search_hint)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
+                trailingIcon = {
+                    if (state.hasSearchQuery) {
+                        IconButton(onClick = { onEvent(ExercisePickerEvent.SearchQueryChanged("")) }) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = stringResource(R.string.action_clear_search),
+                            )
+                        }
+                    }
+                },
             )
 
             // Muscle-group filters — functional selection controls (Phase 6 §6.4)

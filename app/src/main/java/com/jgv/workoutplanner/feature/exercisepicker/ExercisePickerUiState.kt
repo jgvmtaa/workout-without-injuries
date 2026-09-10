@@ -16,7 +16,18 @@ data class ExercisePickerUiState(
     val searchQuery: String = "",
     val selectedMuscleGroup: MuscleGroup? = null,
     val selectedEquipment: Equipment? = null,
-)
+) {
+    /**
+     * Whether the query narrows anything. Blank, not empty: the ViewModel treats a
+     * whitespace-only query as "match all", so every affordance that claims a search is
+     * active must agree with that or it will offer to clear a filter that is not there.
+     */
+    val hasSearchQuery: Boolean get() = searchQuery.isNotBlank()
+
+    /** Whether anything is narrowing the candidate list — gates the Clear filters action. */
+    val hasActiveFilters: Boolean
+        get() = hasSearchQuery || selectedMuscleGroup != null || selectedEquipment != null
+}
 
 sealed interface ExercisePickerEvent {
     data class ToggleSelection(val exerciseId: ExerciseId) : ExercisePickerEvent

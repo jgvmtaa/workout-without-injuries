@@ -68,8 +68,9 @@ A returning user with a saved profile starts on Home rather than Welcome.
 - Replacement and addition candidates must satisfy current profile filters, avoid day
   duplicates, and fit the day focus and remaining capacity.
 - Replacement uses an explicit pending selection and confirmation.
-- The exercise picker supports search and filters, ordered multi-selection, and capacity
-  limits without discarding selections when filters change.
+- The exercise picker names the day it is adding to, and supports search and filters,
+  clearing them, ordered multi-selection, and capacity limits without discarding
+  selections when filters change.
 - Expected edit failures appear as recoverable messages and refresh from stored state.
 
 ## Profile editing and outdated plans

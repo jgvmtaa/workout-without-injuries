@@ -104,8 +104,9 @@ fun HomeScreen(
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(text = stringResource(R.string.home_section_current_plan), style = MaterialTheme.typography.titleMedium)
-                if (state.hasPlan) {
-                    Text(text = state.planName ?: stringResource(R.string.home_plan_ready), style = MaterialTheme.typography.bodyMedium)
+                val planName = state.planName
+                if (planName != null) {
+                    Text(text = planName, style = MaterialTheme.typography.bodyMedium)
                     Button(onClick = onOpenPlan, modifier = Modifier.fillMaxWidth()) {
                         Text(text = stringResource(R.string.action_view_plan))
                     }
@@ -181,7 +182,6 @@ private fun HomeScreenPreview() {
                 experienceLevel = ExperienceLevel.INTERMEDIATE,
                 split = WorkoutSplit.UPPER_LOWER,
                 limitationsCount = 2,
-                hasPlan = true,
                 planName = "UPPER_LOWER - 4 days",
             ),
             onOpenPlan = {},
@@ -216,7 +216,6 @@ private fun HomeScreenNoPlanPreview() {
                 experienceLevel = ExperienceLevel.BEGINNER,
                 split = WorkoutSplit.PUSH_PULL_LEGS,
                 limitationsCount = 0,
-                hasPlan = false,
                 planName = null,
             ),
             onOpenPlan = {},

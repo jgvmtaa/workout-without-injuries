@@ -118,7 +118,7 @@ fun ExerciseLibraryScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 trailingIcon = {
-                    if (state.searchQuery.isNotEmpty()) {
+                    if (state.hasSearchQuery) {
                         IconButton(onClick = { onEvent(ExerciseLibraryEvent.SearchQueryChanged("")) }) {
                             Icon(Icons.Default.Clear, contentDescription = stringResource(R.string.action_clear_search))
                         }
@@ -141,7 +141,7 @@ fun ExerciseLibraryScreen(
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                if (state.selectedMuscleGroup != null || state.selectedEquipment != null || state.searchQuery.isNotBlank()) {
+                if (state.hasActiveFilters) {
                     TextButton(onClick = { onEvent(ExerciseLibraryEvent.ClearFilters) }) {
                         Text(stringResource(R.string.library_clear_filters))
                     }

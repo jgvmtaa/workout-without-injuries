@@ -364,18 +364,14 @@ private fun AvailabilityCard(
                         text = stringResource(R.string.detail_unavailable_title),
                         style = MaterialTheme.typography.titleSmall,
                     )
-                    reasonTexts.forEach { (def, text) ->
-                        if (def != null) {
-                            Text(
-                                text = stringResource(R.string.detail_conflicting_limitation_reason, text),
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                        } else {
-                            Text(
-                                text = text,
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                        }
+                    // Every reason here is equipment or experience: availability()
+                    // promotes any limitation conflict to EXCLUDED, so the
+                    // conflicting-limitation wording cannot reach this card.
+                    reasonTexts.forEach { (_, text) ->
+                        Text(
+                            text = text,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
                     }
                 }
             }

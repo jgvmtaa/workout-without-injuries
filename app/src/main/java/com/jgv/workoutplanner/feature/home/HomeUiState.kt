@@ -17,7 +17,13 @@ data class HomeUiState(
     val experienceLevel: ExperienceLevel? = null,
     val split: WorkoutSplit? = null,
     val limitationsCount: Int = 0,
-    val hasPlan: Boolean = false,
     val planName: String? = null,
     val requiresRegeneration: Boolean = false,
-)
+) {
+    /**
+     * Derived rather than stored: a saved plan always has a name, so a separate flag
+     * could only ever disagree with [planName] — and the screen would then need a
+     * fallback string for a state that cannot happen.
+     */
+    val hasPlan: Boolean get() = planName != null
+}

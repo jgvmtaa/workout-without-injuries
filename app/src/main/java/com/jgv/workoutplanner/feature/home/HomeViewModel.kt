@@ -34,7 +34,7 @@ class HomeViewModel @Inject constructor(
         workoutPlanRepository.requiresRegeneration,
     ) { profile, plan, requiresRegeneration ->
         if (profile == null) {
-            HomeUiState(isLoading = false, hasPlan = false, requiresRegeneration = false)
+            HomeUiState(isLoading = false, requiresRegeneration = false)
         } else {
             HomeUiState(
                 isLoading = false,
@@ -43,7 +43,6 @@ class HomeViewModel @Inject constructor(
                 experienceLevel = profile.experienceLevel,
                 split = profile.preferredSplit,
                 limitationsCount = profile.movementLimitations.size,
-                hasPlan = plan != null,
                 planName = plan?.name,
                 requiresRegeneration = requiresRegeneration,
             )

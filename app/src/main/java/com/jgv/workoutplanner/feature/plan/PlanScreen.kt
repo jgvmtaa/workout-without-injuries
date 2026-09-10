@@ -203,9 +203,11 @@ fun PlanScreen(
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Spacer(modifier = Modifier.height(16.dp))
+                // No `enabled = !isGenerating` guard: generation replaces this whole
+                // body with the generating state above, so the button is never
+                // on screen while a generation is in flight.
                 Button(
                     onClick = { onEvent(PlanEvent.GeneratePlan) },
-                    enabled = !state.isGenerating,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(text = stringResource(R.string.action_generate_plan))
