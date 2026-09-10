@@ -43,6 +43,28 @@ android {
     buildFeatures {
         compose = true
     }
+
+    testOptions {
+        unitTests {
+            // Robolectric-backed unit tests — the screenshot suite in tests.spec —
+            // need merged resources and the manifest on the unit-test classpath.
+            isIncludeAndroidResources = true
+        }
+    }
+}
+
+kotlin {
+    // Pins the JDK that *compiles* Kotlin and Java, independently of whatever JVM
+    // Gradle itself was launched on, and fails loudly with "no matching toolchain"
+    // rather than silently compiling against a different JDK.
+    //
+    // What this does NOT do, despite looking like it should:
+    //  - It does not choose the JVM that runs Gradle and AGP. That is JAVA_HOME's,
+    //    and AGP 8.7.3 independently requires it to be 17 or newer.
+    //  - It does not pin a vendor or a patch level. Any JDK 17 satisfies it.
+    // `compileOptions` and `kotlinOptions` above are a third thing again: the
+    // bytecode target. All three have to agree, and none of them implies the others.
+    jvmToolchain(17)
 }
 
 dependencies {

@@ -1,101 +1,169 @@
-# Toolchain & Build Notes (Phase 0)
+# Android Toolchain and Build Guide
 
-This file records the exact toolchain the Android MVP is built against, per
-Phase 0 task 0.1 ("record versions in the repo").
+This file explains how the Android app selects its toolchain, how to build it, and how
+to diagnose environment failures. Build files are the source of truth for versions so
+this document does not duplicate values that can drift.
 
-## Pinned versions
+## Version sources
 
-| Component            | Version            | Where pinned                         |
-|----------------------|--------------------|--------------------------------------|
-| JDK                  | Temurin 17 (17.0.8)| `compileOptions` / `kotlinOptions` (JVM 17) |
-| Gradle               | 8.9                | `gradle/wrapper/gradle-wrapper.properties` |
-| Android Gradle Plugin| 8.7.3              | `gradle/libs.versions.toml` (`agp`)  |
-| Kotlin               | 2.0.21             | `gradle/libs.versions.toml` (`kotlin`) |
-| KSP                  | 2.0.21-1.0.28      | `gradle/libs.versions.toml` (`ksp`)  |
-| compileSdk / targetSdk | 35               | `app/build.gradle.kts`               |
-| minSdk               | 24                 | `app/build.gradle.kts`               |
-| Build Tools          | 35.0.0             | Android SDK                          |
+| Component | Source of truth |
+|---|---|
+| Compilation JDK | `kotlin.jvmToolchain` in [`app/build.gradle.kts`](../app/build.gradle.kts) |
+| Gradle / AGP JVM | `JAVA_HOME` locally; `java-version` in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) |
+| Java/Kotlin bytecode target | `compileOptions` and `kotlinOptions` in [`app/build.gradle.kts`](../app/build.gradle.kts) |
+| Gradle | [`gradle/wrapper/gradle-wrapper.properties`](../gradle/wrapper/gradle-wrapper.properties) |
+| Plugins and libraries | [`gradle/libs.versions.toml`](../gradle/libs.versions.toml) |
+| Android SDK levels | `compileSdk`, `targetSdk`, and `minSdk` in [`app/build.gradle.kts`](../app/build.gradle.kts) |
+| Android Build Tools | The default selected by the pinned Android Gradle Plugin |
 
-All library versions are pinned in the Gradle version catalog at
-[`gradle/libs.versions.toml`](../gradle/libs.versions.toml) (README §23).
+Those first three rows are three different things, and it is worth being precise
+because the difference is easy to get wrong:
 
-## Android SDK (dev machine used for scaffolding)
+- **Compilation JDK** — what `javac`/`kotlinc` run on. `jvmToolchain` selects the required
+  language version, and Gradle fails with "no matching toolchain" if none is available.
+  It does not constrain vendor or patch level unless the build explicitly says so.
+- **Gradle / AGP JVM** — what the Gradle daemon, and therefore AGP itself, runs on.
+  This comes from `JAVA_HOME` locally and the CI workflow in automation. It must satisfy
+  the Android Gradle Plugin's runtime requirement regardless of the compilation
+  toolchain. A repository-level pin would require `org.gradle.java.home` or Gradle
+  Daemon JVM criteria; the repository configures neither.
+- **Bytecode target** — what class-file version is emitted, set by `compileOptions` and
+  `kotlinOptions`. Independent of both JDKs above.
 
-- Location: `/opt/android_sdk` (see `local.properties`, git-ignored)
-- Platforms installed: `android-31`, `android-33`, `android-34`, `android-35`, `android-36`
-- Build tools: `35.0.0`
-- `cmdline-tools/latest` and `platform-tools` present
-- The project was scaffolded by hand before Android Studio was installed, and is a
-  standard AGP project that Android Studio (Koala / Ladybug or newer) opens directly.
-  Studio is present now, and Phases 1–3 lean on it: it builds here, and its bundled
-  kotlinc backs `tools/verify-no-gradle.sh`.
+CI's `java-version` is deliberately a floating major, so security patches land without
+a repository change. It therefore does not guarantee byte-identical output against a
+developer's fixed local patch level.
+
+Direct dependency versions are pinned in the Gradle version catalog at
+[`gradle/libs.versions.toml`](../gradle/libs.versions.toml). Transitive
+versions are *not* locked — they are whatever the pinned directs resolve to. Fixing
+that means Gradle **dependency locking** (`./gradlew dependencies --write-locks`),
+which is the only one of the two mechanisms that constrains *resolution*. A
+`verification-metadata.xml` is a different tool for a different problem: it checks the
+**integrity** of resolved artifacts via checksums and signatures, and does not stop a
+version from changing. The repository configures neither mechanism.
+
+### Compatibility constraints
+
+These are constraints, not preferences — changing one may require changing the others:
+
+- The Android Gradle Plugin determines the supported Gradle and runtime-JDK ranges.
+- KSP versions are Kotlin-specific; update Kotlin and KSP together.
+- The Compose compiler plugin is versioned in lockstep with Kotlin, so
+  `kotlin-compose` and `kotlin` share a version reference.
+
+## Android SDK
+
+- Install the platform selected by `compileSdk`; let the pinned Android Gradle Plugin
+  select its default compatible Build Tools version.
+- The SDK location comes from `local.properties` (git-ignored) or `ANDROID_HOME`.
+- The project is a standard Android Gradle Plugin project that a compatible Android
+  Studio release opens directly.
 
 ## Building
 
-Standard commands, from an interactive terminal or Android Studio:
-
 ```bash
-./gradlew assembleDebug     # build the debug APK
-./gradlew test              # run JVM unit tests
-./gradlew installDebug      # install on a connected device/emulator
+./gradlew assembleDebug              # build the debug APK
+./gradlew test                       # run JVM unit tests
+./gradlew lint                       # Android lint
+./gradlew connectedDebugAndroidTest  # instrumented tests on a device/emulator
+./gradlew installDebug               # install on a connected device/emulator
 ```
 
-The Gradle wrapper (`gradlew`, `gradlew.bat`, `gradle/wrapper/`) is checked in
-and pinned to Gradle 8.9, so a clean clone needs only a JDK 17 and the Android
-SDK.
+The Gradle wrapper (`gradlew`, `gradlew.bat`, `gradle/wrapper/`) is checked in and
+selects the repository's Gradle version. A clean clone needs a compatible JDK and the
+Android SDK platform selected by the build.
 
-## Build verification status
+The configuration cache is enabled in `gradle.properties`. If a plugin turns out not to
+support it, the failure names the plugin; set `org.gradle.configuration-cache=false` to
+unblock and record the incompatibility.
 
-**Phase 1 — verified building, installing, and launching** via Android Studio 2024.3
-on an Android 14 emulator: AGP produced `app-debug.apk`, it installed, and
-`MainActivity` rendered the placeholder surface with no crash.
+## Continuous integration
 
-**Phases 2 and 3 — verified.** `./gradlew test assembleDebug` and
-`./gradlew connectedDebugAndroidTest` both pass: 155 JVM unit tests, plus
-`OnboardingScreensTest` on a device, through AGP, KSP, Hilt code generation, aapt and
-lint.
+[`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs on every push and pull
+request to `main`: the configured JDK, then `test`, `lint`, and `assembleDebug`, with
+test and lint reports uploaded as artifacts. Treat this workflow as the canonical
+automated build environment.
 
-Both phases were written from a shell that cannot reach the Gradle daemon (see the
-caveat below), so during development they were checked with
-[`tools/verify-no-gradle.sh`](../tools/verify-no-gradle.sh) — every source set compiles,
-Compose included, and the unit tests run — and only built afterwards from an ordinary
-terminal. Worth knowing if a phase is ever developed that way again: the script proves
-compilation and logic and nothing else, so the real build stays the gate.
+CI excludes instrumented tests. Run `connectedDebugAndroidTest` on a compatible local
+device or emulator. Adding device coverage to CI requires a separate emulator job, such
+as one based on `reactivecircus/android-emulator-runner`.
 
-What is still unverified is the part no test covers — persistence across process death.
-See [follow-ups.md](follow-ups.md#pending-verification).
+## Validation guidance
 
-### Environment caveat (Gradle from an automation-spawned shell)
+Before submitting a change, run:
 
-**This does not apply to a normal interactive terminal.** `./gradlew test` works fine
-from Terminal/iTerm on the scaffolding Mac. What follows applies to shells spawned by
-tooling — coding agents, hooks, scripts launched outside the user's own session — whose
-process tree the endpoint policy has not granted network access.
+```bash
+./gradlew test lint assembleDebug
+./gradlew connectedDebugAndroidTest  # when a compatible device or emulator is available
+```
 
-In such a shell, the endpoint policy denies the JVM all outbound TCP `connect()` —
-**including loopback**. `curl` and Python reach the corporate proxy at
-`localhost:10054`, but a JVM started there — Temurin 17 *and* Android Studio's bundled
-JBR 21 — gets `SocketException: Operation not permitted` on every connect, even to
-`127.0.0.1`.
+The first command exercises unit tests, KSP, Hilt code generation, resource processing,
+dexing, lint, and APK packaging. Inspect
+`app/build/reports/lint-results-debug.html` rather than recording warning counts here,
+because dependency-update results change as releases become available.
 
-Gradle runs the build in a separate daemon JVM reached over a loopback socket, so the
-symptom is distinctive: `./gradlew --version` succeeds (no daemon needed), the daemon
-process starts and logs `Daemon server started`, and the client then fails with
-`Could not connect to the Gradle daemon`. `--no-daemon` does not help — it still forks.
+Run lint without `--offline`: dependency-version checks consult a remote index, so an
+offline run can omit update warnings. Treat dependency updates as coordinated toolchain
+work rather than suppressing those warnings.
 
-If you hit that, you are in the wrong kind of shell. Build from your own terminal,
-Android Studio, or CI; or use the script below for a fast compile-and-unit-test check
-that needs no sockets at all.
+The configuration cache is enabled. After changing build plugins, run the same Gradle
+command twice and confirm that the second invocation reports `Configuration cache entry
+reused`.
+
+Run instrumented tests on a device or emulator whose API level is compatible with the
+app. For an emulator, `emulator-check accel` reports whether hardware acceleration is
+available before boot.
+
+Persistence across process death requires manual or dedicated instrumentation coverage;
+see [follow-ups.md](follow-ups.md#pending-verification).
+
+## Screenshot test setup
+
+Implementing the screenshot suite in [`tests.spec`](../tests.spec) requires:
+
+- **Robolectric**, to run Compose layout on the JVM at a pinned SDK level.
+- **Roborazzi** (Gradle plugin plus the Compose artifact), for capture and comparison.
+
+Robolectric requires
+`android.testOptions.unitTests.isIncludeAndroidResources = true` in
+`app/build.gradle.kts`. Choose Robolectric and Roborazzi versions compatible with the
+Kotlin and Compose versions in the catalog, add the dependencies there, and update this
+section in the same change.
+
+## Environment caveat (Gradle from an automation-spawned shell)
+
+Use this section only for shells spawned by tooling — coding agents, hooks, or scripts
+launched outside the user's own session. In a normal interactive terminal, use the
+standard Gradle commands above.
+
+Automation shells can fail in two distinct ways, each requiring a different response:
+
+1. **Toolchain not on the default path.** The shell starts on a JDK too old for AGP and
+   with no `ANDROID_HOME`, so the build dies during configuration — first with a minimum
+   JVM-version error from AGP resolution, then, once a JDK is supplied, with "SDK
+   location not found". Both are environment, not project: point `JAVA_HOME` at a full
+   installed JDK containing both `java` and `javac`, and point `ANDROID_HOME` at the
+   installed SDK. Setting `sdk.dir` in
+   `local.properties` (git-ignored) is the durable alternative to exporting
+   `ANDROID_HOME` every session. If Gradle cannot discover the compilation JDK selected
+   by `jvmToolchain`, add its path to `org.gradle.java.installations.paths` in the
+   **user-level** Gradle properties, never the repository's machine-independent file.
+2. **Loopback blocked.** Some endpoint policies deny the JVM outbound TCP `connect()`,
+   including loopback, even when other processes can reach a local proxy. Gradle runs
+   the build in a separate daemon JVM reached over a loopback socket, so the symptom is
+   distinctive: `./gradlew --version` succeeds, the daemon logs `Daemon server started`,
+   and the client then fails with `Could not connect to the Gradle daemon`. `--no-daemon`
+   does not help because it still forks.
+
+In either case you are in the wrong kind of shell. Build from your own terminal,
+Android Studio, or CI.
 
 ### Workaround: compiling and running JVM tests without Gradle
 
-The block is on *socket connect*, not on running a JVM, so the Kotlin compiler can be
-invoked directly. Everything needed is already on the machine: Android Studio ships
-kotlinc 2.0.21 — the version this project pins — and a Gradle sync leaves every
-dependency, both compiler plugins, and `kotlin-compiler-embeddable` in the module cache.
-
-[`tools/verify-no-gradle.sh`](../tools/verify-no-gradle.sh) does this. Run it from the
-repo root:
+For case 2 only. The block there is on *socket connect*, not on running a JVM, so the
+Kotlin compiler can be invoked directly.
+[`tools/verify-no-gradle.sh`](../tools/verify-no-gradle.sh) does this:
 
 ```bash
 tools/verify-no-gradle.sh           # compile everything, then run the unit tests
@@ -104,9 +172,18 @@ tools/verify-no-gradle.sh --quiet   # same, without the toolchain banner
 
 It compiles `app/src/main`, `app/src/test` and `app/src/androidTest` in one pass with
 the Compose and serialization compiler plugins, then runs every JUnit class in
-`app/src/test`. Roughly 30 seconds from cold.
+`app/src/test`.
 
-Two details worth knowing if it ever needs fixing:
+**It has its own environment requirements**, and does not help in case 1:
+
+- A `kotlinc` matching the version selected by the build. The script defaults to the
+  macOS Android Studio install path; on any other platform `KOTLINC_HOME` is required,
+  not optional.
+- An Android SDK with an `android.jar` — `ANDROID_HOME`, `ANDROID_SDK_ROOT`, or
+  the fallback documented by the script.
+- A populated Gradle module cache, obtained by completing a project sync.
+
+Implementation details:
 
 - **`R` is generated from `strings.xml`** by a Python block in the script, standing in
   for aapt. That is not just scaffolding — a reference to a string that does not exist
@@ -121,10 +198,10 @@ Two details worth knowing if it ever needs fixing:
 
 **Limits.** No aapt, no KSP, no Hilt code generation, no lint, no packaging, and nothing
 on a device. A missing Hilt binding or a resource that only exists in a preview will get
-through. It is a fast correctness check, not a build — still build in Android Studio or
-CI before calling something verified.
+through. It is a fast correctness check, not a build; use the standard Gradle build in
+CI or Android Studio for validation.
 
-### Note on emulator installs
+## Note on emulator installs
 
 IDE "Run" builds mark the debug APK `testOnly`, so a manual install needs the
 `-t` flag: `adb install -t -r app/build/intermediates/apk/debug/app-debug.apk`.

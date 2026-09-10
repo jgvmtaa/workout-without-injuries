@@ -2,6 +2,9 @@
 .gradle/
 build/
 
+# Kotlin 2.x session/build scratch directory
+.kotlin/
+
 # Local configuration file (sdk path, etc)
 local.properties
 
