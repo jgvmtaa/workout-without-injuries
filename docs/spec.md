@@ -1,7 +1,7 @@
 # Workout Planner — Product And Implementation Specification
 
-> **What this file is.** The numbered specification (§1–§31) that every task in
-> [`tasks/`](../tasks/README.md) and most KDoc in the codebase cites as
+> **What this file is.** The numbered specification (§1–§31) that the
+> [app behavior reference](../README.md) and most KDoc in the codebase cite as
 > "README §N". It was the root `README.md` until commit `3c141c7` replaced that
 > file with a short product summary, after which the references dangled. Restored
 > here verbatim so they resolve again.
@@ -45,8 +45,9 @@ instead of declaring an exercise universally safe or unsafe for an injury.
 
 The MVP is local-first and deterministic. It does not require an account, cloud
 service, backend, subscription, social feature, or AI-generated workout advice.
-The repository currently contains the product and technical specification plus
-the sequential implementation plan in [`tasks/`](tasks/README.md).
+The repository contains the product and technical specification. Implemented
+behavior is summarized in the [app behavior reference](../README.md), with
+visual coverage tracked in [tests.spec](../tests.spec).
 
 ## Product And Implementation Specification
 
@@ -1492,4 +1493,3 @@ The UI collects confirmed limitations.
 The domain engine determines eligibility.
 The static catalog describes exercises.
 No Compose code contains exercise-safety rules.
-
