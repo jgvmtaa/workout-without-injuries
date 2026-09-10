@@ -12,15 +12,15 @@ import com.jgv.workoutplanner.domain.model.MovementPattern
 import com.jgv.workoutplanner.domain.model.MuscleGroup
 
 /**
- * The static exercise catalog (README §7, §26).
+ * The static exercise catalog (spec §7, §26).
  *
- * Kotlin rather than JSON on purpose (README §6): the compiler rejects an unknown
+ * Kotlin rather than JSON on purpose (spec §6): the compiler rejects an unknown
  * equipment or limitation value, refactors reach every entry, and there is no parsing
  * layer to fail at runtime. It moves to a data file only once non-developers need to
  * edit it.
  *
  * ## What the numbers have to satisfy
- * README §26 sets a per-muscle distribution and asks that every movement pattern have
+ * spec §26 sets a per-muscle distribution and asks that every movement pattern have
  * alternatives across equipment types — filtering is only useful if a user who loses an
  * exercise has somewhere else to go. `ExerciseCatalogTest` enforces both, so a future
  * addition cannot quietly break the balance.

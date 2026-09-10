@@ -7,7 +7,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** Structural guarantees for the injury catalog (README §4.5, Phase 2 task 2.7). */
+/** Structural guarantees for the injury catalog (spec §4.5, §7). */
 class InjuryCatalogTest {
 
     private val injuries = InjuryCatalog.injuries
@@ -45,7 +45,7 @@ class InjuryCatalogTest {
         assertEquals(emptyList<InjuryId>(), withoutSuggestions)
     }
 
-    /** The worked example from README §4.5, pinned so it cannot drift. */
+    /** The worked example from spec §4.5, pinned so it cannot drift. */
     @Test
     fun `ACL injury suggests avoiding jumping and rapid direction changes`() {
         val acl = injuries.single { it.id == InjuryId.KNEE_ACL }
@@ -61,7 +61,7 @@ class InjuryCatalogTest {
     }
 
     /**
-     * README §4.4 lists the regions with injury options. Neck and upper back are defined
+     * spec §4.4 lists the regions with injury options. Neck and upper back are defined
      * on [BodyRegion] but have no options yet — asserted explicitly so adding one is a
      * deliberate change to this list rather than an accident.
      */
@@ -84,7 +84,7 @@ class InjuryCatalogTest {
 
     /**
      * Every region the catalog covers offers an undiagnosed-pain option, so nobody has to
-     * pick a diagnosis they were never given in order to be heard (README §2).
+     * pick a diagnosis they were never given in order to be heard (spec §2).
      */
     @Test
     fun `every covered body region offers an undiagnosed pain option`() {

@@ -1,10 +1,10 @@
 package com.jgv.workoutplanner.domain.model
 
 /**
- * A movement the user has confirmed they need to avoid (README §4.5).
+ * A movement the user has confirmed they need to avoid (spec §4.5).
  *
  * This is the single input the exercise filter runs on. Injuries only *suggest*
- * limitations; nothing here is ever set without the user confirming it (README §2).
+ * limitations; nothing here is ever set without the user confirming it (spec §2).
  *
  * Limitations describe movements, not diagnoses, so the same limitation can come from
  * unrelated injuries — which is exactly why the filter keys on these instead of on

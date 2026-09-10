@@ -19,19 +19,19 @@ import com.jgv.workoutplanner.domain.model.WorkoutSplit
 import javax.inject.Inject
 
 /**
- * Deterministically generates a workout plan from an eligible exercise set (README §12).
+ * Deterministically generates a workout plan from an eligible exercise set (spec §12).
  *
- * Orchestrates: split → filter → group → rank → assemble (task 5.7).
+ * Orchestrates split → filter → group → rank → assemble (spec §12).
  *
  * Filtering is delegated to [GetEligibleExercisesUseCase] which already implements
- * 5.2 (README §12.2): removes conflicting limitations, missing equipment, above-level.
+ * 5.2 (spec §12.2): removes conflicting limitations, missing equipment, above-level.
  *
  * ## Determinism
  * - Available exercises sorted by [com.jgv.workoutplanner.domain.model.ExerciseId.name]
- * - Ranking tie-break on ExerciseId.name (README §12.5)
- * - No randomness, no timestamp, plan & day IDs derived from daysPerWeek+split (task spec)
+ * - Ranking tie-break on ExerciseId.name (spec §12.5)
+ * - No randomness or timestamp; plan and day IDs derive from daysPerWeek and split
  *
- * ## Partial handling (README §25)
+ * ## Partial handling (spec §25)
  * Unfillable template slot ⇒ warning, not crash.
  *
  * ## Prescription (clarified)

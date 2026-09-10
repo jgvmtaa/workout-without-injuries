@@ -115,8 +115,8 @@ Run instrumented tests on a device or emulator whose API level is compatible wit
 app. For an emulator, `emulator-check accel` reports whether hardware acceleration is
 available before boot.
 
-Persistence across process death requires manual or dedicated instrumentation coverage;
-see [follow-ups.md](follow-ups.md#pending-verification).
+Use dedicated instrumentation for persistence across process death; the required
+coverage is tracked in [follow-ups.md](follow-ups.md#testing).
 
 ## Screenshot test setup
 

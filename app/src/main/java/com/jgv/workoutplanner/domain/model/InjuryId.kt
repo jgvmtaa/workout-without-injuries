@@ -1,14 +1,14 @@
 package com.jgv.workoutplanner.domain.model
 
 /**
- * Stable identifier for every injury the user can select (README §4.4).
+ * Stable identifier for every injury the user can select (spec §4.4).
  *
  * The enum name is the identity; the user-facing label lives in `strings.xml` and is
- * reached through [InjuryDefinition.nameRes] (README §6). Never use the label as an id.
+ * reached through [InjuryDefinition.nameRes] (spec §6). Never use the label as an id.
  *
  * Every region ends with an `UNDIAGNOSED_PAIN` entry. That is deliberate: the app must
  * accept "something hurts and I don't know why" without asking the user to guess at a
- * diagnosis it is not qualified to confirm (README §2).
+ * diagnosis it is not qualified to confirm (spec §2).
  */
 enum class InjuryId {
     SHOULDER_GENERAL,

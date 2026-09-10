@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.Flow
 
 /**
  * Storage for the user's profile and the onboarding answers leading up to it
- * (README §19, §21).
+ * (spec §19, §21).
  *
- * ## What README §21 asks to persist, and where it lives here
+ * ## What spec §21 asks to persist, and where it lives here
  * | §21 item                | Stored as |
  * |-------------------------|-----------|
  * | User profile            | [profile] |
@@ -19,10 +19,10 @@ import kotlinx.coroutines.flow.Flow
  * Onboarding completion is deliberately *not* a separate flag. A stored boolean and a
  * stored profile can disagree; a derived one cannot, and the two things it could mean —
  * "the user finished the flow" and "there is a profile to plan from" — are the same
- * event here. Recorded in docs/follow-ups.md in case that stops being true.
+ * event here.
  *
  * [profile] emits `null` until onboarding has produced one, which is also how the app
- * decides whether to start at Welcome or Home (README §3).
+ * decides whether to start at Welcome or Home (spec §3).
  */
 interface ProfileRepository {
 
@@ -50,7 +50,7 @@ interface ProfileRepository {
      * Writes [profile], replacing anything stored, and re-seeds the draft from it.
      *
      * Re-seeding rather than clearing: the profile screen reuses the onboarding
-     * destinations to edit a saved profile (README §13), and those screens read the
+     * destinations to edit a saved profile (spec §13), and those screens read the
      * draft — clearing it would show a returning user an empty form.
      */
     suspend fun saveProfile(profile: UserProfile)
@@ -58,7 +58,7 @@ interface ProfileRepository {
     /**
      * Atomically re-seeds draft from the saved profile.
      * Used before starting an edit session and on cancel/back-from-first-destination
-     * so stale draft changes cannot leak (Phase 6 §6.5).
+     * so stale draft changes cannot leak (spec §13).
      */
     suspend fun resetDraftFromProfile()
 

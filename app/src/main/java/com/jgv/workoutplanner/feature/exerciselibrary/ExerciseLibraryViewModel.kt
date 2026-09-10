@@ -22,7 +22,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 /**
- * Loads eligibility for the current profile and applies library filters (README §14, §20).
+ * Loads eligibility for the current profile and applies library filters (spec §14, §20).
  *
  * Filtering is deterministic and runs in the ViewModel, not the composable, so the same
  * (profile, muscle, equipment, query) always produces the same ordered list.

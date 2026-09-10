@@ -13,7 +13,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * [ProfileRepository] backed by [ProfileDataStore] (README §19, §21, §27 Phase 3).
+ * [ProfileRepository] backed by [ProfileDataStore] (spec §19, §21).
  *
  * The repository is where storage stops and the domain starts: DataStore holds
  * `PersistedState`, every caller above here sees [UserProfile] and [OnboardingDraft].

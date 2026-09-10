@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * Summarises the draft and turns it into a saved `UserProfile` (README §3, §4, §20).
+ * Summarises the draft and turns it into a saved `UserProfile` (spec §3, §4, §20).
  *
  * ## Why finishing is not just navigation
  * Every other onboarding step writes as the user taps, so its Continue button is pure

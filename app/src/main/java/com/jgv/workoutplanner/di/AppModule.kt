@@ -22,7 +22,7 @@ import kotlinx.coroutines.SupervisorJob
 import javax.inject.Singleton
 
 /**
- * Application-scoped bindings that need constructing rather than binding (README §22).
+ * Application-scoped bindings that need constructing rather than binding (spec §22).
  *
  * Repositories are constructor-injectable and bound with `@Binds` in [RepositoryModule];
  * use cases are constructor-injected and need no entry anywhere. What lands here is the
@@ -47,7 +47,7 @@ object AppModule {
         CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     /**
-     * The typed profile store (README §21).
+     * The typed profile store (spec §21).
      *
      * [ReplaceFileCorruptionHandler] resets the file to the serializer's default if it
      * cannot be read. That loses the stored profile, which is bad — but the alternative
@@ -70,7 +70,7 @@ object AppModule {
     )
 
     /**
-     * The typed workout-plan store (README §21, task 5.7).
+     * The typed workout-plan store (spec §21).
      *
      * Separate file `workout_plan.json` from profile. Same corruption policy: losing a
      * generated plan is recoverable by re-generating, crashing on launch is not.

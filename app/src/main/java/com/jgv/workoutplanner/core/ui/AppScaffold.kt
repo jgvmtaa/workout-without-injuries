@@ -13,7 +13,7 @@ import com.jgv.workoutplanner.core.designsystem.AppTheme
 import com.jgv.workoutplanner.core.designsystem.Dimens
 
 /**
- * Screen container shared by every destination (README §19 core/ui): a title bar,
+ * Screen container shared by every destination (spec §19 core/ui): a title bar,
  * optional back affordance, and a content slot that receives the scaffold insets.
  */
 @Composable

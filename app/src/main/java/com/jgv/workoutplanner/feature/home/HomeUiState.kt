@@ -5,9 +5,9 @@ import com.jgv.workoutplanner.domain.model.TrainingGoal
 import com.jgv.workoutplanner.domain.model.WorkoutSplit
 
 /**
- * Immutable state for the home screen (README §20, §16, task 5.8).
+ * Immutable state for the home screen (spec §16, §20).
  *
- * Real implementation for Phase 5: shows current plan summary, profile summary,
+ * Shows the current plan summary, profile summary,
  * active limitations count, and exercise library entry point.
  */
 data class HomeUiState(

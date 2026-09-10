@@ -1,10 +1,10 @@
 package com.jgv.workoutplanner.domain.model
 
 /**
- * What the user is training for (README §4.3).
+ * What the user is training for (spec §4.3).
  *
- * The goal steers rep ranges and exercise emphasis during plan generation (Phase 5);
- * it never affects eligibility — that is limitation- and equipment-driven only.
+ * The current generator stores this choice in the profile but does not use it to alter
+ * exercise selection or prescriptions (spec §5.3, §12).
  */
 enum class TrainingGoal {
     GENERAL_FITNESS,

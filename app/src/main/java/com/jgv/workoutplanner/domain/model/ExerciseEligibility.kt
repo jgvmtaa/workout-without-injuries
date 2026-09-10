@@ -1,7 +1,7 @@
 package com.jgv.workoutplanner.domain.model
 
 /**
- * Result of checking one exercise against one profile (README §8).
+ * Result of checking one exercise against one profile (spec §8).
  *
  * @param exercise the catalog entry that was checked.
  * @param isEligible true when no [ExclusionReason] was found.

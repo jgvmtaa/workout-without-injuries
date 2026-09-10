@@ -7,11 +7,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Typed local store for the current workout plan (README §21, task 5.7).
+ * Typed local store for the current workout plan (spec §21).
  *
  * Thin wrapper over `DataStore<StoredWorkoutPlan>` – file name and type in one place,
  * domain mapping in [com.jgv.workoutplanner.data.repository.DefaultWorkoutPlanRepository].
- * Separate file `workout_plan.json` (not `profile.json`) per Phase 5 decision.
+ * Uses `workout_plan.json`, separate from profile state in `profile.json`.
  */
 @Singleton
 class WorkoutPlanDataStore @Inject constructor(

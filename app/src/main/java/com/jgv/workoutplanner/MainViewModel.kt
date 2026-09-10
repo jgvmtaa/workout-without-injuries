@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.take
 import javax.inject.Inject
 
 /**
- * Decides where the app opens (README §3, task 3.9).
+ * Decides where the app opens (spec §3).
  *
  * A returning user goes to Home; anyone without a saved profile starts at Welcome. The
  * profile is read from disk, so there is a moment before either is known — that is
@@ -43,7 +43,7 @@ class MainViewModel @Inject constructor(
             )
 }
 
-/** Where the app should open (README §3). */
+/** Where the app should open (spec §3). */
 enum class StartDestination {
     /** The stored profile has not been read yet. */
     Undecided,

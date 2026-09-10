@@ -5,13 +5,13 @@ import com.jgv.workoutplanner.domain.model.LimitationGroup
 import com.jgv.workoutplanner.domain.model.MovementLimitation
 
 /**
- * Immutable state for the movement limitations screen (README §4.5, §20).
+ * Immutable state for the movement limitations screen (spec §4.5, §20).
  *
  * ## The shape encodes the product rule
  * [suggested] and [confirmed] are separate fields and one is never derived from the
  * other. A suggestion is a question the app is asking; a confirmation is the user's
  * answer. There is no representation in this state for "suggested, therefore applied" —
- * which is the point (README §2).
+ * which is the point (spec §2).
  *
  * [otherGroups] holds everything *not* suggested, grouped for browsing. Suggested
  * limitations are excluded from it so no limitation appears as two separate checkboxes
@@ -31,12 +31,12 @@ data class MovementLimitationsUiState(
 
     /**
      * Always true. Confirming nothing is a valid answer, and an injury without a
-     * confirmed limitation must not block the flow (README §25).
+     * confirmed limitation must not block the flow (spec §25).
      */
     val canContinue: Boolean = true
 }
 
-/** One limitation group and the limitations under it (README §4.5). */
+/** One limitation group and the limitations under it (spec §4.5). */
 data class LimitationGroupUiModel(
     val group: LimitationGroup,
     @StringRes val groupNameRes: Int,
@@ -49,7 +49,7 @@ data class LimitationUiModel(
     @StringRes val nameRes: Int,
 )
 
-/** Everything the limitations screen can do (README §20). */
+/** Everything the limitations screen can do (spec §20). */
 sealed interface MovementLimitationsEvent {
 
     /**

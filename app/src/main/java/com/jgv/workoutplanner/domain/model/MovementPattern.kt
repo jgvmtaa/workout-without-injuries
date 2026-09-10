@@ -1,13 +1,13 @@
 package com.jgv.workoutplanner.domain.model
 
 /**
- * The movement an exercise is built around (README §5.2).
+ * The movement an exercise is built around (spec §5.2).
  *
  * This is what makes substitution possible: two exercises sharing a pattern train the
  * same job, so one can stand in for the other when the first is filtered out. Plan
- * templates are written in terms of patterns rather than named exercises (README §12.4),
+ * templates are written in terms of patterns rather than named exercises (spec §12.4),
  * and the catalog guarantees each pattern in use has alternatives across equipment
- * types (README §26).
+ * types (spec §26).
  *
  * The set is deliberately coarse. Knee-extension isolation (leg extension) is filed
  * under [SQUAT] as knee-dominant work rather than earning its own value — the

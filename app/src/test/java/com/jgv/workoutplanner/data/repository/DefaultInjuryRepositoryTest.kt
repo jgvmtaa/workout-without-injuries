@@ -7,7 +7,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Phase 2 completion criterion: injuries can be queried by body region (README §27).
+ * Injuries can be queried by body region (spec §4.4, §7).
  */
 class DefaultInjuryRepositoryTest {
 

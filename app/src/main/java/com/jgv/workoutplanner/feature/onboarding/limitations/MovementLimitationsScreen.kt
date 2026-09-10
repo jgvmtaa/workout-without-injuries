@@ -25,7 +25,7 @@ import com.jgv.workoutplanner.core.ui.StepIntroduction
 import com.jgv.workoutplanner.domain.model.LimitationGroup
 import com.jgv.workoutplanner.domain.model.MovementLimitation
 
-/** Stateful entry point for the limitations step (README §20). */
+/** Stateful entry point for the limitations step (spec §20). */
 @Composable
 fun MovementLimitationsRoute(
     onContinue: () -> Unit,
@@ -49,13 +49,13 @@ fun MovementLimitationsRoute(
 }
 
 /**
- * Suggested and manual movement limitations (README §4.5).
+ * Suggested and manual movement limitations (spec §4.5).
  *
  * The screen this whole flow exists for. Suggestions appear first, unticked, under copy
  * that says outright they have not been applied — because a suggestion the user did not
  * read is indistinguishable, from their side, from the app deciding for them. Everything
  * else is browsable below, so a limitation from a clinician that no selected injury
- * implies can still be added (README §4.5).
+ * implies can still be added (spec §4.5).
  */
 @Composable
 fun MovementLimitationsScreen(

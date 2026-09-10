@@ -12,7 +12,7 @@ import com.jgv.workoutplanner.feature.onboarding.preferences.PreferencesScreen
 import com.jgv.workoutplanner.feature.onboarding.preferences.PreferencesViewModel
 
 /**
- * Edit Preferences — first destination when origin = Profile (Phase 6 §6.5).
+ * Preferences destination for profile editing (spec §13).
  * Reuses PreferencesScreen composable with edit-specific navigation.
  * Treats Back from first destination as Cancel: reset draft before returning to Profile.
  */

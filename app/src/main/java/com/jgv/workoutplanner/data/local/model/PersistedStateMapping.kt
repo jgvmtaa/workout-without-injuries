@@ -13,7 +13,7 @@ import com.jgv.workoutplanner.domain.model.UserProfile
 import com.jgv.workoutplanner.domain.model.WorkoutSplit
 
 /**
- * Mapping between the persisted form and the domain model (README §21).
+ * Mapping between the persisted form and the domain model (spec §21).
  *
  * ## Reading is tolerant, writing is exact
  * Every enum is stored by constant name. On the way in, a name this build does not
@@ -39,7 +39,7 @@ fun PersistedDraft.toDomain(): OnboardingDraft = OnboardingDraft(
     daysPerWeek = daysPerWeek,
     sessionDurationMinutes = sessionDurationMinutes,
     // Bodyweight is not a choice — it is always available and cannot be deselected
-    // (README §25). Added on read regardless of what the file says, so a profile written
+    // (spec §25). Added on read regardless of what the file says, so a profile written
     // before that rule existed still satisfies it.
     availableEquipment = availableEquipment.toEnumSet<Equipment>() + Equipment.BODYWEIGHT,
     selectedInjuries = selectedInjuries.mapNotNullTo(mutableSetOf()) { it.toDomain() },

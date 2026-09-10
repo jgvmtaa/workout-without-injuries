@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 /**
- * ViewModel that combines profile + current plan for Home screen (README §16, task 5.8).
+ * ViewModel that combines profile and current plan for Home (spec §16).
  *
  * Home shows:
  * - Current plan (View plan) if exists, otherwise ability to generate on Plan screen.

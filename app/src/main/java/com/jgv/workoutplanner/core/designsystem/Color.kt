@@ -2,7 +2,7 @@ package com.jgv.workoutplanner.core.designsystem
 
 import androidx.compose.ui.graphics.Color
 
-// App palette (README §19 core/designsystem). Light is the MVP baseline; the dark
+// App palette (spec §19 core/designsystem). Light is the MVP baseline; the dark
 // values exist so the app degrades gracefully when the system is in dark mode.
 //
 // Deliberately app-owned rather than Material You dynamic color: exercise

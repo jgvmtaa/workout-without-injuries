@@ -17,7 +17,7 @@ fun StoredWorkoutPlan.toDomainWarnings(): List<PlanWarning> =
 fun PersistedWorkoutPlan.toDomain(): WorkoutPlan? {
     val mappedDays = days.mapNotNull { it.toDomain() }
     // If every day failed to parse (e.g., all exercises unknown) we still return a plan
-    // with whatever survived – an empty day list is still a valid partial result (README §25).
+    // with whatever survived – an empty day list is still a valid partial result (spec §25).
     return WorkoutPlan(
         id = id,
         name = name,

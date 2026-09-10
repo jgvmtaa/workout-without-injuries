@@ -24,7 +24,7 @@ import com.jgv.workoutplanner.core.designsystem.AppTheme
 import com.jgv.workoutplanner.core.designsystem.Dimens
 
 /**
- * Selection controls shared by the onboarding screens (README §4.3–§4.5).
+ * Selection controls shared by the onboarding screens (spec §4.3–§4.5).
  *
  * Each one puts the click handler on the whole row or chip rather than on the checkbox
  * or radio button, so the touch target is the size of the thing that looks tappable, and

@@ -17,7 +17,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
-/** Selection, continue-state and persistence for the preferences step (README §24.5). */
+/** Selection, continue-state and persistence for the preferences step (spec §24.5). */
 class PreferencesViewModelTest {
 
     @get:Rule
@@ -58,7 +58,7 @@ class PreferencesViewModelTest {
         }
     }
 
-    /** Equipment is optional: selecting none means bodyweight only (README §25). */
+    /** Equipment is optional: selecting none means bodyweight only (spec §25). */
     @Test
     fun `no equipment selected does not block continuing`() = runTest {
         viewModel.onEvent(PreferencesEvent.SelectGoal(TrainingGoal.GENERAL_FITNESS))
@@ -97,7 +97,7 @@ class PreferencesViewModelTest {
     }
 
     /**
-     * README §25 offers "treat bodyweight as always available" or "require at least one
+     * spec §25 offers "treat bodyweight as always available" or "require at least one
      * selection"; `Equipment`'s KDoc picks the first. Enforced in the ViewModel rather
      * than by hiding the control, because the draft is what plan generation reads.
      */
@@ -127,7 +127,7 @@ class PreferencesViewModelTest {
         }
     }
 
-    /** The Phase 3 decision recorded in docs/follow-ups.md: no cardio in the MVP. */
+    /** Cardio equipment is not actionable while the catalog contains only strength work. */
     @Test
     fun `cardio machine is not offered while the catalog is strength-only`() = runTest {
         viewModel.uiState.test {

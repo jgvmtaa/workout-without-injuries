@@ -3,7 +3,7 @@ package com.jgv.workoutplanner.data.local.model
 import kotlinx.serialization.Serializable
 
 /**
- * The on-disk shape of everything onboarding persists (README §21).
+ * The on-disk shape of everything onboarding persists (spec §21).
  *
  * ## Why this is not just `UserProfile`
  * A storage format and a domain model change for different reasons. Renaming an enum
@@ -52,7 +52,7 @@ data class PersistedDraft(
 )
 
 /**
- * A completed profile (README §10).
+ * A completed profile (spec §10).
  *
  * Unlike [PersistedDraft], the enum fields here are non-null: a profile that cannot be
  * fully reconstructed is not a profile. The mapping returns `null` for the whole thing
@@ -72,7 +72,7 @@ data class PersistedProfile(
     val hasAcceptedSafetyNotice: Boolean = false,
 )
 
-/** One selected injury (README §4.4). */
+/** One selected injury (spec §4.4). */
 @Serializable
 data class PersistedInjury(
     val injuryId: String,

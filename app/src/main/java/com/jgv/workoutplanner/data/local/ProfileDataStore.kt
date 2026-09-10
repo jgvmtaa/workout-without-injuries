@@ -7,7 +7,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * The app's typed local store for onboarding and profile state (README §19, §21).
+ * The app's typed local store for onboarding and profile state (spec §19, §21).
  *
  * A thin wrapper over `DataStore<PersistedState>` rather than a layer with opinions:
  * it exists so that the file name and the storage type are declared in one place, and

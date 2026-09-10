@@ -3,7 +3,7 @@ package com.jgv.workoutplanner.feature.plan
 import com.jgv.workoutplanner.domain.model.ExerciseId
 
 /**
- * User actions on the plan screen (README §20).
+ * User actions on the plan screen (spec §20).
  *
  * Immutable events consumed by [PlanViewModel.onEvent].
  */

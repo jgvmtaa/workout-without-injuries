@@ -8,7 +8,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Phase 2 completion criterion: exercises can be queried by muscle group (README §27).
+ * Exercises can be queried by muscle group (spec §5.1, §7).
  */
 class DefaultExerciseRepositoryTest {
 

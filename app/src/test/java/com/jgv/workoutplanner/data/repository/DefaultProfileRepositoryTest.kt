@@ -17,7 +17,7 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 /**
- * The repository's own behaviour, over an in-memory store (README §21, §27 Phase 3).
+ * The repository's own behaviour over an in-memory store (spec §21).
  *
  * What is worth testing here is not "does DataStore work" but the decisions this class
  * makes: what a save does to the draft, what clearing removes, and that a write to one
@@ -86,7 +86,7 @@ class DefaultProfileRepositoryTest {
     /**
      * The profile screen reuses the onboarding screens to edit a saved profile, and those
      * screens read the draft. Clearing it on save would show a returning user empty
-     * forms (README §13).
+     * forms (spec §13).
      */
     @Test
     fun `saving a profile re-seeds the draft from it`() = runTest {

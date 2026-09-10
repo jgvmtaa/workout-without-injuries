@@ -25,7 +25,7 @@ import com.jgv.workoutplanner.core.designsystem.Dimens
 
 /**
  * The shape every onboarding step shares: a title bar, scrolling content, and one
- * primary action pinned to the bottom (README §4.1–§4.5).
+ * primary action pinned to the bottom (spec §4.1–§4.5).
  *
  * Pinned rather than inline because the content of these screens varies from a
  * paragraph to twenty-seven checkboxes, and a Continue button that is sometimes
@@ -64,8 +64,8 @@ fun OnboardingScaffold(
                         .fillMaxWidth()
                         .navigationBarsPadding()
                         .padding(Dimens.ScreenPadding)
-                        // Material3 buttons default to 40.dp; the Phase 7 accessibility
-                        // bar is 48.dp (Dimens.MinTouchTarget, README §27 Phase 7).
+                        // Material3 buttons default to 40.dp; this app's accessibility
+                        // target is 48.dp (Dimens.MinTouchTarget, spec §27).
                         .heightIn(min = Dimens.MinTouchTarget),
                 ) {
                     Text(text = continueLabel)

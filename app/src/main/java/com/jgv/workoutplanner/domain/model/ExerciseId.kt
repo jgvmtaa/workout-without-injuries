@@ -3,7 +3,7 @@ package com.jgv.workoutplanner.domain.model
 import androidx.annotation.Keep
 
 /**
- * Stable identifier for every exercise in the catalog (README §5.3, §6).
+ * Stable identifier for every exercise in the catalog (spec §5.3, §6).
  *
  * The enum name is the identity and is what gets persisted, passed between screens,
  * and referenced by a [WorkoutPlan]. Display names live in `strings.xml` and are
@@ -12,7 +12,7 @@ import androidx.annotation.Keep
  * Grouped by primary muscle to match the catalog's own ordering, which keeps the two
  * files readable side by side. Order carries no meaning: ranking ties break on
  * [name], so plan generation stays deterministic regardless of how this list grows
- * (README §12.5).
+ * (spec §12.5).
  */
 @Keep
 enum class ExerciseId {

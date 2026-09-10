@@ -15,7 +15,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Eligibility engine tests (README §24.1, §24.2, Phase 4).
+ * Eligibility engine tests (spec §8, §24.1, §24.2).
  *
  * Runs against the real [ExerciseCatalog] rather than stubs — the interesting behaviour
  * is "a catalog entry with a given limitation is excluded when that limitation is confirmed".
@@ -122,7 +122,7 @@ class EvaluateExerciseEligibilityUseCaseTest {
         assertTrue(result.exclusionReasons.any { it is ExclusionReason.MissingEquipment })
     }
 
-    // ---- Per limitation category tests (Phase 4.6) ----
+    // ---- Per-limitation-category tests ----
 
     @Test
     fun `knee category - deep knee flexion excludes exercise`() {
@@ -187,8 +187,8 @@ class EvaluateExerciseEligibilityUseCaseTest {
 
     @Test
     fun `impact category limitations currently exclude nothing - documented`() {
-        // From docs/follow-ups.md: six limitations exclude no exercise because catalog
-        // has no plyometrics/running. This test pins that fact so copy doesn't claim otherwise.
+        // These limitations have no applicable exercises in the strength-only catalog.
+        // Pin that fact so product copy does not claim they change current results.
         val nonExcluding = listOf(
             MovementLimitation.AVOID_HIGH_IMPACT,
             MovementLimitation.AVOID_JUMPING,
@@ -200,7 +200,7 @@ class EvaluateExerciseEligibilityUseCaseTest {
 
         for (limitation in nonExcluding) {
             val matching = ExerciseCatalog.exercises.count { limitation in it.conflictingLimitations }
-            assertEquals("Expected 0 exercises to conflict with $limitation per follow-ups.md", 0, matching)
+            assertEquals("Expected 0 exercises to conflict with $limitation", 0, matching)
         }
     }
 

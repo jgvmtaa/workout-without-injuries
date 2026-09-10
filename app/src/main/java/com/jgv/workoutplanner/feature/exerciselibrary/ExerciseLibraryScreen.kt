@@ -56,7 +56,7 @@ import com.jgv.workoutplanner.domain.model.MovementPattern
 import com.jgv.workoutplanner.domain.model.MuscleGroup
 
 /**
- * Stateful entry point for the library (README §20): collects ViewModel state,
+ * Stateful entry point for the library (spec §20): collects ViewModel state,
  * forwards navigation events.
  */
 @Composable
@@ -83,7 +83,7 @@ fun ExerciseLibraryRoute(
 
 /**
  * Browsable exercise catalog with muscle-group chips, equipment filter, and search
- * (README §14, §20). Shows available and excluded rows with subtitle and exclusion count.
+ * (spec §14, §20). Shows available and excluded rows with subtitle and exclusion count.
  *
  * No NavController inside — previewable.
  */
@@ -266,7 +266,7 @@ private fun ExerciseRow(
                 style = MaterialTheme.typography.titleMedium,
             )
             Spacer(Modifier.height(2.dp))
-            // Subtitle: muscle · equipment · tag (README §14) — show all, sorted deterministically
+            // Subtitle: muscle · equipment · tag (spec §14) — show all, sorted deterministically
             val muscleLabel = stringResource(def.primaryMuscle.labelRes)
             val equipLabels = def.requiredEquipment.sortedBy { it.name }.map { eq ->
                 stringResource(eq.labelRes)

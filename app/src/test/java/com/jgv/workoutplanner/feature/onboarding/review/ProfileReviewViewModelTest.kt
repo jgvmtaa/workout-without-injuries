@@ -21,7 +21,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
-/** Summary, completion gating and the profile write (README §24.5, §27 Phase 3). */
+/** Summary, completion gating, and the profile write (spec §4.6, §24.5). */
 class ProfileReviewViewModelTest {
 
     @get:Rule
@@ -83,7 +83,7 @@ class ProfileReviewViewModelTest {
 
     /**
      * The review screen is the last place the app can imply an injury did something on
-     * its own, so it must show only what the user confirmed (README §2).
+     * its own, so it must show only what the user confirmed (spec §2).
      */
     @Test
     fun `an injury with no confirmed limitation shows an empty limitations list`() = runTest {

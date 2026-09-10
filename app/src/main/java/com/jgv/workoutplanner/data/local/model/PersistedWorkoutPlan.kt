@@ -3,16 +3,16 @@ package com.jgv.workoutplanner.data.local.model
 import kotlinx.serialization.Serializable
 
 /**
- * On-disk shape for the current workout plan (README §21, task 5.7).
+ * On-disk shape for the current workout plan (spec §21).
  *
- * Stored separately from [PersistedState] as `workout_plan.json` per Phase 5 decision:
- * single responsibility, independent schema versioning, avoids growing profile file.
+ * Stored separately from [PersistedState] as `workout_plan.json` for independent
+ * ownership and schema evolution.
  *
  * Mirrors [com.jgv.workoutplanner.domain.model.WorkoutPlan] but with Strings for enums and
  * explicit rep range fields because `IntRange` is not serializable by default without
  * custom serializer. Tolerant on read: unknown ExerciseId is dropped (partial plan survives).
  *
- * The file holds at most one plan — MVP has no plan history (README §29).
+ * The file holds at most one plan — MVP has no plan history (spec §29).
  */
 
 @Serializable

@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * Holds the safety acknowledgement (README §4.2, §20, §21).
+ * Holds the safety acknowledgement (spec §4.2, §20, §21).
  *
  * ## Why the write happens on toggle, not on continue
  * Persisting when Continue is pressed would mean the write races the navigation that

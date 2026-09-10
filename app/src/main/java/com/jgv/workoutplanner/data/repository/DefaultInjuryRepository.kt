@@ -9,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * [InjuryRepository] backed by the static [InjuryCatalog] (README §19, §27 Phase 2).
+ * [InjuryRepository] backed by the static [InjuryCatalog] (spec §7, §19).
  *
  * Same shape as [DefaultExerciseRepository]: index once, serve from memory.
  */

@@ -9,9 +9,9 @@ import java.io.InputStream
 import java.io.OutputStream
 
 /**
- * Reads and writes [PersistedState] as JSON for a typed DataStore (README §21).
+ * Reads and writes [PersistedState] as JSON for a typed DataStore (spec §21).
  *
- * README §21 offers Preferences DataStore with JSON blobs or Proto DataStore. This is
+ * spec §21 offers Preferences DataStore with JSON blobs or Proto DataStore. This is
  * the middle path: a typed `DataStore<PersistedState>` with a kotlinx-serialization
  * codec — the typed schema and explicit defaults of the Proto option, without adding
  * the protobuf toolchain, and using a dependency the project already has.

@@ -13,7 +13,7 @@ import com.jgv.workoutplanner.feature.onboarding.review.ProfileReviewEvent
 import com.jgv.workoutplanner.feature.onboarding.review.ProfileReviewScreen
 
 /**
- * Edit Review — final destination for all edit flows (Phase 6 §6.5).
+ * Final review destination for all profile-edit flows (spec §13).
  * Reuses ProfileReviewScreen but saving uses SaveProfileEditsUseCase.
  * After saving, returns to Profile without clearing back stack or re-entering onboarding.
  */

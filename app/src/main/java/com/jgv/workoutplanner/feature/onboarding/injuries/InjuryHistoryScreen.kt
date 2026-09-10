@@ -26,7 +26,7 @@ import com.jgv.workoutplanner.domain.model.BodyRegion
 import com.jgv.workoutplanner.domain.model.InjuryId
 import com.jgv.workoutplanner.domain.model.InjuryStatus
 
-/** Stateful entry point for the injury history step (README §20). */
+/** Stateful entry point for the injury history step (spec §20). */
 @Composable
 fun InjuryHistoryRoute(
     onContinue: () -> Unit,
@@ -50,7 +50,7 @@ fun InjuryHistoryRoute(
 }
 
 /**
- * Injury history grouped by body region (README §4.4).
+ * Injury history grouped by body region (spec §4.4).
  *
  * The status chips appear only under an injury that is selected. Asking "how is it now?"
  * about something the user has not claimed would be noise, and it keeps the default list

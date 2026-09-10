@@ -11,7 +11,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
-/** Selection, continue-state and persistence for the safety notice (README §24.5). */
+/** Selection, continue-state and persistence for the safety notice (spec §24.5). */
 class SafetyNoticeViewModelTest {
 
     @get:Rule

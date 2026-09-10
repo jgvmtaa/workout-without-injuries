@@ -1,14 +1,14 @@
 package com.jgv.workoutplanner.domain.model
 
 /**
- * Result of plan generation (README §12.4, §25, task 5.6).
+ * Result of plan generation (spec §12.4, §25).
  *
  * A plan can be partial: when a template slot has no eligible candidate, the generator
- * emits a warning instead of crashing (README §12.4 / §25). The caller renders the warning
+ * emits a warning instead of crashing (spec §12.4 / §25). The caller renders the warning
  * and keeps the valid prefix of the plan.
  *
  * Determinism: same [UserProfile] ⇒ same [plan] and same [warnings] ordering, because
- * candidate ordering and tie-breaks are stable (README §12.5).
+ * candidate ordering and tie-breaks are stable (spec §12.5).
  */
 data class WorkoutPlanGenerationResult(
     val plan: WorkoutPlan,
@@ -17,7 +17,7 @@ data class WorkoutPlanGenerationResult(
 )
 
 /**
- * An unfillable template slot (README §25).
+ * An unfillable template slot (spec §25).
  *
  * @param dayIndex zero-based index inside the generated plan
  * @param dayFocus which day template this slot belongs to

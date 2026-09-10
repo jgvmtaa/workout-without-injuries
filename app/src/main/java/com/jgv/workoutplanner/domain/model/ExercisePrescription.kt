@@ -1,11 +1,10 @@
 package com.jgv.workoutplanner.domain.model
 
 /**
- * The catalog's default dosing for an exercise (README §5.3).
+ * The catalog's default dosing for an exercise (spec §5.3).
  *
- * Ranges rather than fixed numbers: plan generation narrows them to a concrete set
- * count and rep range based on the user's goal (README §12), and the user can adjust
- * from there.
+ * Plan generation uses the first set count, the complete repetition range, and the
+ * default rest duration without goal-based adjustment (spec §5.3, §12).
  *
  * Isometric holds (planks) have no natural rep count. They use `1..1` and state the
  * hold duration in their description — the model has no duration field yet, tracked

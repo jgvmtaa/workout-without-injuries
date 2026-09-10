@@ -8,7 +8,7 @@ import com.jgv.workoutplanner.domain.model.WorkoutPlanTemplate
 import javax.inject.Inject
 
 /**
- * Candidates for adding exercises to a specific workout day (Phase 6 §6.4).
+ * Candidates for adding exercises to a specific workout day (spec §13).
  *
  * - Start from profile-eligible.
  * - Keep exercises whose movement pattern occurs in at least one template slot for dayFocus.

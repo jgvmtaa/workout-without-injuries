@@ -17,7 +17,7 @@ import com.jgv.workoutplanner.navigation.AppRoute
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
- * Single-activity host (README §18, §19). It applies the theme, waits for the start
+ * Single-activity host (spec §18, §19). It applies the theme, waits for the start
  * destination to be known, and hands off to the navigation shell; everything else lives
  * in the feature packages.
  */

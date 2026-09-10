@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">Workout Planner</string>
+    <string name="app_name">Workout Without Injuries</string>
 
-    <!-- Screen titles (README §4, §17) -->
+    <!-- Screen titles (spec §4, §17) -->
     <string name="screen_welcome">Welcome</string>
     <string name="screen_safety_notice">Safety notice</string>
     <string name="screen_preferences">Training preferences</string>
@@ -31,16 +31,16 @@
     <string name="state_loading">Loading…</string>
 
     <!--
-        Onboarding copy (README §4.1–§4.5).
+        Onboarding copy (spec §4.1–§4.5).
 
         Two rules run through all of it. It describes what the app does rather than what
         the user's body is doing — "the app filters", never "you have". And it never
         implies a limitation has been applied on the user's behalf: suggestions are
         phrased as questions to answer, because the user's confirmation is the only thing
-        that reaches the filter (README §2).
+        that reaches the filter (spec §2).
     -->
 
-    <!-- Welcome (README §4.1) -->
+    <!-- Welcome (spec §4.1) -->
     <string name="welcome_headline">Build workouts around your preferences and movement limitations.</string>
     <string name="welcome_body">The app filters exercises based on the information you provide. It does not diagnose injuries or replace professional medical advice.</string>
     <string name="welcome_steps_title">What setup covers</string>
@@ -48,7 +48,7 @@
     <string name="welcome_step_injuries">Any injury history you want to take into account.</string>
     <string name="welcome_step_limitations">Which movements you need to avoid right now. You choose these; nothing is decided for you.</string>
 
-    <!-- Safety notice (README §4.2) -->
+    <!-- Safety notice (spec §4.2) -->
     <string name="safety_intro">Read these before you continue. They apply to everything the app suggests.</string>
     <string name="safety_ack_not_medical_advice">This app is not medical advice. It does not diagnose injuries or prescribe rehabilitation.</string>
     <string name="safety_ack_stop_on_pain">Stop any exercise that causes pain.</string>
@@ -56,7 +56,7 @@
     <string name="safety_ack_filters_are_general">The exercise filters are general and may not match your individual case.</string>
     <string name="safety_confirm_label">I have read and understood these points</string>
 
-    <!-- Training preferences (README §4.3) -->
+    <!-- Training preferences (spec §4.3) -->
     <string name="preferences_intro">Tell us how you want to train. All of it can be changed later.</string>
     <string name="preferences_goal_title">Primary goal</string>
     <string name="preferences_experience_title">Experience level</string>
@@ -73,18 +73,18 @@
         <item quantity="other">%1$d days</item>
     </plurals>
 
-    <!-- Goals (README §4.3) -->
+    <!-- Goals (spec §4.3) -->
     <string name="goal_general_fitness">General fitness</string>
     <string name="goal_build_muscle">Build muscle</string>
     <string name="goal_build_strength">Build strength</string>
     <string name="goal_improve_endurance">Improve endurance</string>
 
-    <!-- Experience levels (README §4.3) -->
+    <!-- Experience levels (spec §4.3) -->
     <string name="experience_beginner">Beginner</string>
     <string name="experience_intermediate">Intermediate</string>
     <string name="experience_advanced">Advanced</string>
 
-    <!-- Equipment (README §4.3) -->
+    <!-- Equipment (spec §4.3) -->
     <string name="equipment_bodyweight">Bodyweight</string>
     <string name="equipment_dumbbells">Dumbbells</string>
     <string name="equipment_barbell">Barbell</string>
@@ -95,7 +95,7 @@
     <string name="equipment_resistance_band">Resistance bands</string>
     <string name="equipment_cardio_machine">Cardio machine</string>
 
-    <!-- Workout splits (README §4.3, §12.1) -->
+    <!-- Workout splits (spec §4.3, §12.1) -->
     <string name="split_full_body">Full body</string>
     <string name="split_upper_lower">Upper / lower</string>
     <string name="split_push_pull_legs">Push / pull / legs</string>
@@ -108,7 +108,7 @@
     <string name="focus_pull">Pull</string>
     <string name="focus_legs">Legs</string>
 
-    <!-- Body regions (README §4.4) -->
+    <!-- Body regions (spec §4.4) -->
     <string name="body_region_neck">Neck</string>
     <string name="body_region_shoulder">Shoulder</string>
     <string name="body_region_elbow">Elbow</string>
@@ -119,7 +119,7 @@
     <string name="body_region_knee">Knee</string>
     <string name="body_region_ankle_foot">Ankle and foot</string>
 
-    <!-- Injury history (README §4.4) -->
+    <!-- Injury history (spec §4.4) -->
     <string name="injuries_intro">Select anything that applies to you, or none of it. Injury history never excludes an exercise on its own — it only decides which movements you are asked about on the next screen.</string>
     <string name="injuries_status_title">How is it now?</string>
     <string name="injuries_selected_count">%1$d selected</string>
@@ -128,7 +128,7 @@
     <string name="injury_status_historical">In the past</string>
     <string name="injury_status_not_specified">Prefer not to say</string>
 
-    <!-- Movement limitations (README §4.5) -->
+    <!-- Movement limitations (spec §4.5) -->
     <string name="limitations_intro">Based on the history you selected, consider whether any of these movements should be excluded.\n\nSelect only the limitations that currently apply to you.</string>
     <string name="limitations_suggested_title">Worth considering</string>
     <string name="limitations_suggested_description">Suggested by the injuries you selected. None of them is applied until you select it here.</string>
@@ -145,7 +145,7 @@
     <string name="limitation_group_wrist_grip">Wrist and grip</string>
     <string name="limitation_group_hip">Hip</string>
 
-    <!-- Profile review (README §3, §4) -->
+    <!-- Profile review (spec §3, §4) -->
     <string name="review_intro">Check this over before we build your plan. Everything here can be changed later.</string>
     <string name="review_section_training">Training</string>
     <string name="review_section_equipment">Equipment</string>
@@ -164,7 +164,7 @@
     <string name="review_incomplete">Some answers are still missing. Go back and complete them to finish setup.</string>
 
     <!--
-        Exercise catalog copy (README §6, §7).
+        Exercise catalog copy (spec §6, §7).
 
         One name and one description per ExerciseId, named `exercise_<id>` and
         `exercise_<id>_description` after the lower-cased enum constant. The enum is the
@@ -314,7 +314,7 @@
     <string name="exercise_hanging_knee_raise_description">Hanging from a bar, draw your knees up towards your chest and lower them without swinging.</string>
 
     <!--
-        Injury catalog copy (README §4.4, §6).
+        Injury catalog copy (spec §4.4, §6).
 
         Wording stays descriptive rather than diagnostic — these are histories the user
         recognises, not conditions the app is asserting. Every body region ends with an
@@ -368,11 +368,11 @@
     <string name="injury_ankle_foot_undiagnosed_pain">Ankle or foot pain without a diagnosis</string>
 
     <!--
-        Movement limitation labels (README §4.5, §6).
+        Movement limitation labels (spec §4.5, §6).
 
         Phrased as the movement to avoid, in plain language, because the user reads these
         as a checklist of what currently applies to them and later as the reason an
-        exercise was excluded. First consumed by the limitations screen in Phase 3.
+        exercise was excluded. Used by the movement-limitations screen.
     -->
     <string name="limitation_avoid_high_impact">Avoid high-impact movements</string>
     <string name="limitation_avoid_jumping">Avoid jumping and landing</string>
@@ -402,7 +402,7 @@
     <string name="limitation_avoid_wide_hip_abduction">Avoid taking the legs wide apart</string>
     <string name="limitation_avoid_unilateral_balance_demand">Avoid balancing on one leg</string>
 
-    <!-- Muscle groups (README §5.1, §14) -->
+    <!-- Muscle groups (spec §5.1, §14) -->
     <string name="muscle_chest">Chest</string>
     <string name="muscle_back">Back</string>
     <string name="muscle_shoulders">Shoulders</string>
@@ -415,7 +415,7 @@
     <string name="muscle_core">Core</string>
     <string name="muscle_all">All</string>
 
-    <!-- Movement patterns (README §5.2) -->
+    <!-- Movement patterns (spec §5.2) -->
     <string name="movement_horizontal_push">Horizontal push</string>
     <string name="movement_vertical_push">Vertical push</string>
     <string name="movement_horizontal_pull">Horizontal pull</string>
@@ -437,7 +437,7 @@
     <string name="movement_core_flexion">Core flexion</string>
     <string name="movement_carry">Carry</string>
 
-    <!-- Exercise tags (README §5.3) -->
+    <!-- Exercise tags (spec §5.3) -->
     <string name="tag_compound">Compound</string>
     <string name="tag_isolation">Isolation</string>
     <string name="tag_unilateral">Unilateral</string>
@@ -459,7 +459,7 @@
     <string name="availability_excluded">Excluded</string>
     <string name="availability_unavailable">Unavailable</string>
 
-    <!-- Exercise library (README §14) -->
+    <!-- Exercise library (spec §14) -->
     <string name="library_search_hint">Search exercises</string>
     <string name="library_filter_muscle_title">Muscle group</string>
     <string name="library_filter_equipment_all">All equipment</string>
@@ -476,7 +476,7 @@
     <string name="library_subtitle_format">%1$s · %2$s · %3$s</string>
     <string name="library_clear_filters">Clear filters</string>
 
-    <!-- Exercise detail (README §15) -->
+    <!-- Exercise detail (spec §15) -->
     <string name="detail_section_overview">Overview</string>
     <string name="detail_section_muscles">Muscles</string>
     <string name="detail_section_movement">Movement</string>
@@ -504,14 +504,14 @@
     <string name="action_generate_plan">Generate plan</string>
     <string name="action_replace_exercise_short">Replace</string>
 
-    <!-- Plan screen (Phase 5) -->
+    <!-- Plan screen -->
     <string name="plan_empty_title">No plan yet</string>
     <string name="plan_empty_body">Generate a workout plan from your profile. The same profile always produces the same plan, and your limitations are respected.</string>
     <string name="plan_warnings_title">Some sections could not be filled</string>
     <string name="plan_slot_no_match">No matching exercise was found for this section using your current equipment and movement limitations.</string>
     <string name="plan_warning_item">Day %1$d (%2$s): %3$s</string>
 
-    <!-- Home screen (Phase 5) -->
+    <!-- Home screen -->
     <string name="home_section_current_plan">Current plan</string>
     <string name="home_section_profile">Profile summary</string>
     <string name="home_section_limitations">Active limitations</string>
@@ -519,7 +519,7 @@
     <string name="home_limitations_count">%1$d selected</string>
     <string name="home_profile_summary">%1$s · %2$s · %3$s · %4$s</string>
 
-    <!-- Plan editing (Phase 6 §6.2, §6.6) -->
+    <!-- Plan editing -->
     <string name="plan_outdated_banner">Your profile has changed. Regenerate the plan to apply the new limitations.</string>
     <string name="plan_empty_day">No exercises in this workout</string>
     <string name="plan_action_remove">Remove</string>
@@ -548,20 +548,20 @@
     <string name="plan_edit_failed_ineligible">Selected exercise is not eligible for your current profile.</string>
     <string name="plan_edit_failed_invalid">Cannot complete this edit.</string>
 
-    <!-- Exercise replacement (Phase 6 §6.3) -->
+    <!-- Exercise replacement -->
     <string name="replacement_title">Replace exercise</string>
     <string name="replacement_select_prompt">Choose a replacement. Names only, ordered by match.</string>
     <string name="replacement_confirm">Confirm replacement</string>
     <string name="replacement_empty">No eligible alternatives for your current profile and equipment.</string>
 
-    <!-- Exercise picker (Phase 6 §6.4) -->
+    <!-- Exercise picker -->
     <string name="picker_title">Add exercises</string>
     <string name="picker_title_for_day">Add to %1$s</string>
     <string name="picker_confirm">Add selected</string>
     <string name="picker_search_hint">Search exercises</string>
     <string name="picker_capacity_remaining">%1$d of %2$d slots available</string>
 
-    <!-- Profile (Phase 6 §6.5) -->
+    <!-- Profile -->
     <string name="profile_section_preferences">Training preferences</string>
     <string name="profile_section_injuries">Injury history</string>
     <string name="profile_section_limitations">Movement limitations</string>

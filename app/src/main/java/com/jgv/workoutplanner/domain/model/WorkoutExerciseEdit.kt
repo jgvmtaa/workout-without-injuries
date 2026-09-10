@@ -1,7 +1,7 @@
 package com.jgv.workoutplanner.domain.model
 
 /**
- * Manual plan mutations — single-use-case sealed contract (Phase 6 §6.1, README §13).
+ * Manual plan mutations through a single-use-case sealed contract (spec §13).
  *
  * UI does not edit WorkoutPlan directly. Every mutation goes through
  * UpdateWorkoutExerciseUseCase which validates against profile filters and capacity.
@@ -31,7 +31,7 @@ sealed interface WorkoutExerciseEdit {
 }
 
 /**
- * Typed result for manual edits — no throws for expected failures (Phase 6 §6.1).
+ * Typed result for manual edits; expected failures do not throw (spec §13).
  */
 sealed interface WorkoutExerciseEditResult {
     data object Updated : WorkoutExerciseEditResult

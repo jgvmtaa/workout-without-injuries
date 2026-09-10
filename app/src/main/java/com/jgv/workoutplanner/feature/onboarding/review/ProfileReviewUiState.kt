@@ -3,7 +3,7 @@ package com.jgv.workoutplanner.feature.onboarding.review
 import androidx.annotation.StringRes
 
 /**
- * Immutable state for the profile review screen (README §3, §4, §20).
+ * Immutable state for the profile review screen (spec §3, §4, §20).
  *
  * Everything is pre-resolved to string resources here rather than passed as domain
  * enums, because this screen only reads: it has no interaction that needs to know a
@@ -34,7 +34,7 @@ data class ReviewInjuryUiModel(
     @StringRes val statusRes: Int,
 )
 
-/** Everything the review screen can do (README §20). */
+/** Everything the review screen can do (spec §20). */
 sealed interface ProfileReviewEvent {
 
     /** Assembles and saves the profile, ending onboarding. */

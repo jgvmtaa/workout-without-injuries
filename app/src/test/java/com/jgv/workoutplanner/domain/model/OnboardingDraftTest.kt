@@ -10,7 +10,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** The draft-to-profile boundary (README §4, §10). */
+/** The draft-to-profile boundary (spec §4, §10). */
 class OnboardingDraftTest {
 
     @Test
@@ -60,7 +60,7 @@ class OnboardingDraftTest {
         }
     }
 
-    /** README §25: an injury with nothing confirmed must not block completion. */
+    /** spec §25: an injury with nothing confirmed must not block completion. */
     @Test
     fun `an injury with no confirmed limitation still completes`() {
         val draft = completeDraft(selectedInjuries = setOf(injury(InjuryId.KNEE_ACL)))
@@ -73,7 +73,7 @@ class OnboardingDraftTest {
     /**
      * Only confirmed limitations cross into the profile. This is the last point at which
      * an injury could leak into the filter, so it is asserted at the boundary rather than
-     * trusted from the screen above it (README §2).
+     * trusted from the screen above it (spec §2).
      */
     @Test
     fun `only confirmed limitations reach the profile`() {

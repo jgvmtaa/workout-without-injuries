@@ -40,8 +40,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 
-/** Compose coverage for the Phase 7 plan, replacement, and exclusion flows. */
-class Phase7ScreensTest {
+/** Compose coverage for plan, replacement, and exclusion flows. */
+class PlanAndEligibilityScreensTest {
 
     @get:Rule
     val composeRule = createComposeRule()

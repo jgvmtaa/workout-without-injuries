@@ -20,7 +20,7 @@ import com.jgv.workoutplanner.core.designsystem.AppTheme
 import com.jgv.workoutplanner.core.designsystem.Dimens
 
 /**
- * Empty state (README §19 core/ui, §25). Every empty list in the app should explain
+ * Empty state (spec §19 core/ui, §25). Every empty list in the app should explain
  * *why* it is empty and — where one exists — offer the action that resolves it.
  */
 @Composable

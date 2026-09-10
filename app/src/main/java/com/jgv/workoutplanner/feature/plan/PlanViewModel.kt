@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
- * ViewModel for the plan screen (README §18, §20, task 5.8, Phase 6).
+ * ViewModel for the plan screen (spec §12, §13, §18, §20).
  *
  * - Observes profile + current plan + warnings + requiresRegeneration.
  * - Auto-generates on entry if no plan exists.

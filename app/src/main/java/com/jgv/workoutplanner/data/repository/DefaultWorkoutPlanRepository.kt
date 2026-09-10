@@ -15,9 +15,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * [WorkoutPlanRepository] backed by [WorkoutPlanDataStore] (README §19, §21, §25, Phase 6).
+ * [WorkoutPlanRepository] backed by [WorkoutPlanDataStore] (spec §19, §21, §25).
  *
- * One plan at a time – MVP has no history (README §29).
+ * One plan at a time – MVP has no history (spec §29).
  *
  * Manual edits use [updatePlanAtomically] which runs inside DataStore.updateData transaction.
  * Commit replaces only WorkoutPlan; warnings and requiresRegeneration are preserved internally.

@@ -7,7 +7,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 /**
- * App typography (README §19 core/designsystem). Material 3 defaults with only the
+ * App typography (spec §19 core/designsystem). Material 3 defaults with only the
  * styles the app actually leans on spelled out, so the intent is visible in one place.
  */
 val AppTypography = Typography(

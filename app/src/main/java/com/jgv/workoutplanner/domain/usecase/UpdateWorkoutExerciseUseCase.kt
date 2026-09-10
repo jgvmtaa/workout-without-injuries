@@ -14,7 +14,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.first
 
 /**
- * Single entry point for manual plan mutations (Phase 6 §6.1).
+ * Single entry point for manual plan mutations (spec §13).
  *
  * - Reads latest profile immediately before atomic transaction.
  * - Inside transaction checks snapshot.requiresRegeneration first -> PlanOutdated.

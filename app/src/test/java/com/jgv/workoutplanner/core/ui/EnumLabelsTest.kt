@@ -12,7 +12,7 @@ import org.junit.Assert.assertNotEquals
 import org.junit.Test
 
 /**
- * Label coverage for the domain enums (README §6).
+ * Label coverage for the domain enums (spec §6).
  *
  * The `when` expressions are exhaustive, so the compiler already guarantees every
  * constant has *a* label. What it cannot catch is two constants pointing at the same

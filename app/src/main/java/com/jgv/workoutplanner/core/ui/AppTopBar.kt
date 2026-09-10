@@ -15,10 +15,10 @@ import com.jgv.workoutplanner.R
 import com.jgv.workoutplanner.core.designsystem.AppTheme
 
 /**
- * Standard top app bar (README §19 core/ui).
+ * Standard top app bar (spec §19 core/ui).
  *
  * Takes a plain [onBack] lambda rather than a `NavController` so screens stay
- * navigation-agnostic and previewable (README §20).
+ * navigation-agnostic and previewable (spec §20).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

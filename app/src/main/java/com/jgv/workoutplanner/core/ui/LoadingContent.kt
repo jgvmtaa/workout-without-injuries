@@ -18,7 +18,7 @@ import com.jgv.workoutplanner.core.designsystem.AppTheme
 import com.jgv.workoutplanner.core.designsystem.Dimens
 
 /**
- * Centred progress state (README §19 core/ui). Screens show this while their state
+ * Centred progress state (spec §19 core/ui). Screens show this while their state
  * is still resolving; the real loading states arrive with the features in Phases 3–6.
  */
 @Composable

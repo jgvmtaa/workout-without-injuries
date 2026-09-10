@@ -7,7 +7,7 @@ import com.jgv.workoutplanner.domain.repository.ExerciseRepository
 import javax.inject.Inject
 
 /**
- * Deterministic replacement candidates (Phase 6 §6.3).
+ * Deterministic replacement candidates (spec §13).
  *
  * Starts from profile-eligible, excludes current + day duplicates,
  * ranks in tiers, tie-break ExerciseId.name.

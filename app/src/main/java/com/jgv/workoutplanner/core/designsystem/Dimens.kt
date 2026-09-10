@@ -3,7 +3,7 @@ package com.jgv.workoutplanner.core.designsystem
 import androidx.compose.ui.unit.dp
 
 /**
- * Shared spacing and sizing tokens (README §19 core/designsystem).
+ * Shared spacing and sizing tokens (spec §19 core/designsystem).
  *
  * Screens should reach for these instead of ad-hoc `dp` values so padding stays
  * consistent as the feature screens land in later phases.

@@ -7,11 +7,11 @@ import com.jgv.workoutplanner.domain.model.InjuryId
 import com.jgv.workoutplanner.domain.model.MovementLimitation
 
 /**
- * The static injury catalog (README §4.5).
+ * The static injury catalog (spec §4.5).
  *
  * Maps every [InjuryId] to the [MovementLimitation]s it *might* imply. Nothing here
  * filters anything. The limitations screen shows these as a prompt, the user decides
- * which currently apply, and only that confirmed set reaches the engine (README §2).
+ * which currently apply, and only that confirmed set reaches the engine (spec §2).
  *
  * ## How the suggestions were chosen
  * Suggestions can afford to be broader than [ExerciseCatalog]'s conflicts, because the
@@ -280,7 +280,7 @@ object InjuryCatalog {
             id = InjuryId.KNEE_ACL,
             nameRes = R.string.injury_knee_acl,
             bodyRegion = BodyRegion.KNEE,
-            // The worked example from README §4.5.
+            // The worked example from spec §4.5.
             suggestedLimitations = setOf(
                 MovementLimitation.AVOID_JUMPING,
                 MovementLimitation.AVOID_RAPID_DIRECTION_CHANGE,

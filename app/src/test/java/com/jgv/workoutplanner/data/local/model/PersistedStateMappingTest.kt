@@ -20,7 +20,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * The storage boundary (README §21).
+ * The storage boundary (spec §21).
  *
  * Two properties matter here and everything below tests one of them: nothing the user
  * entered is lost on the way through, and nothing a future build changes can make the
@@ -170,7 +170,7 @@ class PersistedStateMappingTest {
         assertEquals(InjuryStatus.HISTORICAL, restored.status)
     }
 
-    /** Bodyweight is a rule, not a stored choice (README §25). */
+    /** Bodyweight is a rule, not a stored choice (spec §25). */
     @Test
     fun `bodyweight is always available however the file was written`() {
         val stored = PersistedDraft(availableEquipment = listOf("DUMBBELLS"))

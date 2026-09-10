@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 /**
- * Resolves the exercise and its eligibility for the current profile (README §15).
+ * Resolves the exercise and its eligibility for the current profile (spec §15).
  *
  * Navigation argument [ExerciseId] is typed via AppRoute (§17), so an unknown id
  * cannot be navigated to. Profile may be null on first launch — detail still shows

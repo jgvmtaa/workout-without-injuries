@@ -54,7 +54,7 @@ import org.junit.Rule
 import org.junit.Test
 
 /**
- * Compose tests for the onboarding flows README §24.6 calls out: selecting and
+ * Compose tests for the onboarding flows spec §24.6 calls out: selecting and
  * deselecting an injury, confirming suggested limitations, and the safety gate.
  *
  * These drive the stateless `*Screen` composables with a hand-built state and a
@@ -208,7 +208,7 @@ class OnboardingScreensTest {
     // -------------------------------------------------------- Movement limitations
 
     /**
-     * The rendered form of README §2: a suggestion arrives as an unticked box, under copy
+     * The rendered form of spec §2: a suggestion arrives as an unticked box, under copy
      * that says it has not been applied.
      */
     @Test
@@ -295,7 +295,7 @@ class OnboardingScreensTest {
         composeRule.onNodeWithText(text(R.string.action_continue)).assertIsEnabled()
     }
 
-    /** Continuing with nothing confirmed is valid (README §25). */
+    /** Continuing with nothing confirmed is valid (spec §25). */
     @Test
     fun limitations_continueIsNeverBlocked() {
         val events = mutableListOf<MovementLimitationsEvent>()

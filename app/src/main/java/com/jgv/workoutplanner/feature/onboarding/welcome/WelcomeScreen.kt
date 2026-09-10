@@ -17,16 +17,16 @@ import com.jgv.workoutplanner.core.ui.OnboardingScaffold
 import com.jgv.workoutplanner.core.ui.SectionHeader
 
 /**
- * Onboarding entry point (README §4.1).
+ * Onboarding entry point (spec §4.1).
  *
  * No ViewModel and no `UiState`, unlike every other onboarding screen: there is nothing
- * to collect here and nothing to remember. README §20's pattern exists to keep business
+ * to collect here and nothing to remember. spec §20's pattern exists to keep business
  * state out of composables, and adding an empty state holder to satisfy the shape of it
  * would be ceremony rather than structure.
  *
  * The disclaimer appears here as well as on the safety screen. That is deliberate
  * duplication — the first sentence a user reads should not oversell what the app is
- * (README §2).
+ * (spec §2).
  */
 @Composable
 fun WelcomeScreen(

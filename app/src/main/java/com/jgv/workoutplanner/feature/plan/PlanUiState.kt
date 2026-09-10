@@ -6,12 +6,12 @@ import com.jgv.workoutplanner.domain.model.PlanWarning
 import com.jgv.workoutplanner.domain.model.WorkoutDayFocus
 
 /**
- * Immutable state for the plan screen (README §20, task 5.8).
+ * Immutable state for the plan screen (spec §12, §13, §20).
  *
  * Rendered by a previewable [PlanScreen] that receives this value – no ViewModel, no
  * NavController inside the composable.
  *
- * Warnings are the partial-plan signals (README §12.4 / §25): a slot could not be filled
+ * Warnings are the partial-plan signals (spec §12.4 / §25): a slot could not be filled
  * without conflicting with limitations/equipment. Shown inline, not as crash.
  */
 data class PlanUiState(
@@ -48,7 +48,7 @@ data class PendingExerciseRemoval(
 )
 
 /**
- * One-shot effects for recoverable edit failures — typed, not raw String (Phase 6 §6.1).
+ * One-shot effects for recoverable edit failures; typed rather than raw strings.
  */
 sealed interface PlanEffect {
     data class EditFailed(val result: com.jgv.workoutplanner.domain.model.WorkoutExerciseEditResult) : PlanEffect

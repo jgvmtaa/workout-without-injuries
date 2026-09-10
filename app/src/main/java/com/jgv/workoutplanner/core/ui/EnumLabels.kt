@@ -12,12 +12,12 @@ import com.jgv.workoutplanner.domain.model.WorkoutSplit
 import com.jgv.workoutplanner.domain.model.WorkoutDayFocus
 
 /**
- * Display labels for the domain enums the onboarding screens render (README §6).
+ * Display labels for the domain enums the onboarding screens render (spec §6).
  *
  * The enums carry no copy — the identifier is the enum name and the words live in
  * `strings.xml` — so something has to join them. That join is here rather than in each
  * screen, because the same enum is labelled on the preferences screen, the review
- * screen, and (from Phase 6) the profile screen, and three copies would drift.
+ * screen, and the profile screen; separate copies would drift.
  *
  * Exhaustive `when` over each enum: adding a constant is a compile error until it has a
  * label, which is the whole point of doing it this way rather than with a map.

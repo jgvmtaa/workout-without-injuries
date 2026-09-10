@@ -6,10 +6,10 @@ import com.jgv.workoutplanner.domain.model.MovementLimitation
 import com.jgv.workoutplanner.domain.model.MovementLimitationDefinition
 
 /**
- * Label and grouping for every [MovementLimitation] (README §4.5, §6).
+ * Label and grouping for every [MovementLimitation] (spec §4.5, §6).
  *
- * Phase 2 wrote the `limitation_*` strings but nothing consumed them; this is the
- * mapping that lets the limitations screen render the enum. The third catalog
+ * This mapping lets the limitations screen render the `limitation_*` resources for the
+ * enum. It is the third catalog
  * alongside [ExerciseCatalog] and [InjuryCatalog], and structurally the simplest —
  * there is no judgement here, only copy and ordering.
  *

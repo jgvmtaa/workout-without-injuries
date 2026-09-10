@@ -3,7 +3,7 @@ package com.jgv.workoutplanner.feature.profile
 import androidx.annotation.StringRes
 
 /**
- * Immutable state for Profile screen (Phase 6 §6.5, README §16–§17, §20).
+ * Immutable state for the Profile screen (spec §13, §16, §20).
  * Summaries derived only from saved profile, never from unfinished edit draft.
  */
 data class ProfileUiState(

@@ -1,7 +1,7 @@
 package com.jgv.workoutplanner.domain.model
 
 /**
- * How the limitations screen groups [MovementLimitation]s (README §4.5).
+ * How the limitations screen groups [MovementLimitation]s (spec §4.5).
  *
  * Twenty-seven checkboxes in one list is unreadable, and the screen has to be
  * scannable — the user is looking for the two or three that describe them. The

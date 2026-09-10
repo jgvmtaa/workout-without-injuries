@@ -2,9 +2,9 @@
 
 ## Purpose
 
-Capture every stable, visually distinct state of the implemented Workout Planner UI.
-The application code is the source of truth when historical task notes disagree with
-the implementation.
+Capture every stable, visually distinct state required by
+[`docs/spec.md`](docs/spec.md), the source of truth for application behavior. Update
+this file in the same change whenever that behavior adds or changes a visual state.
 
 This specification is complete when every rendering branch in a screen composable is
 represented by at least one case below. A case may cover several independent branches.

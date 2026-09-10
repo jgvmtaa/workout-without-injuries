@@ -1,14 +1,14 @@
 package com.jgv.workoutplanner.domain.model
 
 /**
- * The user's current workout plan (README §11).
+ * The user's current workout plan (spec §11).
  *
  * A plan references exercises by [ExerciseId] and stores only what the user can change
  * — sets, reps, rest, order. Names, descriptions, and safety data stay in the catalog,
  * so a catalog correction reaches every saved plan instead of leaving stale copies
  * behind.
  *
- * The MVP keeps exactly one plan at a time (README §29 defers history).
+ * The MVP keeps exactly one plan at a time (spec §29 defers history).
  */
 data class WorkoutPlan(
     val id: String,
@@ -16,7 +16,7 @@ data class WorkoutPlan(
     val days: List<WorkoutDay>,
 )
 
-/** One training session within a [WorkoutPlan] (README §11). */
+/** One training session within a [WorkoutPlan] (spec §11). */
 data class WorkoutDay(
     val id: String,
     val name: String,
@@ -25,10 +25,10 @@ data class WorkoutDay(
 )
 
 /**
- * One exercise as scheduled in a [WorkoutDay] (README §11).
+ * One exercise as scheduled in a [WorkoutDay] (spec §11).
  *
  * [order] is stored rather than inferred from list position so reordering is an
- * explicit edit (README §13) and survives serialisation unambiguously.
+ * explicit edit (spec §13) and survives serialisation unambiguously.
  */
 data class PlannedExercise(
     val exerciseId: ExerciseId,
@@ -39,11 +39,11 @@ data class PlannedExercise(
 )
 
 /**
- * What a single day trains (README §11).
+ * What a single day trains (spec §11).
  *
  * Derived from the [WorkoutSplit]: full body produces [FULL_BODY] days, upper/lower
  * produces [UPPER_BODY] and [LOWER_BODY], push/pull/legs produces [PUSH], [PULL], and
- * [LEGS]. Each focus maps to a template of movement-pattern slots (README §12.4).
+ * [LEGS]. Each focus maps to a template of movement-pattern slots (spec §12.4).
  */
 enum class WorkoutDayFocus {
     FULL_BODY,

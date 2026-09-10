@@ -14,7 +14,7 @@ import org.junit.Test
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 
-/** The JSON codec behind the typed DataStore (README §21). */
+/** The JSON codec behind the typed DataStore (spec §21). */
 class PersistedStateSerializerTest {
 
     @Test

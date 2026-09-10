@@ -1,7 +1,7 @@
 package com.jgv.workoutplanner.domain.model
 
 /**
- * Onboarding answers collected so far (README §3, §4.1–§4.5).
+ * Onboarding answers collected so far (spec §3, §4.1–§4.5).
  *
  * Onboarding spans six destinations, each with its own ViewModel, but the later
  * screens need what the earlier ones collected: the limitations screen derives its
@@ -16,7 +16,7 @@ package com.jgv.workoutplanner.domain.model
  *
  * [confirmedLimitations] holds only what the user ticked. Suggestions are derived from
  * [selectedInjuries] on demand and never merged in — that separation is what keeps the
- * core product rule enforceable (README §2, §4.5).
+ * core product rule enforceable (spec §2, §4.5).
  */
 data class OnboardingDraft(
     val hasAcceptedSafetyNotice: Boolean = false,
@@ -64,7 +64,7 @@ data class OnboardingDraft(
 
         /**
          * A draft pre-filled from an existing [profile], so the onboarding screens can be
-         * reused to edit a saved profile instead of starting blank (README §13).
+         * reused to edit a saved profile instead of starting blank (spec §13).
          *
          * The split is not carried back: it is derived from [UserProfile.daysPerWeek], so
          * re-deriving it keeps a single source of truth.

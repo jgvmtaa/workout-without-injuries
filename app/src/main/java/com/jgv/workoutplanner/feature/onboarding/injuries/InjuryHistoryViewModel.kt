@@ -18,10 +18,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * Collects injury history, grouped by body region (README §4.4, §20).
+ * Collects injury history, grouped by body region (spec §4.4, §20).
  *
  * Selecting an injury changes nothing about which exercises are eligible. It only widens
- * the set of limitations the next screen asks about (README §2) — that separation is the
+ * the set of limitations the next screen asks about (spec §2) — that separation is the
  * product rule, and it is why this ViewModel writes to `selectedInjuries` and never
  * touches `confirmedLimitations`.
  */

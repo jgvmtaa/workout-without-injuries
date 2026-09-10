@@ -215,7 +215,7 @@ fun ExercisePickerScreen(
                 },
             )
 
-            // Muscle-group filters — functional selection controls (Phase 6 §6.4)
+            // Muscle-group filters — functional selection controls (spec §13)
             Text(
                 text = stringResource(R.string.library_filter_muscle_title),
                 style = MaterialTheme.typography.labelLarge,

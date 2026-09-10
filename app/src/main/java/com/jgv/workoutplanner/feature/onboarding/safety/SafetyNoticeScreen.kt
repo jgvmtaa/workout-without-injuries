@@ -22,7 +22,7 @@ import com.jgv.workoutplanner.core.ui.OnboardingScaffold
 import com.jgv.workoutplanner.core.ui.StepIntroduction
 
 /**
- * Stateful entry point for the safety notice (README §20).
+ * Stateful entry point for the safety notice (spec §20).
  *
  * Navigation events are mapped here rather than in the ViewModel: the screen keeps one
  * event channel, and the route decides what "continue" means.
@@ -50,7 +50,7 @@ fun SafetyNoticeRoute(
 }
 
 /**
- * Safety acknowledgement (README §4.2).
+ * Safety acknowledgement (spec §4.2).
  *
  * All four points are shown as text and covered by one explicit checkbox. Four separate
  * checkboxes would let someone proceed having ticked three of them, which is a state the

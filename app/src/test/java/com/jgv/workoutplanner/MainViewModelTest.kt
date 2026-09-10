@@ -10,7 +10,7 @@ import org.junit.Rule
 import org.junit.Test
 
 /**
- * Returning-user routing (README §3, task 3.9).
+ * Returning-user routing (spec §3).
  *
  * `StartDestination.Undecided` is the initial value and is what the activity renders
  * while the profile is read from disk, but it is not asserted here: the test dispatcher

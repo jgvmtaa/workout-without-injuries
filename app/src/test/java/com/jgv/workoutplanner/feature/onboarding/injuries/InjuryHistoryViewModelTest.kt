@@ -18,7 +18,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
-/** Selection and persistence for the injury history step (README §24.5). */
+/** Selection and persistence for the injury history step (spec §24.5). */
 class InjuryHistoryViewModelTest {
 
     @get:Rule
@@ -124,7 +124,7 @@ class InjuryHistoryViewModelTest {
         )
     }
 
-    /** README §25: selecting nothing is a valid answer. */
+    /** spec §25: selecting nothing is a valid answer. */
     @Test
     fun `continue is never blocked`() = runTest {
         viewModel.uiState.test {
@@ -135,7 +135,7 @@ class InjuryHistoryViewModelTest {
     /**
      * The product rule at this step: selecting an injury must widen nothing but the
      * question set. If this ever confirmed a limitation, the app would be filtering on a
-     * diagnosis the user never agreed to (README §2).
+     * diagnosis the user never agreed to (spec §2).
      */
     @Test
     fun `selecting an injury confirms no limitation`() = runTest {

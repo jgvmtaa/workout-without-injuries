@@ -14,7 +14,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Three-category filtering tests (README §9, Phase 4.3, §24.1).
+ * Three-category filtering tests (spec §9, §24.1).
  */
 class GetEligibleExercisesUseCaseTest {
 

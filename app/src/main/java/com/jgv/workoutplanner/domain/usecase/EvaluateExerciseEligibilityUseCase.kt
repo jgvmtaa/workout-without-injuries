@@ -7,7 +7,7 @@ import com.jgv.workoutplanner.domain.model.UserProfile
 import javax.inject.Inject
 
 /**
- * Determines whether an exercise can be included for a given profile (README §8).
+ * Determines whether an exercise can be included for a given profile (spec §8).
  *
  * Android-independent by design — no Compose, Context, or @StringRes here. All
  * exclusion reasons are explainable via the returned [ExerciseEligibility].

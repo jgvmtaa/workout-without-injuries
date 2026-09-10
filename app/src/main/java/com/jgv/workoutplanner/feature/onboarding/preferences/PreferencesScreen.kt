@@ -30,7 +30,7 @@ import com.jgv.workoutplanner.domain.model.ExperienceLevel
 import com.jgv.workoutplanner.domain.model.TrainingGoal
 import com.jgv.workoutplanner.domain.model.WorkoutSplit
 
-/** Stateful entry point for the preferences step (README §20). */
+/** Stateful entry point for the preferences step (spec §20). */
 @Composable
 fun PreferencesRoute(
     onContinue: () -> Unit,
@@ -55,9 +55,9 @@ fun PreferencesRoute(
 
 /**
  * Goal, experience level, weekly schedule, session duration and equipment
- * (README §4.3).
+ * (spec §4.3).
  *
- * The split is shown but not chosen. README §4.3 lists it among the preferences and then
+ * The split is shown but not chosen. spec §4.3 lists it among the preferences and then
  * permits deriving it from the training frequency instead; deriving it removes a question
  * whose wrong answers (five days of full body) the app would then have to defend, and
  * showing the result keeps it from being a surprise on the plan screen.

@@ -10,7 +10,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * [ExerciseRepository] backed by the static [ExerciseCatalog] (README §19, §27 Phase 2).
+ * [ExerciseRepository] backed by the static [ExerciseCatalog] (spec §7, §19).
  *
  * Indexes the catalog once at construction. The lists are small enough that scanning
  * would be fine, but the library and the plan generator query by muscle group and

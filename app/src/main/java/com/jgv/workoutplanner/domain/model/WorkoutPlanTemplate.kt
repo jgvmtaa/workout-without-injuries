@@ -1,25 +1,25 @@
 package com.jgv.workoutplanner.domain.model
 
 /**
- * Workout-day templates that drive deterministic plan generation (README §12.4).
+ * Workout-day templates that drive deterministic plan generation (spec §12.4).
  *
  * Each [WorkoutDayFocus] maps to a list of [TemplateSlot]s. A slot allows one or more
  * [MovementPattern]s; the generator picks the highest-ranked eligible exercise whose pattern
- * is allowed and that hasn't been used earlier that day (README §12.5 / §12.4).
+ * is allowed and that hasn't been used earlier that day (spec §12.5 / §12.4).
  *
  * ## Why these slots
  * - FULL_BODY: 6 slots – squat/knee, hinge/hip-ext, push, pull, secondary upper, core
- *   (README §12.4 example)
+ *   (spec §12.4 example)
  * - UPPER_BODY: 7 slots – h-push, v/secondary push, h-pull, v-pull, shoulder iso, biceps,
- *   triceps (README §12.4 example)
+ *   triceps (spec §12.4 example)
  * - LOWER_BODY: 6 slots – knee-dominant, hinge, glute, hamstring iso, calf, core
- *   (README §12.4 example)
- * - PUSH/PULL/LEGS: not in README; defined for PPL split (3 days = PUSH/PULL/LEGS).
+ *   (spec §12.4 example)
+ * - PUSH/PULL/LEGS: dedicated templates for the three-day split.
  *   PUSH = h-push, v-push, shoulder abduction, triceps, secondary push.
  *   PULL = h-pull, v-pull, shoulder ext rotation, biceps, secondary pull.
  *   LEGS reuses lower-body template.
  *
- * Sizes are fixed (README §12 / task 5.4); session duration does not change them in MVP.
+ * Sizes are fixed; session duration does not change them (spec §5.3, §12.4).
  */
 data class TemplateSlot(
     val id: String,

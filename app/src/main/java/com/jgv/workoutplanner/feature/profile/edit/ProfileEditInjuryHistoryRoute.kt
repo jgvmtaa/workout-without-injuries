@@ -12,7 +12,7 @@ import com.jgv.workoutplanner.feature.onboarding.injuries.InjuryHistoryScreen
 import com.jgv.workoutplanner.feature.onboarding.injuries.InjuryHistoryViewModel
 
 /**
- * Edit Injury History — first destination of Injury flow (Phase 6 §6.5).
+ * Injury-history destination for profile editing (spec §13).
  * Short flow: InjuryHistory -> MovementLimitations(origin=InjuryHistory) -> Review.
  * Back from first destination is Cancel: reset draft then return to Profile.
  */

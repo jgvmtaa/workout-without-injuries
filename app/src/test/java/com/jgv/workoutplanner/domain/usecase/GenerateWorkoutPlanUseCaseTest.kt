@@ -15,7 +15,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Plan generation tests (README §24.4, task 5.9, task 5 completion criteria).
+ * Plan generation tests (spec §12, §24.4).
  *
  * Deterministic: same profile ⇒ same plan, no randomness.
  * Partial handling: unfillable slot ⇒ warning, not crash.
@@ -101,7 +101,7 @@ class GenerateWorkoutPlanUseCaseTest {
         val result = generate(profile)
 
         // With all equipment and no limitations, we should have zero warnings
-        // (catalog was designed to have alternatives per muscle pattern, README §26)
+        // (catalog was designed to have alternatives per muscle pattern, spec §26)
         assertTrue("Generous profile should have no warnings but had ${result.warnings}", result.warnings.isEmpty())
 
         // Each day should be fully filled according to template size

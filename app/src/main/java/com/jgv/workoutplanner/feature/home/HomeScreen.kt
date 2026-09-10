@@ -31,7 +31,7 @@ import com.jgv.workoutplanner.domain.model.TrainingGoal
 import com.jgv.workoutplanner.domain.model.WorkoutSplit
 
 /**
- * Stateful entry point for the home destination (README §20, §16 task 5.8).
+ * Stateful entry point for the home destination (spec §16, §20).
  */
 @Composable
 fun HomeRoute(
@@ -53,10 +53,10 @@ fun HomeRoute(
 }
 
 /**
- * Post-onboarding home screen (README §16).
+ * Post-onboarding home screen (spec §16).
  *
- * Shows current plan (if exists), profile summary, active limitations, library entry.
- * Phase 5 real implementation replacing placeholder.
+ * Shows the current plan when present, profile summary, active limitations, and the
+ * exercise-library entry point.
  */
 @Composable
 fun HomeScreen(

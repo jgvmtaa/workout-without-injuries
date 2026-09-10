@@ -7,7 +7,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Structural guarantees for the limitation catalog (README §4.5, §6).
+ * Structural guarantees for the limitation catalog (spec §4.5, §6).
  *
  * The same shape of test as [ExerciseCatalogTest] and [InjuryCatalogTest]: the catalog is
  * hand-written data, so what protects it is exhaustiveness checks rather than examples.

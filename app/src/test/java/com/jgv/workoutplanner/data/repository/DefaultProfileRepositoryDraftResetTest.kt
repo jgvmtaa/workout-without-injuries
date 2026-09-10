@@ -11,7 +11,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class DefaultProfileRepositoryPhase6Test {
+class DefaultProfileRepositoryDraftResetTest {
 
     @Test
     fun `resetDraftFromProfile seeds draft from profile`() = runTest {

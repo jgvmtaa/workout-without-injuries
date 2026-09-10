@@ -15,11 +15,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * Collects goal, experience, schedule, session length and equipment (README §4.3, §20).
+ * Collects goal, experience, schedule, session length and equipment (spec §4.3, §20).
  *
  * Every selection is written to the draft as it is made, so the answers survive leaving
  * the app mid-flow and the screen has no state of its own to fall out of sync
- * (README §21, §27 Phase 3).
+ * (spec §4.3, §21).
  *
  * The split is derived, never stored on the draft: [OnboardingDraft] holds
  * `daysPerWeek`, and the split is computed from it here for display and again when the
@@ -82,7 +82,7 @@ class PreferencesViewModel @Inject constructor(
  * Adds or removes [equipment], keeping [Equipment.BODYWEIGHT] present whatever happens.
  *
  * Enforced here rather than trusted from the UI: the draft is what gets persisted and
- * what plan generation reads, so "there is always at least bodyweight" (README §25) has
+ * what plan generation reads, so "there is always at least bodyweight" (spec §25) has
  * to hold at the data boundary, not at the checkbox.
  */
 private fun OnboardingDraft.withEquipment(

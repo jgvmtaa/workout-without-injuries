@@ -6,7 +6,7 @@ import com.jgv.workoutplanner.domain.model.InjuryId
 import com.jgv.workoutplanner.domain.model.InjuryStatus
 
 /**
- * Immutable state for the injury history screen (README §4.4, §20).
+ * Immutable state for the injury history screen (spec §4.4, §20).
  *
  * Modelled as [injuryGroups] plus a [selectedInjuries] map rather than a list of
  * definitions with a `selected` flag: the catalog part never changes while the screen is
@@ -24,7 +24,7 @@ data class InjuryHistoryUiState(
     val selectedCount: Int get() = selectedInjuries.size
 
     /**
-     * Always true — selecting nothing is a valid answer (README §25).
+     * Always true — selecting nothing is a valid answer (spec §25).
      *
      * Present so the screen reads the same way as the others rather than special-casing
      * a step that happens to have no requirement.
@@ -32,7 +32,7 @@ data class InjuryHistoryUiState(
     val canContinue: Boolean = true
 }
 
-/** One body region and the injuries listed under it (README §4.4, §20). */
+/** One body region and the injuries listed under it (spec §4.4, §20). */
 data class InjuryGroupUiModel(
     val region: BodyRegion,
     @StringRes val regionNameRes: Int,
@@ -45,7 +45,7 @@ data class InjuryUiModel(
     @StringRes val nameRes: Int,
 )
 
-/** Everything the injury history screen can do (README §20). */
+/** Everything the injury history screen can do (spec §20). */
 sealed interface InjuryHistoryEvent {
 
     /** Adds the injury with the default status, or removes it if already selected. */

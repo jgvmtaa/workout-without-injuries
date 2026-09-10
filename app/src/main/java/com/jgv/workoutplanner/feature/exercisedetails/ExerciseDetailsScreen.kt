@@ -39,7 +39,7 @@ import com.jgv.workoutplanner.domain.model.ExerciseEligibility
 import com.jgv.workoutplanner.domain.model.ExerciseId
 
 /**
- * Stateful entry point for exercise details (README §15, §20).
+ * Stateful entry point for exercise details (spec §15, §20).
  */
 @Composable
 fun ExerciseDetailsRoute(
@@ -62,7 +62,7 @@ fun ExerciseDetailsRoute(
 
 /**
  * Detail view for one exercise, including why it is or is not available for the
- * current profile (README §15).
+ * current profile (spec §15).
  *
  * No NavController inside — previewable.
  */

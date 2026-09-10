@@ -7,9 +7,9 @@ import javax.inject.Inject
 
 /**
  * Derives the limitations worth *asking about* from the injuries the user selected
- * (README §4.5, §19).
+ * (spec §4.5, §19).
  *
- * This is the hinge of the whole product rule (README §2). It returns a suggestion set
+ * This is the hinge of the whole product rule (spec §2). It returns a suggestion set
  * and nothing else: it does not touch the draft, the profile, or the confirmed
  * limitations, so there is no code path by which selecting an injury silently excludes
  * an exercise. The limitations screen presents what this returns as unticked boxes; the
@@ -19,7 +19,7 @@ import javax.inject.Inject
  * limitation produce one suggestion, and a limitation is never suggested "twice".
  * [com.jgv.workoutplanner.domain.model.SelectedInjury.status] and `affectedSide` are not
  * read: a historical injury raises the same question as a current one, and the answer
- * is the user's to give (README §4.4).
+ * is the user's to give (spec §4.4).
  */
 class GetSuggestedLimitationsUseCase @Inject constructor(
     private val injuryRepository: InjuryRepository,

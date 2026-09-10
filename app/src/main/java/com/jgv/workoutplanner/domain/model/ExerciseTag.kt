@@ -1,13 +1,13 @@
 package com.jgv.workoutplanner.domain.model
 
 /**
- * Descriptive traits used for ranking and substitution (README §5.3).
+ * Descriptive traits used for ranking and substitution (spec §5.3).
  *
  * Tags never exclude an exercise on their own — only [MovementLimitation]s and missing
- * [Equipment] do that (README §9). They feed the deterministic score in Phase 5: a
+ * [Equipment] do that (spec §9). They feed the deterministic generation score: a
  * [MACHINE_SUPPORTED] exercise outranks a free-weight one when the user has balance
  * limitations, [COMPOUND] work is preferred early in a session, and a second
- * [UNILATERAL] exercise in the same day is penalised (README §12.5).
+ * [UNILATERAL] exercise in the same day is penalised (spec §12.5).
  */
 enum class ExerciseTag {
     COMPOUND,

@@ -26,14 +26,14 @@ import com.jgv.workoutplanner.feature.profile.edit.ProfileEditReviewRoute
 import com.jgv.workoutplanner.navigation.AppRoute.ProfileEditOrigin
 
 /**
- * Navigation shell wiring every destination in [AppRoute] (README §17).
+ * Navigation shell wiring every destination in [AppRoute] (spec §17).
  *
  * The `NavController` lives here and nowhere else: screens are handed plain lambdas,
- * which keeps them previewable and testable in isolation (README §20).
+ * which keeps them previewable and testable in isolation (spec §20).
  *
  * @param startDestination decided by
  *   [com.jgv.workoutplanner.MainViewModel] from the stored profile — Welcome on first
- *   launch, Home for a returning user (README §3). Passed in rather than read here so
+ *   launch, Home for a returning user (spec §3). Passed in rather than read here so
  *   this stays a pure function of its arguments, and because changing it after
  *   composition would rebuild the graph and discard the back stack.
  */
@@ -166,7 +166,7 @@ fun AppNavigation(
             )
         }
 
-        // ---- Profile editing dedicated destinations (Phase 6 §6.5)
+        // ---- Profile editing destinations (spec §13)
 
         composable<AppRoute.ProfileEditPreferences> {
             ProfileEditPreferencesRoute(

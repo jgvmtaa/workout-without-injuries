@@ -8,14 +8,14 @@ import com.jgv.workoutplanner.domain.repository.ExerciseRepository
 import javax.inject.Inject
 
 /**
- * Categorizes every exercise in the catalog for a profile (README §9, §14).
+ * Categorizes every exercise in the catalog for a profile (spec §9, §14).
  *
- * Deterministic (README §12.5, §27 Phase 4): same profile ⇒ same grouping, because
+ * Deterministic (spec §9, §12.5): same profile ⇒ same grouping, because
  * the catalog order is fixed and each eligibility check is pure. Ties broken by
  * ExerciseId.name inside [FilteredExercises] construction.
  *
  * Excluded exercises remain inspectable but are never auto-included by the planner
- * (Phase 5 respects this).
+ * (plan generation preserves this rule).
  */
 class GetEligibleExercisesUseCase @Inject constructor(
     private val exerciseRepository: ExerciseRepository,

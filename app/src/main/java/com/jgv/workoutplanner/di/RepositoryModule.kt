@@ -15,7 +15,7 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 /**
- * Binds repository interfaces to their implementations (README §22).
+ * Binds repository interfaces to their implementations (spec §22).
  */
 @Module
 @InstallIn(SingletonComponent::class)

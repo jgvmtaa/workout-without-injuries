@@ -17,7 +17,7 @@ import org.junit.Rule
 import org.junit.Test
 
 /**
- * The screen the whole product rule rests on (README §2, §4.5, §24.5).
+ * The screen the whole product rule rests on (spec §2, §4.5, §24.5).
  *
  * Most of what follows is one assertion in different clothes: a suggestion is not a
  * confirmation. It is worth the repetition — this is the behaviour that separates
@@ -55,7 +55,7 @@ class MovementLimitationsViewModelTest {
         }
     }
 
-    /** The core assertion of README §2, at the screen that could break it. */
+    /** The core assertion of spec §2, at the screen that could break it. */
     @Test
     fun `suggestions arrive unconfirmed`() = runTest {
         val repository = repositoryWithAcl()
@@ -137,7 +137,7 @@ class MovementLimitationsViewModelTest {
         )
     }
 
-    /** README §4.5: a limitation from a clinician need not relate to a selected injury. */
+    /** spec §4.5: a limitation from a clinician need not relate to a selected injury. */
     @Test
     fun `a limitation unrelated to any injury can be added`() = runTest {
         val repository = repositoryWithAcl()

@@ -9,7 +9,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 /**
- * Reads/writes [StoredWorkoutPlan] as JSON for typed DataStore (README §21, task 5.7).
+ * Reads and writes [StoredWorkoutPlan] as JSON for typed DataStore (spec §21).
  *
  * Mirrors [PersistedStateSerializer]: tolerant on read (ignoreUnknownKeys), complete on write
  * (encodeDefaults + prettyPrint for debuggability). Corruption resets to empty plan rather than

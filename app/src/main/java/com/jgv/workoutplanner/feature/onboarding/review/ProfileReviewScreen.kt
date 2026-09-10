@@ -24,7 +24,7 @@ import com.jgv.workoutplanner.core.ui.SectionHeader
 import com.jgv.workoutplanner.core.ui.StepIntroduction
 
 /**
- * Stateful entry point for the review step (README §20).
+ * Stateful entry point for the review step (spec §20).
  *
  * Unlike the other routes, this one waits: [onFinish] fires from a `LaunchedEffect` on
  * the ViewModel's finished signal, not from the button, so navigation cannot outrun the
@@ -58,11 +58,11 @@ fun ProfileReviewRoute(
 
 /**
  * Final onboarding step: everything collected, in one place, before the first plan
- * (README §3, §4).
+ * (spec §3, §4).
  *
  * The limitations section carries a note that these are the only thing filtering
  * exercises. It is the last chance to correct the impression that selecting an injury
- * did something on its own (README §2).
+ * did something on its own (spec §2).
  */
 @Composable
 fun ProfileReviewScreen(

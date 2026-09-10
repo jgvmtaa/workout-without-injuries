@@ -59,7 +59,7 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 /**
- * Material 3 theme for the whole app (README §19, §27 Phase 1).
+ * Material 3 theme for the whole app (spec §19, §27).
  *
  * Light is the MVP baseline; dark follows the system setting so the app is usable
  * either way. Dynamic (Material You) color is intentionally not used — the palette

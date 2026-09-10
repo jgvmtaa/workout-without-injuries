@@ -62,7 +62,7 @@ import com.jgv.workoutplanner.domain.model.WorkoutDayFocus
 import com.jgv.workoutplanner.domain.model.WorkoutExerciseEditResult
 
 /**
- * Stateful entry point for the plan destination (README §20, Phase 5/6).
+ * Stateful entry point for the plan destination (spec §12, §13, §20).
  *
  * - Auto-generates if no plan.
  * - Collects typed one-shot effects (PlanEffect.EditFailed) and maps to localized text.
@@ -137,7 +137,7 @@ fun PlanRoute(
 }
 
 /**
- * The current workout plan (README §11–§13, Phase 5/6).
+ * The current workout plan (spec §11–§13).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

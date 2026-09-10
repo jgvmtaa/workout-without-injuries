@@ -7,10 +7,8 @@ import com.jgv.workoutplanner.domain.model.InjuryId
 /**
  * Read access to the injury catalog.
  *
- * README §19 sketches three repositories and does not name this one, but "injuries can
- * be queried by body region" is a Phase 2 completion criterion (README §27) and that
- * query does not belong on [ExerciseRepository]. Kept separate rather than merged so
- * the two catalogs stay independently replaceable.
+ * The injury catalog has its own repository boundary so grouping and lookup remain
+ * independently testable (spec §4.4, §7, §19).
  */
 interface InjuryRepository {
 
@@ -24,7 +22,7 @@ interface InjuryRepository {
     fun getInjuriesByBodyRegion(bodyRegion: BodyRegion): List<InjuryDefinition>
 
     /**
-     * Every injury grouped by region, for the injury-history screen (README §4.4).
+     * Every injury grouped by region, for the injury-history screen (spec §4.4).
      *
      * Regions with no injuries are omitted, so the screen renders whatever the catalog
      * happens to cover instead of showing empty sections.

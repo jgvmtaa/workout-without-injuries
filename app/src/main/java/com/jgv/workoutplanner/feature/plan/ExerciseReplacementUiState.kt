@@ -4,7 +4,7 @@ import com.jgv.workoutplanner.domain.model.ExerciseDefinition
 import com.jgv.workoutplanner.domain.model.ExerciseId
 
 /**
- * Immutable state for replacement screen (Phase 6 §6.3, README §20).
+ * Immutable state for the replacement screen (spec §13, §20).
  */
 data class ExerciseReplacementUiState(
     val isLoading: Boolean = true,

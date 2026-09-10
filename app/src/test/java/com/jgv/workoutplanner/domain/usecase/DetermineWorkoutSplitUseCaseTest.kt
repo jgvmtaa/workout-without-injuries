@@ -6,7 +6,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Test
 
-/** The frequency-to-split mapping from README §12.1. */
+/** The frequency-to-split mapping from spec §12.1. */
 class DetermineWorkoutSplitUseCaseTest {
 
     private val determineSplit = DetermineWorkoutSplitUseCase()
@@ -41,7 +41,7 @@ class DetermineWorkoutSplitUseCaseTest {
 
     /**
      * A profile persisted by an older build could carry a frequency this one no longer
-     * offers. README §24.4 requires generation not to crash on odd input, and it starts
+     * offers. spec §24.4 requires generation not to crash on odd input, and it starts
      * here.
      */
     @Test
@@ -51,7 +51,7 @@ class DetermineWorkoutSplitUseCaseTest {
         assertEquals(WorkoutSplit.UPPER_LOWER, determineSplit(-1))
     }
 
-    /** Same input, same split — the first link in README §12.5's determinism chain. */
+    /** Same input, same split — the first link in spec §12.5's determinism chain. */
     @Test
     fun `the mapping is deterministic`() {
         repeat(10) {

@@ -1,12 +1,10 @@
 package com.jgv.workoutplanner.domain.model
 
 /**
- * How much training experience the user reports (README §4.3).
+ * How much training experience the user reports (spec §4.3).
  *
- * Compared against [ExerciseDifficulty] by the eligibility engine in Phase 4
- * (README §8). §8 leaves open whether experience should exclude an exercise outright
- * or only lower its ranking — Phase 4 uses strict exclusion for determinism; ranking
- * may reconsider this in Phase 5.
+ * Compared against [ExerciseDifficulty] by the eligibility engine using the strict
+ * support matrix in spec §8.
  */
 enum class ExperienceLevel {
     BEGINNER,
@@ -14,7 +12,7 @@ enum class ExperienceLevel {
     ADVANCED;
 
     /**
-     * Whether this experience level can perform an exercise of [difficulty] (README §8).
+     * Whether this experience level can perform an exercise of [difficulty] (spec §8).
      *
      * BEGINNER → only BEGINNER, INTERMEDIATE → BEGINNER + INTERMEDIATE, ADVANCED → all.
      */

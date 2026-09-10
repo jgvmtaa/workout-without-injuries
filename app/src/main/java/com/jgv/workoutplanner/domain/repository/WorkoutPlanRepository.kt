@@ -5,11 +5,11 @@ import com.jgv.workoutplanner.domain.model.WorkoutPlan
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Storage for the current workout plan (README §19, §21, §25).
+ * Storage for the current workout plan (spec §19, §21, §25).
  *
- * One plan at a time — the MVP has no plan history (README §29).
- * Phase 6 owns manual edits through an atomic mutation contract that can only replace
- * the domain WorkoutPlan. Warnings and requiresRegeneration are preserved internally
+ * One plan at a time — the MVP has no plan history (spec §29).
+ * Manual edits use an atomic mutation contract that can only replace the domain
+ * WorkoutPlan. Warnings and requiresRegeneration are preserved internally
  * by the implementation and cannot be written by callers of the manual-edit path.
  *
  * Only [saveGeneratedPlan] is allowed to clear [requiresRegeneration]; it does so only
@@ -27,7 +27,7 @@ interface WorkoutPlanRepository {
     val requiresRegeneration: Flow<Boolean>
 
     // ----------------------------------------------------------------
-    // Atomic manual-edit contract (Phase 6 §6.1)
+    // Atomic manual-edit contract (spec §13)
 
     data class WorkoutPlanSnapshot(
         val plan: WorkoutPlan?,

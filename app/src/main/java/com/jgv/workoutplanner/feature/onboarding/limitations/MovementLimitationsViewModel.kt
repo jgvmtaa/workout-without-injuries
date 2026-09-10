@@ -19,13 +19,13 @@ import javax.inject.Inject
 
 /**
  * Presents suggested limitations and records the ones the user confirms
- * (README §4.5, §20).
+ * (spec §4.5, §20).
  *
  * ## What this ViewModel deliberately does not do
  * It never writes a suggestion into `confirmedLimitations`. Suggestions are recomputed
  * from the draft's injuries on every emission and exist only in the UI state; the draft
  * gains a limitation solely through [MovementLimitationsEvent.SetConfirmed], which is
- * only ever sent by a user tapping a checkbox. That is the whole of README §2 expressed
+ * only ever sent by a user tapping a checkbox. That is the whole of spec §2 expressed
  * as code, and the test in `MovementLimitationsViewModelTest` pins it.
  *
  * A limitation the user confirmed stays confirmed if they go back and remove the injury

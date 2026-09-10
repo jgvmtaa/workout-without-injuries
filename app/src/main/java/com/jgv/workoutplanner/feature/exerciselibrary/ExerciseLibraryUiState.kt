@@ -8,7 +8,7 @@ import com.jgv.workoutplanner.domain.model.ExclusionReason
 import com.jgv.workoutplanner.domain.model.MuscleGroup
 
 /**
- * Row displayed in the exercise library (README §14).
+ * Row displayed in the exercise library (spec §14).
  *
  * Combines the catalog definition with the eligibility result for the current profile,
  * so the screen can render both the description and the availability badge without
@@ -19,13 +19,13 @@ data class ExerciseRowUiModel(
     val eligibility: ExerciseEligibility,
     val availability: ExerciseAvailability,
 ) {
-    /** Number of conflicting limitations — surfaced as "Excluded by N limitation(s)" (Phase 4.4). */
+    /** Number of conflicting limitations, surfaced as "Excluded by N limitation(s)". */
     val conflictingLimitationCount: Int =
         eligibility.exclusionReasons.count { it is ExclusionReason.ConflictingLimitation }
 }
 
 /**
- * Immutable state for the exercise library screen (README §14, §20).
+ * Immutable state for the exercise library screen (spec §14, §20).
  *
  * Filtering is deterministic: same profile + same filters ⇒ same [filteredRows],
  * because sorting is always by ExerciseId.name.
@@ -57,7 +57,7 @@ data class ExerciseLibraryUiState(
     /**
      * True only when limitation conflicts exclude every row in the current category.
      * Equipment- or experience-unavailable rows are intentionally not classified as
-     * limitation exclusions (README §25).
+     * limitation exclusions (spec §25).
      */
     val areAllFilteredExercisesExcluded: Boolean
         get() = !isLoading &&
@@ -80,7 +80,7 @@ data class ExerciseLibraryUiState(
     }
 }
 
-/** Everything the library screen can do (README §20). */
+/** Everything the library screen can do (spec §20). */
 sealed interface ExerciseLibraryEvent {
     data class SelectMuscleGroup(val group: MuscleGroup?) : ExerciseLibraryEvent
     data class SearchQueryChanged(val query: String) : ExerciseLibraryEvent

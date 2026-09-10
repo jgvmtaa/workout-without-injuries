@@ -11,7 +11,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * The suggestion half of the core product rule (README §2, §4.5, §24.3).
+ * The suggestion half of the core product rule (spec §2, §4.5, §24.3).
  *
  * Run against the real injury catalog rather than a stub. The behaviour worth protecting
  * is "the catalog's suggestions reach the screen unchanged and nothing else happens",
@@ -21,7 +21,7 @@ class GetSuggestedLimitationsUseCaseTest {
 
     private val useCase = GetSuggestedLimitationsUseCase(DefaultInjuryRepository())
 
-    /** The worked example from README §4.5, and the test §24.3 asks for. */
+    /** The worked example from spec §4.5, and the test §24.3 asks for. */
     @Test
     fun `ACL history suggests jumping and direction-change limitations`() {
         val suggestions = useCase(setOf(injury(InjuryId.KNEE_ACL)))
@@ -92,7 +92,7 @@ class GetSuggestedLimitationsUseCaseTest {
     }
 
     /**
-     * README §4.4: the MVP engine ignores how current an injury is. A historical ACL
+     * spec §4.4: the MVP engine ignores how current an injury is. A historical ACL
      * raises the same question as one that hurts today — the user decides the answer.
      */
     @Test

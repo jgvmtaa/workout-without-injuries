@@ -10,7 +10,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Structural guarantees for the exercise catalog (README §26, Phase 2 task 2.7).
+ * Structural guarantees for the exercise catalog (spec §7, §26).
  *
  * The catalog is hand-written data, and the failure modes are the ones humans have when
  * editing sixty near-identical blocks: a duplicated id, a copy-pasted name that was
@@ -22,7 +22,7 @@ class ExerciseCatalogTest {
 
     private val exercises = ExerciseCatalog.exercises
 
-    /** README §26: aim for roughly 45–60 exercises. */
+    /** spec §26: aim for roughly 45–60 exercises. */
     @Test
     fun `catalog size is within the target range`() {
         assertTrue(
@@ -74,7 +74,7 @@ class ExerciseCatalogTest {
         )
     }
 
-    /** README §26 sets a per-muscle distribution so no muscle group is left thin. */
+    /** spec §26 sets a per-muscle distribution so no muscle group is left thin. */
     @Test
     fun `primary muscle distribution matches the target ranges`() {
         val targets = mapOf(
@@ -108,7 +108,7 @@ class ExerciseCatalogTest {
     }
 
     /**
-     * README §26: every movement needs substitutes across equipment types, "because
+     * spec §26: every movement needs substitutes across equipment types, "because
      * filtering only works well when each movement has several possible substitutes".
      *
      * Bodyweight-only patterns are exempt from the equipment requirement — they are

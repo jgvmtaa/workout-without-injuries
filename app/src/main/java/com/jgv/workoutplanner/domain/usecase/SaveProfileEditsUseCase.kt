@@ -8,7 +8,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.first
 
 /**
- * Cross-repository rule for profile editing (Phase 6 §6.5, §6.6).
+ * Cross-repository rule for profile editing (spec §13).
  *
  * Compares old vs new profile (except hasAcceptedSafetyNotice). If changed,
  * markRequiresRegeneration before saving profile to avoid exposing changed profile
