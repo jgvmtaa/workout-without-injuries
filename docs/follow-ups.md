@@ -181,9 +181,8 @@ so it stays here rather than being assumed from a green build.
   per process tree, and those trees do not get it, so the client cannot reach the daemon
   over loopback. Symptom: `./gradlew --version` succeeds, the daemon logs "Daemon server
   started", and the build fails with "Could not connect to the Gradle daemon" — with or
-  without `--no-daemon`. Nothing is wrong with the project.
-  [`tools/verify-no-gradle.sh`](../tools/verify-no-gradle.sh) exists for that case and
-  needs no sockets. See [toolchain.md](toolchain.md).
+  without `--no-daemon`. Nothing is wrong with the project. Build from an interactive
+  terminal, Android Studio, or CI. See [toolchain.md](toolchain.md).
 - Emulator install gotchas: a full `/data` makes `install-create` fail with a
   generic "Unknown failure" (wipe AVD data / size up userdata); IDE debug APKs
   are `testOnly`, so manual `adb install` needs `-t`. See [toolchain.md](toolchain.md).

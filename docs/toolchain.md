@@ -159,48 +159,6 @@ Automation shells can fail in two distinct ways, each requiring a different resp
 In either case you are in the wrong kind of shell. Build from your own terminal,
 Android Studio, or CI.
 
-### Workaround: compiling and running JVM tests without Gradle
-
-For case 2 only. The block there is on *socket connect*, not on running a JVM, so the
-Kotlin compiler can be invoked directly.
-[`tools/verify-no-gradle.sh`](../tools/verify-no-gradle.sh) does this:
-
-```bash
-tools/verify-no-gradle.sh           # compile everything, then run the unit tests
-tools/verify-no-gradle.sh --quiet   # same, without the toolchain banner
-```
-
-It compiles `app/src/main`, `app/src/test` and `app/src/androidTest` in one pass with
-the Compose and serialization compiler plugins, then runs every JUnit class in
-`app/src/test`.
-
-**It has its own environment requirements**, and does not help in case 1:
-
-- A `kotlinc` matching the version selected by the build. The script defaults to the
-  macOS Android Studio install path; on any other platform `KOTLINC_HOME` is required,
-  not optional.
-- An Android SDK with an `android.jar` — `ANDROID_HOME`, `ANDROID_SDK_ROOT`, or
-  the fallback documented by the script.
-- A populated Gradle module cache, obtained by completing a project sync.
-
-Implementation details:
-
-- **`R` is generated from `strings.xml`** by a Python block in the script, standing in
-  for aapt. That is not just scaffolding — a reference to a string that does not exist
-  becomes a compile error, which is a check the IDE would otherwise be the only one
-  doing.
-- **Embeddable everything.** The compiler is `kotlin-compiler-embeddable` from the
-  Gradle cache, not `kotlinc/lib/kotlin-compiler.jar`, because the Compose plugin
-  published to Maven is built against the shaded compiler. Mixing the two fails with
-  "the provided plugin ... is not compatible with this version of compiler". The
-  embeddable compiler also bundles none of its own runtime dependencies, so the script
-  supplies stdlib, reflect, script-runtime, trove4j, annotations and coroutines by hand.
-
-**Limits.** No aapt, no KSP, no Hilt code generation, no lint, no packaging, and nothing
-on a device. A missing Hilt binding or a resource that only exists in a preview will get
-through. It is a fast correctness check, not a build; use the standard Gradle build in
-CI or Android Studio for validation.
-
 ## Note on emulator installs
 
 IDE "Run" builds mark the debug APK `testOnly`, so a manual install needs the
