@@ -129,9 +129,9 @@ a row to a dense screen fails the run at 2.0x even when 1.0x still fits.
 
 - [x] `SC-001-welcome` — Welcome headline, disclaimer, three setup steps, Get started,
   and Review safety actions. No back affordance.
-- [ ] `SC-002-safety-unacknowledged` — Four acknowledgements, unchecked confirmation,
+- [x] `SC-002-safety-unacknowledged` — Four acknowledgements, unchecked confirmation,
   and disabled Accept safety action. `[dense]`
-- [ ] `SC-003-safety-acknowledged` — Checked confirmation and enabled Accept safety
+- [x] `SC-003-safety-acknowledged` — Checked confirmation and enabled Accept safety
   action.
 - [ ] `SC-004-preferences-incomplete` — Required preference fields unanswered, no
   derived-split card, fixed disabled Bodyweight row, and Continue disabled.

@@ -132,7 +132,8 @@ Robolectric requires
 `android.testOptions.unitTests.isIncludeAndroidResources = true` in
 `app/build.gradle.kts`. The suite itself lives in
 `app/src/test/java/com/jgv/workoutplanner/screenshots/`; baselines are committed
-under `app/src/test/screenshots/` and named `<case>[-<scroll>]-<variant>.png`.
+under `app/src/test/screenshots/` and named
+`<screen>-<state>[-<scroll>]-<variant>.png`.
 Failure actuals/diffs (`*_actual.png`, `*_compare.png`) land next to the baselines
 and under `build/outputs/roborazzi/`; both are git-ignored, never committed.
 
