@@ -118,6 +118,8 @@ dependencies {
     testImplementation(libs.roborazzi)
     testImplementation(libs.roborazzi.compose)
     testImplementation(libs.roborazzi.junit.rule)
+    // Compose rule + semantics scrolling for multi-frame (tall) captures.
+    testImplementation(libs.androidx.ui.test.junit4)
 
     // Instrumented tests
     androidTestImplementation(libs.androidx.test.ext.junit)

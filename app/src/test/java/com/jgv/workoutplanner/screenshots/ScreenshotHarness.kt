@@ -1,13 +1,26 @@
 package com.jgv.workoutplanner.screenshots
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.onChildren
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.unit.Density
+import androidx.test.core.app.ApplicationProvider
+import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.RoborazziRule
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.jgv.workoutplanner.core.designsystem.AppTheme
+import java.io.File
+import kotlin.math.ceil
+import kotlin.math.roundToInt
+import org.junit.Assert.assertEquals
 
 /**
  * Shared harness for the screenshot suite.
@@ -37,7 +50,11 @@ internal const val BASELINE_DIR = "src/test/screenshots"
 internal const val LIGHT_QUALIFIERS = "en-rUS-w360dp-h800dp-notlong-port-notnight-xhdpi"
 internal const val DARK_QUALIFIERS = "en-rUS-w360dp-h800dp-notlong-port-night-xhdpi"
 
+// Mirrored layout: pseudolocale keeps the strings legible while flipping direction.
+internal const val RTL_QUALIFIERS = "ar-rXB-w360dp-h800dp-notlong-port-notnight-xhdpi"
+
 /** Rule carrying the suite's comparison threshold into every capture. */
+@OptIn(ExperimentalRoborazziApi::class)
 fun screenshotRule(): RoborazziRule = RoborazziRule(
     options = RoborazziRule.Options(
         roborazziOptions = RoborazziOptions(
@@ -68,16 +85,114 @@ fun captureScreenshot(
         filePath = "$BASELINE_DIR/$fileName.png",
     ) {
         AppTheme {
-            if (fontScale == 1f) {
-                content()
-            } else {
-                val density = LocalDensity.current
-                CompositionLocalProvider(
-                    LocalDensity provides Density(density.density, fontScale),
-                ) {
-                    content()
-                }
+            ScaledContent(fontScale, content)
+        }
+    }
+}
+
+/**
+ * Multi-frame capture for scrollable screens.
+ *
+ * Measures the scrollable content height `H` ([scrollTag]) against the viewport
+ * height `V` (window root) and captures `N = ceil(H / (V - 64dp))` frames at
+ * offsets `0, (V - 64dp), …`, clamping the last flush with the content end —
+ * the overlap keeps a row from falling between frames. Frame suffixes follow the
+ * suite contract: none when `N = 1`; `-top`/`-bottom` when 2; `-top`/`-middle`/
+ * `-bottom` when 3; `-p1`…`-pN` beyond that.
+ *
+ * Scrolling goes through the `ScrollBy` semantics action, so the content column
+ * needs a test tag and no other machinery. The run then asserts the committed
+ * baseline set for ([baseName], [variant]) is exactly the `N` images produced —
+ * a missing or orphaned image fails. Measured `H`/`V`/`N` print to test output
+ * for review: when a tag and the measurement disagree, the measurement is right.
+ *
+ * Requires [content] to reach Compose idle: screens with indeterminate progress
+ * indicators never settle and cannot use this path.
+ */
+fun ComposeContentTestRule.captureScrollable(
+    baseName: String,
+    variant: String,
+    fontScale: Float = 1f,
+    scrollTag: String,
+    content: @Composable () -> Unit,
+) {
+    setContent {
+        AppTheme {
+            ScaledContent(fontScale, content)
+        }
+    }
+    waitForIdle()
+
+    val displayDensity = ApplicationProvider.getApplicationContext<Context>()
+        .resources.displayMetrics.density
+    // The scrollable column's own box is viewport-sized (its scrolling parent
+    // constrains it), so V comes from the box while H comes from the children's
+    // bounds at scroll offset 0. Measured before any scrolling below.
+    val viewportHeight = onNodeWithTag(scrollTag).fetchSemanticsNode().size.height
+    val childBounds = onNodeWithTag(scrollTag).onChildren().fetchSemanticsNodes()
+    val contentHeight = (
+        childBounds.maxOf { it.positionInRoot.y + it.size.height } -
+            childBounds.minOf { it.positionInRoot.y }
+        ).roundToInt()
+    val step = viewportHeight - (64 * displayDensity).roundToInt()
+    val frameCount = ceil(contentHeight / step.toFloat()).toInt().coerceAtLeast(1)
+    println("Screenshot $baseName-$variant: content=${contentHeight}px viewport=${viewportHeight}px frames=$frameCount")
+
+    val lastOffset = (contentHeight - viewportHeight).coerceAtLeast(0)
+    val offsets = if (frameCount == 1) {
+        listOf(0)
+    } else {
+        List(frameCount) { index -> (index * step).coerceAtMost(lastOffset) }
+    }
+    var scrolled = 0
+    offsets.forEachIndexed { index, offset ->
+        onNodeWithTag(scrollTag).performSemanticsAction(SemanticsActions.ScrollBy) {
+            it(0f, (offset - scrolled).toFloat())
+        }
+        waitForIdle()
+        scrolled = offset
+        onRoot().captureRoboImage("$BASELINE_DIR/${frameName(baseName, variant, frameCount, index)}.png")
+    }
+
+    val expected = offsets.indices
+        .map { "${frameName(baseName, variant, frameCount, it)}.png" }
+        .toSet()
+    val actual = File(BASELINE_DIR).listFiles { _, name ->
+        name.endsWith(".png") &&
+            name.removeSuffix(".png").let { stem ->
+                stem.startsWith("$baseName-") && stem.endsWith("-$variant")
             }
+    }?.map { it.name }?.toSet().orEmpty()
+    assertEquals(
+        "Baseline set for $baseName-$variant must be exactly the $frameCount measured frames",
+        expected,
+        actual,
+    )
+}
+
+private fun frameName(baseName: String, variant: String, frameCount: Int, index: Int): String {
+    val scroll = when (frameCount) {
+        1 -> ""
+        2 -> if (index == 0) "-top" else "-bottom"
+        3 -> listOf("-top", "-middle", "-bottom")[index]
+        else -> "-p${index + 1}"
+    }
+    return "$baseName$scroll-$variant"
+}
+
+@Composable
+private fun ScaledContent(
+    fontScale: Float,
+    content: @Composable () -> Unit,
+) {
+    if (fontScale == 1f) {
+        content()
+    } else {
+        val density = LocalDensity.current
+        CompositionLocalProvider(
+            LocalDensity provides Density(density.density, fontScale),
+        ) {
+            content()
         }
     }
 }

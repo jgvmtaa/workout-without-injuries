@@ -17,11 +17,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.jgv.workoutplanner.R
 import com.jgv.workoutplanner.core.designsystem.AppTheme
 import com.jgv.workoutplanner.core.designsystem.Dimens
+
+/** Test tag of the scaffold's scrollable content column (screenshot suite). */
+const val ONBOARDING_CONTENT_TAG = "onboarding_content"
 
 /**
  * The shape every onboarding step shares: a title bar, scrolling content, and one
@@ -78,6 +82,9 @@ fun OnboardingScaffold(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
+                // Test-only hook for the screenshot suite's multi-frame scroll
+                // captures. No visual or accessibility effect.
+                .testTag(ONBOARDING_CONTENT_TAG)
                 .padding(
                     start = Dimens.ScreenPadding,
                     end = Dimens.ScreenPadding,

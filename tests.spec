@@ -133,10 +133,10 @@ a row to a dense screen fails the run at 2.0x even when 1.0x still fits.
   and disabled Accept safety action. `[dense]`
 - [x] `SC-003-safety-acknowledged` — Checked confirmation and enabled Accept safety
   action.
-- [ ] `SC-004-preferences-incomplete` — Required preference fields unanswered, no
+- [x] `SC-004-preferences-incomplete` — Required preference fields unanswered, no
   derived-split card, fixed disabled Bodyweight row, and Continue disabled.
   `[tall+]` `[dense+]`
-- [ ] `SC-005-preferences-complete` — Goal, experience, schedule, duration, selected
+- [x] `SC-005-preferences-complete` — Goal, experience, schedule, duration, selected
   equipment, fixed Bodyweight, derived split, and Continue enabled.
   `[tall+]` `[dense+]` `[rtl]`
 - [ ] `SC-006-injuries-none-selected` — Grouped injury list with no selected-count label
