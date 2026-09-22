@@ -77,10 +77,12 @@ The harness computes the requirement instead of trusting a tag:
    images this produced — no more, no fewer. A missing or orphaned image fails the run.
 
 Suffixes: `-top` and `-bottom` when `N = 2`; `-top`, `-middle`, `-bottom` when `N = 3`;
-`-p1` … `-pN` when `N > 3`, which large text on the onboarding lists will reach.
+`-p1` … `-pN` when `N > 3` — large text on the onboarding lists, and the full
+injury and limitation catalogs even at baseline.
 
-The `[tall]` and `[tall+]` tags below therefore document the expected `N` **at the
-baseline variant only** (2 and 3 respectively; untagged means 1). They are a review aid
+The `[tall]`, `[tall+]`, and `[tall++]` tags below therefore document the expected
+`N` **at the baseline variant only** (2, 3, and 4 or more respectively; untagged
+means 1). They are a review aid
 — they let a reader see at a glance which cases are long — not the enforcement
 mechanism. Step 4 is the enforcement mechanism. Two consequences:
 
@@ -139,21 +141,21 @@ a row to a dense screen fails the run at 2.0x even when 1.0x still fits.
 - [x] `SC-005-preferences-complete` — Goal, experience, schedule, duration, selected
   equipment, fixed Bodyweight, derived split, and Continue enabled.
   `[tall+]` `[dense+]` `[rtl]`
-- [ ] `SC-006-injuries-none-selected` — Grouped injury list with no selected-count label
-  or status controls. `[tall+]`
-- [ ] `SC-007-injuries-selected` — Non-zero selected count and the selected injury's
-  status control. `[tall+]` `[dense]`
-- [ ] `SC-008-limitations-no-suggestions` — No-suggestions card, browsable limitations,
-  no selected-count label, and enabled continuation. `[tall+]`
-- [ ] `SC-009-limitations-unconfirmed` — Injury-derived suggestions shown separately,
-  all unchecked, and no selected-count label. `[tall+]` `[dense]`
-- [ ] `SC-010-limitations-confirmed` — Confirmed suggested and manually browsed
-  limitations, with the non-zero selected-count label. `[tall+]`
-- [ ] `SC-011-profile-review` — Complete populated profile, including non-empty injuries
+- [x] `SC-006-injuries-none-selected` — Grouped injury list with no selected-count label
+  or status controls. `[tall++]`
+- [x] `SC-007-injuries-selected` — Non-zero selected count and the selected injury's
+  status control. `[tall++]` `[dense]`
+- [x] `SC-008-limitations-no-suggestions` — No-suggestions card, browsable limitations,
+  no selected-count label, and enabled continuation. `[tall++]`
+- [x] `SC-009-limitations-unconfirmed` — Injury-derived suggestions shown separately,
+  all unchecked, and no selected-count label. `[tall++]` `[dense]`
+- [x] `SC-010-limitations-confirmed` — Confirmed suggested and manually browsed
+  limitations, with the non-zero selected-count label. `[tall++]`
+- [x] `SC-011-profile-review` — Complete populated profile, including non-empty injuries
   and limitations, with Finish setup enabled. `[tall]` `[dense]` `[rtl]`
-- [ ] `SC-044-profile-review-minimal` — Complete profile with Bodyweight only, no
+- [x] `SC-044-profile-review-minimal` — Complete profile with Bodyweight only, no
   injuries, and no limitations; both empty-section messages are visible. `[tall]`
-- [ ] `SC-045-profile-review-incomplete` — Missing-value labels, incomplete-profile error,
+- [x] `SC-045-profile-review-incomplete` — Missing-value labels, incomplete-profile error,
   and disabled Finish setup action. `[tall]` `[dense]`
 
 ### Home

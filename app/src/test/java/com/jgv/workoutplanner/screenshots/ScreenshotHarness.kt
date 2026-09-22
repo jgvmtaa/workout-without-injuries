@@ -5,8 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
-import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performSemanticsAction
@@ -16,6 +16,7 @@ import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.RoborazziRule
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.github.takahirom.roborazzi.roborazziSystemPropertyTaskType
 import com.jgv.workoutplanner.core.designsystem.AppTheme
 import java.io.File
 import kotlin.math.ceil
@@ -93,12 +94,14 @@ fun captureScreenshot(
 /**
  * Multi-frame capture for scrollable screens.
  *
- * Measures the scrollable content height `H` ([scrollTag]) against the viewport
- * height `V` (window root) and captures `N = ceil(H / (V - 64dp))` frames at
- * offsets `0, (V - 64dp), …`, clamping the last flush with the content end —
- * the overlap keeps a row from falling between frames. Frame suffixes follow the
- * suite contract: none when `N = 1`; `-top`/`-bottom` when 2; `-top`/`-middle`/
- * `-bottom` when 3; `-p1`…`-pN` beyond that.
+ * Reads the viewport height `V` (the scrollable column's own box) and the scroll
+ * range `H - V` (the column's `VerticalScrollAxisRange`, which the scroller
+ * maintains — no child enumeration, so bare text rows cannot go missing) and
+ * captures `N = ceil(H / (V - 64dp))` frames at offsets `0, (V - 64dp), …`,
+ * clamping the last flush with the content end — the overlap keeps a row from
+ * falling between frames. Frame suffixes follow the suite contract: none when
+ * `N = 1`; `-top`/`-bottom` when 2; `-top`/`-middle`/`-bottom` when 3;
+ * `-p1`…`-pN` beyond that.
  *
  * Scrolling goes through the `ScrollBy` semantics action, so the content column
  * needs a test tag and no other machinery. The run then asserts the committed
@@ -106,9 +109,12 @@ fun captureScreenshot(
  * a missing or orphaned image fails. Measured `H`/`V`/`N` print to test output
  * for review: when a tag and the measurement disagree, the measurement is right.
  *
- * Requires [content] to reach Compose idle: screens with indeterminate progress
- * indicators never settle and cannot use this path.
+ * A plain `./gradlew test` run (no Roborazzi task type) skips everything, the
+ * same as single-frame captures. Requires [content] to reach Compose idle when
+ * enabled: screens with indeterminate progress indicators never settle and
+ * cannot use this path.
  */
+@OptIn(ExperimentalRoborazziApi::class)
 fun ComposeContentTestRule.captureScrollable(
     baseName: String,
     variant: String,
@@ -116,6 +122,9 @@ fun ComposeContentTestRule.captureScrollable(
     scrollTag: String,
     content: @Composable () -> Unit,
 ) {
+    if (!roborazziSystemPropertyTaskType().isEnabled()) {
+        return
+    }
     setContent {
         AppTheme {
             ScaledContent(fontScale, content)
@@ -125,15 +134,13 @@ fun ComposeContentTestRule.captureScrollable(
 
     val displayDensity = ApplicationProvider.getApplicationContext<Context>()
         .resources.displayMetrics.density
-    // The scrollable column's own box is viewport-sized (its scrolling parent
-    // constrains it), so V comes from the box while H comes from the children's
-    // bounds at scroll offset 0. Measured before any scrolling below.
-    val viewportHeight = onNodeWithTag(scrollTag).fetchSemanticsNode().size.height
-    val childBounds = onNodeWithTag(scrollTag).onChildren().fetchSemanticsNodes()
-    val contentHeight = (
-        childBounds.maxOf { it.positionInRoot.y + it.size.height } -
-            childBounds.minOf { it.positionInRoot.y }
-        ).roundToInt()
+    val scrollNode = onNodeWithTag(scrollTag).fetchSemanticsNode()
+    val viewportHeight = scrollNode.size.height
+    require(scrollNode.config.contains(SemanticsProperties.VerticalScrollAxisRange)) {
+        "No vertical scroll range on $scrollTag"
+    }
+    val maxScrollOffset = scrollNode.config[SemanticsProperties.VerticalScrollAxisRange].maxValue()
+    val contentHeight = viewportHeight + maxScrollOffset.roundToInt()
     val step = viewportHeight - (64 * displayDensity).roundToInt()
     val frameCount = ceil(contentHeight / step.toFloat()).toInt().coerceAtLeast(1)
     println("Screenshot $baseName-$variant: content=${contentHeight}px viewport=${viewportHeight}px frames=$frameCount")
@@ -157,11 +164,13 @@ fun ComposeContentTestRule.captureScrollable(
     val expected = offsets.indices
         .map { "${frameName(baseName, variant, frameCount, it)}.png" }
         .toSet()
+    // Exact match on the full stem: a startsWith check would let a longer case
+    // name (profile-review-incomplete) leak into a shorter one's set.
+    val filePattern = Regex(
+        "^${Regex.escape(baseName)}(-top|-middle|-bottom|-p\\d+)?-${Regex.escape(variant)}\\.png$",
+    )
     val actual = File(BASELINE_DIR).listFiles { _, name ->
-        name.endsWith(".png") &&
-            name.removeSuffix(".png").let { stem ->
-                stem.startsWith("$baseName-") && stem.endsWith("-$variant")
-            }
+        filePattern.matches(name)
     }?.map { it.name }?.toSet().orEmpty()
     assertEquals(
         "Baseline set for $baseName-$variant must be exactly the $frameCount measured frames",
