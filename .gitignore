@@ -2,6 +2,12 @@
 .gradle/
 build/
 
+# Roborazzi failure artifacts next to the tests.spec baselines in
+# app/src/test/screenshots/. Baselines (*.png) are committed; actuals and
+# diffs (*_actual.png, *_compare.png) are regenerated on every mismatch.
+app/src/test/screenshots/*_actual.png
+app/src/test/screenshots/*_compare.png
+
 # Kotlin 2.x session/build scratch directory
 .kotlin/
 

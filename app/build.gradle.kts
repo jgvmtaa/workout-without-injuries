@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    // Screenshot-test record/verify/compare tasks for the tests.spec suite.
+    alias(libs.plugins.roborazzi)
 }
 
 android {
@@ -109,6 +111,13 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
+
+    // Screenshot tests (tests.spec harness): Robolectric renders Compose on the
+    // JVM at the pinned SDK level, Roborazzi captures and byte-compares.
+    testImplementation(libs.robolectric)
+    testImplementation(libs.roborazzi)
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(libs.roborazzi.junit.rule)
 
     // Instrumented tests
     androidTestImplementation(libs.androidx.test.ext.junit)

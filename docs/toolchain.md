@@ -120,16 +120,35 @@ coverage is tracked in [follow-ups.md](follow-ups.md#testing).
 
 ## Screenshot test setup
 
-Implementing the screenshot suite in [`tests.spec`](../tests.spec) requires:
+The screenshot suite in [`tests.spec`](../tests.spec) runs on:
 
-- **Robolectric**, to run Compose layout on the JVM at a pinned SDK level.
-- **Roborazzi** (Gradle plugin plus the Compose artifact), for capture and comparison.
+- **Robolectric** (`org.robolectric:robolectric` in the catalog), to run Compose
+  layout on the JVM at the pinned SDK level (`@Config(sdk = [35])`, matching
+  `compileSdk`; SDK 35 needs Robolectric 4.14+).
+- **Roborazzi** (Gradle plugin plus the `roborazzi`, `roborazzi-compose`, and
+  `roborazzi-junit-rule` artifacts in the catalog), for capture and comparison.
 
 Robolectric requires
 `android.testOptions.unitTests.isIncludeAndroidResources = true` in
-`app/build.gradle.kts`. Choose Robolectric and Roborazzi versions compatible with the
-Kotlin and Compose versions in the catalog, add the dependencies there, and update this
-section in the same change.
+`app/build.gradle.kts`. The suite itself lives in
+`app/src/test/java/com/jgv/workoutplanner/screenshots/`; baselines are committed
+under `app/src/test/screenshots/` and named `<case>[-<scroll>]-<variant>.png`.
+Failure actuals/diffs (`*_actual.png`, `*_compare.png`) land next to the baselines
+and under `build/outputs/roborazzi/`; both are git-ignored, never committed.
+
+Recording vs verifying is owned by the Roborazzi Gradle tasks — with no task type
+set, `captureRoboImage` is a no-op, so plain `./gradlew test` neither records nor
+verifies screenshots:
+
+```bash
+./gradlew recordRoborazziDebug  # (re)generate baselines, then review and commit them
+./gradlew verifyRoborazziDebug  # byte-compare against the committed baselines (also run in CI)
+```
+
+When adding a case, record it, inspect the PNGs it produced, then run verify to
+prove the run is green. When changing a Robolectric or Roborazzi version, keep it
+contemporary with the AGP/Kotlin/Compose versions in the catalog and update the
+versions stated here in the same change.
 
 ## Environment caveat (Gradle from an automation-spawned shell)
 

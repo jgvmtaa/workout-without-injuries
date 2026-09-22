@@ -49,6 +49,9 @@ jobs:
       - name: Unit tests
         run: ./gradlew test --stacktrace
 
+      - name: Screenshot tests
+        run: ./gradlew verifyRoborazziDebug --stacktrace
+
       - name: Lint
         run: ./gradlew lint --stacktrace
 
@@ -63,5 +66,14 @@ jobs:
           path: |
             app/build/reports/tests/
             app/build/reports/lint-results-*.html
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Upload screenshot diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: roborazzi-diffs
+          path: app/build/outputs/roborazzi/
           retention-days: 14
           if-no-files-found: ignore

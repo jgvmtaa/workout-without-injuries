@@ -127,7 +127,7 @@ a row to a dense screen fails the run at 2.0x even when 1.0x still fits.
 
 ### Onboarding
 
-- [ ] `SC-001-welcome` — Welcome headline, disclaimer, three setup steps, Get started,
+- [x] `SC-001-welcome` — Welcome headline, disclaimer, three setup steps, Get started,
   and Review safety actions. No back affordance.
 - [ ] `SC-002-safety-unacknowledged` — Four acknowledgements, unchecked confirmation,
   and disabled Accept safety action. `[dense]`
@@ -262,7 +262,7 @@ a row to a dense screen fails the run at 2.0x even when 1.0x still fits.
 
 ### Shared and transient visual states
 
-- [ ] `SC-042-loading` — Generic application loading component. It represents every
+- [x] `SC-042-loading` — Generic application loading component. It represents every
   screen that renders the same `LoadingContent` with the default message.
 - [ ] `SC-043-plan-error-snackbar` — "Selected exercise is not eligible for your current
   profile." over a populated plan, verifying snackbar wrapping and bottom placement. This

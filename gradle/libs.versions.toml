@@ -28,6 +28,9 @@ coroutinesTest = "1.9.0"
 turbine = "1.2.0"
 androidxTestExtJunit = "1.2.1"
 espresso = "3.6.1"
+# Screenshot tests (tests.spec harness)
+roborazzi = "1.32.0"
+robolectric = "4.14.1"
 
 [libraries]
 # Core
@@ -70,6 +73,14 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 
+# Screenshot tests (tests.spec harness): Robolectric runs Compose on the JVM,
+# Roborazzi captures and compares. Versions are contemporary with AGP 8.7.3,
+# Kotlin 2.0.21, and compileSdk 35 (@Config(sdk = [35]) needs Robolectric 4.14+).
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+roborazzi = { group = "io.github.takahirom.roborazzi", name = "roborazzi", version.ref = "roborazzi" }
+roborazzi-compose = { group = "io.github.takahirom.roborazzi", name = "roborazzi-compose", version.ref = "roborazzi" }
+roborazzi-junit-rule = { group = "io.github.takahirom.roborazzi", name = "roborazzi-junit-rule", version.ref = "roborazzi" }
+
 # Testing (instrumented)
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExtJunit" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
@@ -83,3 +94,4 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
