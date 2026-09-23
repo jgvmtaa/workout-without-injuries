@@ -1,6 +1,5 @@
 package com.jgv.workoutplanner.screenshots
 
-import androidx.compose.ui.test.junit4.createComposeRule
 import com.jgv.workoutplanner.R
 import com.jgv.workoutplanner.core.ui.ONBOARDING_CONTENT_TAG
 import com.jgv.workoutplanner.core.ui.labelRes
@@ -49,7 +48,7 @@ class OnboardingScreenshotTest {
     val roborazziRule = screenshotRule()
 
     @get:Rule
-    val composeRule = createComposeRule()
+    val composeRule = ScrollableScreenshotRule()
 
     @Test
     fun `should show welcome steps and actions in light theme`() {

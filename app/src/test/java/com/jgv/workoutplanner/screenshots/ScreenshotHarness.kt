@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performSemanticsAction
@@ -17,6 +18,10 @@ import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.RoborazziRule
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.github.takahirom.roborazzi.roborazziSystemPropertyTaskType
+import org.junit.Assume
+import org.junit.rules.TestRule
+import org.junit.runner.Description
+import org.junit.runners.model.Statement
 import com.jgv.workoutplanner.core.designsystem.AppTheme
 import java.io.File
 import kotlin.math.ceil
@@ -53,6 +58,54 @@ internal const val DARK_QUALIFIERS = "en-rUS-w360dp-h800dp-notlong-port-night-xh
 
 // Mirrored layout: pseudolocale keeps the strings legible while flipping direction.
 internal const val RTL_QUALIFIERS = "ar-rXB-w360dp-h800dp-notlong-port-notnight-xhdpi"
+
+/**
+ * Compose rule for scrollable captures that only runs where screenshots can run.
+ *
+ * The rule's activity (`ComponentActivity`) is declared by the compose test
+ * manifest, which is a debug-only dependency — launching it outside a Roborazzi
+ * record/verify/compare run fails (plain `./gradlew test`, including the
+ * release variant). So this rule skips those runs via an assumption instead of
+ * failing them, and only creates the real rule when a Roborazzi task type is
+ * set. Skipped tests report as skipped, never as passed-while-asserting-nothing.
+ */
+class ScrollableScreenshotRule : TestRule {
+
+    private var delegate: ComposeContentTestRule? = null
+
+    override fun apply(base: Statement, description: Description): Statement =
+        object : Statement() {
+            override fun evaluate() {
+                Assume.assumeTrue(
+                    "Screenshots run under record/verify/compare on debug",
+                    isScreenshotRun(),
+                )
+                delegate = createComposeRule()
+                requireNotNull(delegate).apply(base, description).evaluate()
+            }
+        }
+
+    fun captureScrollable(
+        baseName: String,
+        variant: String,
+        fontScale: Float = 1f,
+        scrollTag: String,
+        content: @Composable () -> Unit,
+    ) {
+        requireNotNull(delegate) { "Rule did not run" }
+            .captureScrollable(
+                baseName = baseName,
+                variant = variant,
+                fontScale = fontScale,
+                scrollTag = scrollTag,
+                content = content,
+            )
+    }
+
+    @OptIn(ExperimentalRoborazziApi::class)
+    private fun isScreenshotRun(): Boolean =
+        roborazziSystemPropertyTaskType().isEnabled()
+}
 
 /** Rule carrying the suite's comparison threshold into every capture. */
 @OptIn(ExperimentalRoborazziApi::class)
