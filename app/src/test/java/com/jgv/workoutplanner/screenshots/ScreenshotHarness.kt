@@ -195,15 +195,18 @@ fun ComposeContentTestRule.captureScrollable(
     val maxScrollOffset = scrollNode.config[SemanticsProperties.VerticalScrollAxisRange].maxValue()
     val contentHeight = viewportHeight + maxScrollOffset.roundToInt()
     val step = viewportHeight - (64 * displayDensity).roundToInt()
-    val frameCount = ceil(contentHeight / step.toFloat()).toInt().coerceAtLeast(1)
-    println("Screenshot $baseName-$variant: content=${contentHeight}px viewport=${viewportHeight}px frames=$frameCount")
-
     val lastOffset = (contentHeight - viewportHeight).coerceAtLeast(0)
-    val offsets = if (frameCount == 1) {
+    // Content that fits the viewport needs no scrolling: the formula's offsets
+    // would all coincide, so collapse to the single unsuffixed frame instead of
+    // committing duplicate images.
+    val offsets = if (lastOffset == 0) {
         listOf(0)
     } else {
-        List(frameCount) { index -> (index * step).coerceAtMost(lastOffset) }
+        val measuredFrames = ceil(contentHeight / step.toFloat()).toInt().coerceAtLeast(1)
+        List(measuredFrames) { index -> (index * step).coerceAtMost(lastOffset) }
     }
+    val frameCount = offsets.size
+    println("Screenshot $baseName-$variant: content=${contentHeight}px viewport=${viewportHeight}px frames=$frameCount")
     var scrolled = 0
     offsets.forEachIndexed { index, offset ->
         onNodeWithTag(scrollTag).performSemanticsAction(SemanticsActions.ScrollBy) {

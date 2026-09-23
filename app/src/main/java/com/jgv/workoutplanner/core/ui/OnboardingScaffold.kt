@@ -24,9 +24,6 @@ import com.jgv.workoutplanner.R
 import com.jgv.workoutplanner.core.designsystem.AppTheme
 import com.jgv.workoutplanner.core.designsystem.Dimens
 
-/** Test tag of the scaffold's scrollable content column (screenshot suite). */
-const val ONBOARDING_CONTENT_TAG = "onboarding_content"
-
 /**
  * The shape every onboarding step shares: a title bar, scrolling content, and one
  * primary action pinned to the bottom (spec §4.1–§4.5).
@@ -82,9 +79,7 @@ fun OnboardingScaffold(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                // Test-only hook for the screenshot suite's multi-frame scroll
-                // captures. No visual or accessibility effect.
-                .testTag(ONBOARDING_CONTENT_TAG)
+                .testTag(TestTags.ONBOARDING_CONTENT)
                 .padding(
                     start = Dimens.ScreenPadding,
                     end = Dimens.ScreenPadding,

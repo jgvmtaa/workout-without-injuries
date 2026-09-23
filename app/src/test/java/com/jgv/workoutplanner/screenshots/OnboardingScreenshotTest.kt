@@ -1,7 +1,7 @@
 package com.jgv.workoutplanner.screenshots
 
 import com.jgv.workoutplanner.R
-import com.jgv.workoutplanner.core.ui.ONBOARDING_CONTENT_TAG
+import com.jgv.workoutplanner.core.ui.TestTags
 import com.jgv.workoutplanner.core.ui.labelRes
 import com.jgv.workoutplanner.data.catalog.InjuryCatalog
 import com.jgv.workoutplanner.data.catalog.MovementLimitationCatalog
@@ -125,7 +125,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "preferences-incomplete",
             variant = "light-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             PreferencesScreen(
                 state = PreferencesUiState(isLoading = false),
@@ -140,7 +140,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "preferences-incomplete",
             variant = "dark-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             PreferencesScreen(
                 state = PreferencesUiState(isLoading = false),
@@ -155,7 +155,7 @@ class OnboardingScreenshotTest {
             baseName = "preferences-incomplete",
             variant = "light-1_3",
             fontScale = 1.3f,
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             PreferencesScreen(
                 state = PreferencesUiState(isLoading = false),
@@ -170,7 +170,7 @@ class OnboardingScreenshotTest {
             baseName = "preferences-incomplete",
             variant = "light-2_0",
             fontScale = 2f,
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             PreferencesScreen(
                 state = PreferencesUiState(isLoading = false),
@@ -184,7 +184,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "preferences-complete",
             variant = "light-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             PreferencesScreen(
                 state = completePreferences,
@@ -199,7 +199,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "preferences-complete",
             variant = "dark-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             PreferencesScreen(
                 state = completePreferences,
@@ -214,7 +214,7 @@ class OnboardingScreenshotTest {
             baseName = "preferences-complete",
             variant = "light-1_3",
             fontScale = 1.3f,
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             PreferencesScreen(
                 state = completePreferences,
@@ -229,7 +229,7 @@ class OnboardingScreenshotTest {
             baseName = "preferences-complete",
             variant = "light-2_0",
             fontScale = 2f,
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             PreferencesScreen(
                 state = completePreferences,
@@ -244,7 +244,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "preferences-complete",
             variant = "light-1_0-rtl",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             PreferencesScreen(
                 state = completePreferences,
@@ -258,7 +258,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "injuries-none-selected",
             variant = "light-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             InjuryHistoryScreen(
                 state = InjuryHistoryUiState(
@@ -276,7 +276,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "injuries-none-selected",
             variant = "dark-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             InjuryHistoryScreen(
                 state = InjuryHistoryUiState(
@@ -293,7 +293,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "injuries-selected",
             variant = "light-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             InjuryHistoryScreen(
                 state = InjuryHistoryUiState(
@@ -312,7 +312,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "injuries-selected",
             variant = "dark-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             InjuryHistoryScreen(
                 state = InjuryHistoryUiState(
@@ -331,7 +331,7 @@ class OnboardingScreenshotTest {
             baseName = "injuries-selected",
             variant = "light-1_3",
             fontScale = 1.3f,
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             InjuryHistoryScreen(
                 state = InjuryHistoryUiState(
@@ -349,7 +349,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "limitations-no-suggestions",
             variant = "light-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             MovementLimitationsScreen(
                 state = MovementLimitationsUiState(
@@ -367,7 +367,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "limitations-no-suggestions",
             variant = "dark-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             MovementLimitationsScreen(
                 state = MovementLimitationsUiState(
@@ -384,7 +384,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "limitations-unconfirmed",
             variant = "light-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             MovementLimitationsScreen(
                 state = MovementLimitationsUiState(
@@ -403,7 +403,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "limitations-unconfirmed",
             variant = "dark-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             MovementLimitationsScreen(
                 state = MovementLimitationsUiState(
@@ -422,7 +422,7 @@ class OnboardingScreenshotTest {
             baseName = "limitations-unconfirmed",
             variant = "light-1_3",
             fontScale = 1.3f,
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             MovementLimitationsScreen(
                 state = MovementLimitationsUiState(
@@ -440,7 +440,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "limitations-confirmed",
             variant = "light-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             MovementLimitationsScreen(
                 state = MovementLimitationsUiState(
@@ -463,7 +463,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "limitations-confirmed",
             variant = "dark-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             MovementLimitationsScreen(
                 state = MovementLimitationsUiState(
@@ -485,7 +485,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "profile-review",
             variant = "light-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             ProfileReviewScreen(
                 state = populatedReview,
@@ -500,7 +500,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "profile-review",
             variant = "dark-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             ProfileReviewScreen(
                 state = populatedReview,
@@ -515,7 +515,7 @@ class OnboardingScreenshotTest {
             baseName = "profile-review",
             variant = "light-1_3",
             fontScale = 1.3f,
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             ProfileReviewScreen(
                 state = populatedReview,
@@ -530,7 +530,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "profile-review",
             variant = "light-1_0-rtl",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             ProfileReviewScreen(
                 state = populatedReview,
@@ -544,7 +544,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "profile-review-minimal",
             variant = "light-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             ProfileReviewScreen(
                 state = ProfileReviewUiState(
@@ -568,7 +568,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "profile-review-minimal",
             variant = "dark-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             ProfileReviewScreen(
                 state = ProfileReviewUiState(
@@ -591,7 +591,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "profile-review-incomplete",
             variant = "light-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             ProfileReviewScreen(
                 state = ProfileReviewUiState(isLoading = false, isComplete = false),
@@ -606,7 +606,7 @@ class OnboardingScreenshotTest {
         composeRule.captureScrollable(
             baseName = "profile-review-incomplete",
             variant = "dark-1_0",
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             ProfileReviewScreen(
                 state = ProfileReviewUiState(isLoading = false, isComplete = false),
@@ -621,7 +621,7 @@ class OnboardingScreenshotTest {
             baseName = "profile-review-incomplete",
             variant = "light-1_3",
             fontScale = 1.3f,
-            scrollTag = ONBOARDING_CONTENT_TAG,
+            scrollTag = TestTags.ONBOARDING_CONTENT,
         ) {
             ProfileReviewScreen(
                 state = ProfileReviewUiState(isLoading = false, isComplete = false),

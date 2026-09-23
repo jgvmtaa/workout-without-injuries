@@ -70,7 +70,9 @@ The harness computes the requirement instead of trusting a tag:
 1. For each (case, variant), lay out the screen and measure the scrollable content
    height `H` against the viewport height `V`.
 2. Required frames `N = ceil(H / (V - 64dp))`, the overlap keeping a row from falling
-   between two frames. `N = 1` means one unsuffixed image.
+   between two frames. `N = 1` means one unsuffixed image. Content that fits the
+   viewport (`H ≤ V`) always collapses to it, since every formula offset would
+   coincide on the same frame.
 3. Capture at offsets `0, (V - 64dp), 2(V - 64dp), …`, clamping the last to the content
    end so the final frame is flush with the bottom.
 4. Assert that the committed baseline set for that (case, variant) is exactly the `N`
@@ -152,21 +154,21 @@ a row to a dense screen fails the run at 2.0x even when 1.0x still fits.
 - [x] `SC-010-limitations-confirmed` — Confirmed suggested and manually browsed
   limitations, with the non-zero selected-count label. `[tall++]`
 - [x] `SC-011-profile-review` — Complete populated profile, including non-empty injuries
-  and limitations, with Finish setup enabled. `[tall]` `[dense]` `[rtl]`
+  and limitations, with Finish setup enabled. `[dense]` `[rtl]`
 - [x] `SC-044-profile-review-minimal` — Complete profile with Bodyweight only, no
-  injuries, and no limitations; both empty-section messages are visible. `[tall]`
+  injuries, and no limitations; both empty-section messages are visible.
 - [x] `SC-045-profile-review-incomplete` — Missing-value labels, incomplete-profile error,
-  and disabled Finish setup action. `[tall]` `[dense]`
+  and disabled Finish setup action. `[dense]`
 
 ### Home
 
-- [ ] `SC-012-home-no-plan` — Complete profile summary, zero-limitations copy, library
+- [x] `SC-012-home-no-plan` — Complete profile summary, zero-limitations copy, library
   and profile entry points, and Generate plan action. `[dense]`
-- [ ] `SC-013-home-current-plan` — Saved plan name, non-zero limitation count, complete
+- [x] `SC-013-home-current-plan` — Saved plan name, non-zero limitation count, complete
   profile summary, and View plan action. `[dense]`
-- [ ] `SC-014-home-outdated-plan` — Saved plan remains visible with the profile-changed
-  warning and View plan action. `[tall]` `[dense]`
-- [ ] `SC-046-home-profile-unavailable` — Defensive state produced when Home observes no
+- [x] `SC-014-home-outdated-plan` — Saved plan remains visible with the profile-changed
+  warning and View plan action. `[dense]`
+- [x] `SC-046-home-profile-unavailable` — Defensive state produced when Home observes no
   saved profile: missing profile-summary value, zero-limitations copy, and no-plan action.
 
 ### Plan
