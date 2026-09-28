@@ -173,25 +173,25 @@ a row to a dense screen fails the run at 2.0x even when 1.0x still fits.
 
 ### Plan
 
-- [ ] `SC-015-plan-not-generated` — Empty plan state with Plan fallback title, no
+- [x] `SC-015-plan-not-generated` — Empty plan state with Plan fallback title, no
   Regenerate action in the app bar, and Generate plan action. `[dense]`
-- [ ] `SC-016-plan-complete` — Generated workout days, exercise prescriptions, dividers,
+- [x] `SC-016-plan-complete` — Generated workout days, exercise prescriptions, dividers,
   and a full-capacity day with no add row. `[tall+]` `[dense+]` `[rtl]`
-- [ ] `SC-017-plan-partial` — Partial plan with multiple localized no-match warnings and
+- [x] `SC-017-plan-partial` — Partial plan with multiple localized no-match warnings and
   valid exercises retained below them. `[tall]` `[dense+]`
 - [ ] `SC-018-plan-menu-middle-row` — Middle-row menu with Details, Replace, Move up,
   Move down, and Remove all enabled. `[dense]`
-- [ ] `SC-019-plan-add-one-slot` — Editable workout day with one remaining slot and the
+- [x] `SC-019-plan-add-one-slot` — Editable workout day with one remaining slot and the
   singular add-exercise label. `[dense]`
-- [ ] `SC-020-plan-empty-day` — Manually emptied editable day showing "No exercises in
+- [x] `SC-020-plan-empty-day` — Manually emptied editable day showing "No exercises in
   this workout" and its add-exercise row.
-- [ ] `SC-021-plan-outdated` — Outdated warning with exercise menus, add rows, and stored
+- [x] `SC-021-plan-outdated` — Outdated warning with exercise menus, add rows, and stored
   partial-plan warnings all hidden. `[tall]` `[dense]`
 - [ ] `SC-022-plan-remove-dialog` — Remove-exercise confirmation dialog over a populated
   plan. `[dense]`
 - [ ] `SC-023-plan-regenerate-dialog` — Regeneration dialog warning that manual edits
   will be lost. `[dense+]`
-- [ ] `SC-047-plan-generating` — Held generation state with "Generating your plan…" rather
+- [x] `SC-047-plan-generating` — Held generation state with "Generating your plan…" rather
   than the generic loading message.
 - [ ] `SC-048-plan-menu-first-row` — First-row menu with Move up disabled and Move down
   enabled.

@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
@@ -41,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,6 +53,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jgv.workoutplanner.R
 import com.jgv.workoutplanner.core.designsystem.AppTheme
 import com.jgv.workoutplanner.core.ui.LoadingContent
+import com.jgv.workoutplanner.core.ui.TestTags
 import com.jgv.workoutplanner.core.ui.labelRes
 import com.jgv.workoutplanner.domain.model.ExerciseDefinition
 import com.jgv.workoutplanner.domain.model.ExerciseDifficulty
@@ -148,6 +152,9 @@ fun PlanScreen(
     snackbarHostState: SnackbarHostState,
     onEvent: (PlanEvent) -> Unit,
     modifier: Modifier = Modifier,
+    // Hoisted for the screenshot suite's exact-offset scrolling; production
+    // callers keep the default. No visual or behavioral effect.
+    listState: LazyListState = rememberLazyListState(),
 ) {
     if (state.isLoading || state.isGenerating) {
         LoadingContent(
@@ -218,7 +225,9 @@ fun PlanScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
+                    .testTag(TestTags.PLAN_CONTENT)
                     .padding(16.dp),
+                state = listState,
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 if (state.requiresRegeneration) {

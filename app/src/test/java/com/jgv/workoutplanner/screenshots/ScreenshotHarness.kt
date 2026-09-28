@@ -6,6 +6,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.foundation.gestures.scrollBy
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -13,6 +15,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.unit.Density
 import androidx.test.core.app.ApplicationProvider
+import kotlinx.coroutines.runBlocking
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.RoborazziRule
@@ -90,6 +93,7 @@ class ScrollableScreenshotRule : TestRule {
         variant: String,
         fontScale: Float = 1f,
         scrollTag: String,
+        listState: LazyListState? = null,
         content: @Composable () -> Unit,
     ) {
         requireNotNull(delegate) { "Rule did not run" }
@@ -98,6 +102,7 @@ class ScrollableScreenshotRule : TestRule {
                 variant = variant,
                 fontScale = fontScale,
                 scrollTag = scrollTag,
+                listState = listState,
                 content = content,
             )
     }
@@ -156,16 +161,20 @@ fun captureScreenshot(
  * `N = 1`; `-top`/`-bottom` when 2; `-top`/`-middle`/`-bottom` when 3;
  * `-p1`…`-pN` beyond that.
  *
- * Scrolling goes through the `ScrollBy` semantics action, so the content column
- * needs a test tag and no other machinery. The run then asserts the committed
- * baseline set for ([baseName], [variant]) is exactly the `N` images produced —
- * a missing or orphaned image fails. Measured `H`/`V`/`N` print to test output
- * for review: when a tag and the measurement disagree, the measurement is right.
+ * Scrolling a `Column` goes through the `ScrollBy` semantics action; scrolling a
+ * `LazyColumn` needs its hoisted [LazyListState] (lazy lists offer no `ScrollBy`
+ * action), driven here with exact pixel deltas. Either way the content needs a
+ * test tag and no other machinery. The run then asserts the committed baseline
+ * set for ([baseName], [variant]) is exactly the `N` images produced — a missing
+ * or orphaned image fails. Measured `H`/`V`/`N` print to test output for review:
+ * when a tag and the measurement disagree, the measurement is right.
  *
- * A plain `./gradlew test` run (no Roborazzi task type) skips everything, the
- * same as single-frame captures. Requires [content] to reach Compose idle when
- * enabled: screens with indeterminate progress indicators never settle and
- * cannot use this path.
+ * Lazy lists estimate unseen items and refine the range as they realize, so
+ * with [listState] the harness traverses once to observe the stable maximum
+ * before capturing. A plain `./gradlew test` run (no Roborazzi task type) skips
+ * everything, the same as single-frame captures. Requires [content] to reach
+ * Compose idle when enabled: screens with indeterminate progress indicators
+ * never settle and cannot use this path.
  */
 @OptIn(ExperimentalRoborazziApi::class)
 fun ComposeContentTestRule.captureScrollable(
@@ -173,6 +182,7 @@ fun ComposeContentTestRule.captureScrollable(
     variant: String,
     fontScale: Float = 1f,
     scrollTag: String,
+    listState: LazyListState? = null,
     content: @Composable () -> Unit,
 ) {
     if (!roborazziSystemPropertyTaskType().isEnabled()) {
@@ -187,14 +197,47 @@ fun ComposeContentTestRule.captureScrollable(
 
     val displayDensity = ApplicationProvider.getApplicationContext<Context>()
         .resources.displayMetrics.density
-    val scrollNode = onNodeWithTag(scrollTag).fetchSemanticsNode()
-    val viewportHeight = scrollNode.size.height
-    require(scrollNode.config.contains(SemanticsProperties.VerticalScrollAxisRange)) {
-        "No vertical scroll range on $scrollTag"
+
+    fun scrollMetrics(): Pair<Int, Int> {
+        val node = onNodeWithTag(scrollTag).fetchSemanticsNode()
+        val viewport = node.size.height
+        require(node.config.contains(SemanticsProperties.VerticalScrollAxisRange)) {
+            "No vertical scroll range on $scrollTag"
+        }
+        val maxScroll = node.config[SemanticsProperties.VerticalScrollAxisRange].maxValue().roundToInt()
+        return viewport to maxScroll
     }
-    val maxScrollOffset = scrollNode.config[SemanticsProperties.VerticalScrollAxisRange].maxValue()
-    val contentHeight = viewportHeight + maxScrollOffset.roundToInt()
+
+    fun scrollByPixels(delta: Float) {
+        if (listState != null) {
+            runBlocking { listState.scrollBy(delta) }
+        } else {
+            onNodeWithTag(scrollTag).performSemanticsAction(SemanticsActions.ScrollBy) {
+                it(0f, delta)
+            }
+        }
+        waitForIdle()
+    }
+
+    val (viewportHeight, initialMax) = scrollMetrics()
     val step = viewportHeight - (64 * displayDensity).roundToInt()
+    var maxSeen = initialMax
+    var position = 0
+    if (listState != null) {
+        while (true) {
+            maxSeen = maxOf(maxSeen, scrollMetrics().second)
+            if (position >= maxSeen) {
+                break
+            }
+            val next = minOf(position + step, maxSeen)
+            scrollByPixels((next - position).toFloat())
+            position = next
+        }
+        if (position > 0) {
+            scrollByPixels(-position.toFloat())
+        }
+    }
+    val contentHeight = viewportHeight + maxSeen
     val lastOffset = (contentHeight - viewportHeight).coerceAtLeast(0)
     // Content that fits the viewport needs no scrolling: the formula's offsets
     // would all coincide, so collapse to the single unsuffixed frame instead of
@@ -209,10 +252,7 @@ fun ComposeContentTestRule.captureScrollable(
     println("Screenshot $baseName-$variant: content=${contentHeight}px viewport=${viewportHeight}px frames=$frameCount")
     var scrolled = 0
     offsets.forEachIndexed { index, offset ->
-        onNodeWithTag(scrollTag).performSemanticsAction(SemanticsActions.ScrollBy) {
-            it(0f, (offset - scrolled).toFloat())
-        }
-        waitForIdle()
+        scrollByPixels((offset - scrolled).toFloat())
         scrolled = offset
         onRoot().captureRoboImage("$BASELINE_DIR/${frameName(baseName, variant, frameCount, index)}.png")
     }

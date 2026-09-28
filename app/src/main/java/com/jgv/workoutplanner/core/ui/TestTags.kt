@@ -7,4 +7,5 @@ package com.jgv.workoutplanner.core.ui
 object TestTags {
     const val ONBOARDING_CONTENT = "onboarding_content"
     const val HOME_CONTENT = "home_content"
+    const val PLAN_CONTENT = "plan_content"
 }
