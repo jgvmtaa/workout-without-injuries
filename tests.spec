@@ -51,8 +51,10 @@ difference is a harness bug, not a UI change.
   and snackbars (`SnackbarHostState`) are hoisted into the screen's parameters, so a
   fixture opens them. The one exception is the plan row overflow menu: its expanded
   state is remembered inside `PlannedExerciseRow`, so SC-018 and SC-048 through SC-050
-  must click the row's more-actions button and await idle before capturing. Any change
-  that hoists that state should delete this paragraph.
+  must click the row's more-actions button before capturing. If that state is hoisted,
+  remove the click-specific requirement. In either case, keep automatic clock advancement
+  enabled until the menu's enter transition settles; freezing its initial frame records a
+  transparent popup even though its semantics are already displayed.
 - Prefer the longest real labels and representative maximum list sizes that the product
   permits so wrapping, clipping, and scrolling are exercised deterministically. Where a
   case names a specific string as "longest", it is the longest in `values/strings.xml`
@@ -131,17 +133,8 @@ still fits.
 
 ### Plan
 
-- [ ] `SC-018-plan-menu-middle-row` — Middle-row menu with Details, Replace, Move up,
-  Move down, and Remove all enabled. `[dense]`
 - [ ] `SC-022-plan-remove-dialog` — Remove-exercise confirmation dialog over a populated
   plan. `[dense]`
-- [ ] `SC-023-plan-regenerate-dialog` — Regeneration dialog warning that manual edits
-  will be lost. `[dense+]`
-- [ ] `SC-048-plan-menu-first-row` — First-row menu with Move up disabled and Move down
-  enabled.
-- [ ] `SC-049-plan-menu-last-row` — Last-row menu with Move up enabled and Move down
-  disabled.
-- [ ] `SC-050-plan-menu-only-row` — Single-row menu with both movement actions disabled.
 - [ ] `SC-051-plan-add-multiple-slots` — Editable workout day with at least two remaining
   slots and the plural add-exercise label. `[dense]`
 

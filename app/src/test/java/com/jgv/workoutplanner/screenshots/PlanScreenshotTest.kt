@@ -1,7 +1,10 @@
 package com.jgv.workoutplanner.screenshots
 
+import android.content.Context
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.SnackbarHostState
+import androidx.test.core.app.ApplicationProvider
+import com.jgv.workoutplanner.R
 import com.jgv.workoutplanner.core.ui.TestTags
 import com.jgv.workoutplanner.data.catalog.ExerciseCatalog
 import com.jgv.workoutplanner.domain.model.ExerciseDefinition
@@ -321,6 +324,171 @@ class PlanScreenshotTest {
     }
 
     @Test
+    fun `should show all actions for a middle exercise in light theme`() {
+        menuCase(
+            fileName = "plan-menu-middle-row-light-1_0",
+            state = completePlan,
+            exerciseId = ExerciseId.LAT_PULLDOWN,
+        )
+    }
+
+    @Test
+    @Config(qualifiers = DARK_QUALIFIERS)
+    fun `should show all actions for a middle exercise in dark theme`() {
+        menuCase(
+            fileName = "plan-menu-middle-row-dark-1_0",
+            state = completePlan,
+            exerciseId = ExerciseId.LAT_PULLDOWN,
+        )
+    }
+
+    @Test
+    fun `should show all actions for a middle exercise at large text`() {
+        menuCase(
+            fileName = "plan-menu-middle-row-light-1_3",
+            fontScale = 1.3f,
+            state = completePlan,
+            exerciseId = ExerciseId.LAT_PULLDOWN,
+        )
+    }
+
+    @Test
+    fun `should disable move up for the first exercise in light theme`() {
+        menuCase(
+            fileName = "plan-menu-first-row-light-1_0",
+            state = completePlan,
+            exerciseId = ExerciseId.MACHINE_CHEST_PRESS,
+            disabledItems = setOf(R.string.plan_action_move_up),
+        )
+    }
+
+    @Test
+    @Config(qualifiers = DARK_QUALIFIERS)
+    fun `should disable move up for the first exercise in dark theme`() {
+        menuCase(
+            fileName = "plan-menu-first-row-dark-1_0",
+            state = completePlan,
+            exerciseId = ExerciseId.MACHINE_CHEST_PRESS,
+            disabledItems = setOf(R.string.plan_action_move_up),
+        )
+    }
+
+    @Test
+    fun `should disable move down for the last exercise in light theme`() {
+        menuCase(
+            fileName = "plan-menu-last-row-light-1_0",
+            state = completePlan,
+            exerciseId = ExerciseId.DUMBBELL_LATERAL_RAISE,
+            disabledItems = setOf(R.string.plan_action_move_down),
+        )
+    }
+
+    @Test
+    @Config(qualifiers = DARK_QUALIFIERS)
+    fun `should disable move down for the last exercise in dark theme`() {
+        menuCase(
+            fileName = "plan-menu-last-row-dark-1_0",
+            state = completePlan,
+            exerciseId = ExerciseId.DUMBBELL_LATERAL_RAISE,
+            disabledItems = setOf(R.string.plan_action_move_down),
+        )
+    }
+
+    @Test
+    fun `should disable both move actions for an only exercise in light theme`() {
+        menuCase(
+            fileName = "plan-menu-only-row-light-1_0",
+            state = onlyExercisePlan,
+            exerciseId = ExerciseId.MACHINE_CHEST_PRESS,
+            disabledItems = setOf(
+                R.string.plan_action_move_up,
+                R.string.plan_action_move_down,
+            ),
+        )
+    }
+
+    @Test
+    @Config(qualifiers = DARK_QUALIFIERS)
+    fun `should disable both move actions for an only exercise in dark theme`() {
+        menuCase(
+            fileName = "plan-menu-only-row-dark-1_0",
+            state = onlyExercisePlan,
+            exerciseId = ExerciseId.MACHINE_CHEST_PRESS,
+            disabledItems = setOf(
+                R.string.plan_action_move_up,
+                R.string.plan_action_move_down,
+            ),
+        )
+    }
+
+    @Test
+    fun `should warn that manual edits will be lost in regeneration dialog in light theme`() {
+        composeRule.captureDialogScreenshot(
+            fileName = "plan-regenerate-dialog-light-1_0",
+            dialogTitle = regenerateDialogTitle(),
+        ) {
+            PlanScreen(
+                state = completePlan,
+                showRegenerateConfirm = true,
+                pendingRemoval = null,
+                snackbarHostState = SnackbarHostState(),
+                onEvent = {},
+            )
+        }
+    }
+
+    @Test
+    @Config(qualifiers = DARK_QUALIFIERS)
+    fun `should warn that manual edits will be lost in regeneration dialog in dark theme`() {
+        composeRule.captureDialogScreenshot(
+            fileName = "plan-regenerate-dialog-dark-1_0",
+            dialogTitle = regenerateDialogTitle(),
+        ) {
+            PlanScreen(
+                state = completePlan,
+                showRegenerateConfirm = true,
+                pendingRemoval = null,
+                snackbarHostState = SnackbarHostState(),
+                onEvent = {},
+            )
+        }
+    }
+
+    @Test
+    fun `should warn that manual edits will be lost in regeneration dialog at large text`() {
+        composeRule.captureDialogScreenshot(
+            fileName = "plan-regenerate-dialog-light-1_3",
+            fontScale = 1.3f,
+            dialogTitle = regenerateDialogTitle(),
+        ) {
+            PlanScreen(
+                state = completePlan,
+                showRegenerateConfirm = true,
+                pendingRemoval = null,
+                snackbarHostState = SnackbarHostState(),
+                onEvent = {},
+            )
+        }
+    }
+
+    @Test
+    fun `should warn that manual edits will be lost in regeneration dialog at largest text`() {
+        composeRule.captureDialogScreenshot(
+            fileName = "plan-regenerate-dialog-light-2_0",
+            fontScale = 2f,
+            dialogTitle = regenerateDialogTitle(),
+        ) {
+            PlanScreen(
+                state = completePlan,
+                showRegenerateConfirm = true,
+                pendingRemoval = null,
+                snackbarHostState = SnackbarHostState(),
+                onEvent = {},
+            )
+        }
+    }
+
+    @Test
     fun `should show generating message while regenerating in light theme`() {
         composeRule.captureScreenshot(
             fileName = "plan-generating-light-1_0",
@@ -384,7 +552,53 @@ class PlanScreenshotTest {
         }
     }
 
+    private fun menuCase(
+        fileName: String,
+        state: PlanUiState,
+        exerciseId: ExerciseId,
+        fontScale: Float = 1f,
+        disabledItems: Set<Int> = emptySet(),
+    ) {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val actionResources = listOf(
+            R.string.plan_action_details,
+            R.string.action_replace_exercise_short,
+            R.string.plan_action_move_up,
+            R.string.plan_action_move_down,
+            R.string.plan_action_remove,
+        )
+        composeRule.captureMenuScreenshot(
+            fileName = fileName,
+            fontScale = fontScale,
+            menuButtonDescription = context.getString(
+                R.string.plan_more_actions,
+                context.getString(
+                    ExerciseCatalog.exercises.first { it.id == exerciseId }.nameRes,
+                ),
+            ),
+            enabledItems = actionResources
+                .filterNot { it in disabledItems }
+                .map(context::getString),
+            disabledItems = actionResources
+                .filter { it in disabledItems }
+                .map(context::getString),
+        ) {
+            PlanScreen(
+                state = state,
+                showRegenerateConfirm = false,
+                pendingRemoval = null,
+                snackbarHostState = SnackbarHostState(),
+                onEvent = {},
+            )
+        }
+    }
+
     private companion object {
+        /** Regeneration dialog title, resolved from resources. */
+        fun regenerateDialogTitle(): String =
+            ApplicationProvider.getApplicationContext<Context>()
+                .getString(R.string.plan_regenerate_confirm_title)
+
         fun planned(
             id: ExerciseId,
             sets: Int,
@@ -446,6 +660,22 @@ class PlanScreenshotTest {
                         planned(ExerciseId.CABLE_PULL_THROUGH, 3, 10..12, 60, 1),
                     ),
                     remainingCapacity = 2,
+                ),
+            ),
+        )
+
+        val onlyExercisePlan = PlanUiState(
+            isLoading = false,
+            planName = "FULL_BODY - 1 day",
+            days = listOf(
+                WorkoutDayUiModel(
+                    id = "day-full-body",
+                    name = "Full body",
+                    focus = WorkoutDayFocus.FULL_BODY,
+                    exercises = listOf(
+                        planned(ExerciseId.MACHINE_CHEST_PRESS, 3, 8..12, 90, 0),
+                    ),
+                    remainingCapacity = 3,
                 ),
             ),
         )

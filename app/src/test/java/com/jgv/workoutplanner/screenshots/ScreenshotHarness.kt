@@ -13,8 +13,13 @@ import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.unit.Density
 import androidx.test.core.app.ApplicationProvider
@@ -23,12 +28,14 @@ import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.RoborazziRule
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.github.takahirom.roborazzi.captureScreenRoboImage
 import com.github.takahirom.roborazzi.roborazziSystemPropertyTaskType
 import org.junit.Assume
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
 import com.jgv.workoutplanner.core.designsystem.AppTheme
+import org.robolectric.RuntimeEnvironment
 import java.io.File
 import kotlin.math.roundToInt
 import org.junit.Assert.assertEquals
@@ -126,6 +133,40 @@ class ScrollableScreenshotRule : TestRule {
             )
     }
 
+    fun captureDialogScreenshot(
+        fileName: String,
+        fontScale: Float = 1f,
+        dialogTitle: String,
+        content: @Composable () -> Unit,
+    ) {
+        requireNotNull(delegate) { "Rule did not run" }
+            .captureDialogScreenshot(
+                fileName = fileName,
+                fontScale = fontScale,
+                dialogTitle = dialogTitle,
+                content = content,
+            )
+    }
+
+    fun captureMenuScreenshot(
+        fileName: String,
+        fontScale: Float = 1f,
+        menuButtonDescription: String,
+        enabledItems: List<String>,
+        disabledItems: List<String> = emptyList(),
+        content: @Composable () -> Unit,
+    ) {
+        requireNotNull(delegate) { "Rule did not run" }
+            .captureMenuScreenshot(
+                fileName = fileName,
+                fontScale = fontScale,
+                menuButtonDescription = menuButtonDescription,
+                enabledItems = enabledItems,
+                disabledItems = disabledItems,
+                content = content,
+            )
+    }
+
     fun assertIndeterminateProgressDisplayed() {
         requireNotNull(delegate) { "Rule did not run" }
             .onNode(
@@ -199,6 +240,96 @@ fun ComposeContentTestRule.captureScreenshot(
     }
     waitForIdle()
     onRoot().captureRoboImage("$BASELINE_DIR/$fileName.png")
+}
+
+/**
+ * Single-frame capture with a hoisted dialog held open (`showRegenerateConfirm`,
+ * `pendingRemoval`).
+ *
+ * Dialogs render in a second window, so there are two roots and `onRoot()` is
+ * ambiguous; capturing through any single node would also crop to that node's
+ * bounds. This captures the complete app window instead. [dialogTitle] must
+ * name the dialog's title and is asserted displayed so a missing dialog fails
+ * instead of recording a dialog-less baseline. The clock advances past the
+ * dialog's enter animation so the captured frame is the settled state.
+ */
+@OptIn(ExperimentalRoborazziApi::class)
+fun ComposeContentTestRule.captureDialogScreenshot(
+    fileName: String,
+    fontScale: Float = 1f,
+    dialogTitle: String,
+    content: @Composable () -> Unit,
+) {
+    Assume.assumeTrue(
+        "Screenshots run under record/verify/compare on debug",
+        roborazziSystemPropertyTaskType().isEnabled(),
+    )
+    val originalFontScale = RuntimeEnvironment.getFontScale()
+    try {
+        // Dialog uses a separate Android window, which does not inherit the
+        // LocalDensity override used by ordinary captures. Set Robolectric's
+        // resource configuration so both the activity and dialog windows see
+        // the requested system font scale.
+        RuntimeEnvironment.setFontScale(fontScale)
+        mainClock.autoAdvance = false
+        setContent {
+            AppTheme {
+                content()
+            }
+        }
+        mainClock.advanceTimeBy(1_000L)
+        waitForIdle()
+        onNodeWithText(dialogTitle).assertIsDisplayed()
+        captureScreenRoboImage("$BASELINE_DIR/$fileName.png")
+    } finally {
+        RuntimeEnvironment.setFontScale(originalFontScale)
+    }
+}
+
+/**
+ * Opens and captures a [androidx.compose.material3.DropdownMenu].
+ *
+ * Menus render in a separate popup window, so this uses the same full-screen
+ * capture as dialogs. Keep automatic clock advancement enabled until the
+ * popup's enter transition settles: freezing its initial frame records a
+ * transparent popup even though its semantics are already displayed.
+ */
+@OptIn(ExperimentalRoborazziApi::class)
+fun ComposeContentTestRule.captureMenuScreenshot(
+    fileName: String,
+    fontScale: Float = 1f,
+    menuButtonDescription: String,
+    enabledItems: List<String>,
+    disabledItems: List<String> = emptyList(),
+    content: @Composable () -> Unit,
+) {
+    Assume.assumeTrue(
+        "Screenshots run under record/verify/compare on debug",
+        roborazziSystemPropertyTaskType().isEnabled(),
+    )
+    val originalFontScale = RuntimeEnvironment.getFontScale()
+    try {
+        RuntimeEnvironment.setFontScale(fontScale)
+        mainClock.autoAdvance = true
+        setContent {
+            AppTheme {
+                content()
+            }
+        }
+        waitForIdle()
+        onNodeWithContentDescription(menuButtonDescription).performClick()
+        waitForIdle()
+        enabledItems.forEach { item ->
+            onNodeWithText(item).assertIsDisplayed().assertIsEnabled()
+        }
+        disabledItems.forEach { item ->
+            onNodeWithText(item).assertIsDisplayed().assertIsNotEnabled()
+        }
+        mainClock.autoAdvance = false
+        captureScreenRoboImage("$BASELINE_DIR/$fileName.png")
+    } finally {
+        RuntimeEnvironment.setFontScale(originalFontScale)
+    }
 }
 
 /**
