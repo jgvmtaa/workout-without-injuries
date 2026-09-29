@@ -69,12 +69,11 @@ The harness computes the requirement instead of trusting a tag:
 
 1. For each (case, variant), lay out the screen and measure the scrollable content
    height `H` against the viewport height `V`.
-2. Required frames `N = ceil(H / (V - 64dp))`, the overlap keeping a row from falling
-   between two frames. `N = 1` means one unsuffixed image. Content that fits the
-   viewport (`H ≤ V`) always collapses to it, since every formula offset would
-   coincide on the same frame.
-3. Capture at offsets `0, (V - 64dp), 2(V - 64dp), …`, clamping the last to the content
-   end so the final frame is flush with the bottom.
+2. For content taller than the viewport, required frames
+   `N = ceil((H - V) / (V - 64dp)) + 1`; fitting content (`H ≤ V`) uses one frame.
+3. Capture at offsets `0, (V - 64dp), 2(V - 64dp), …`, then capture the exact content-end
+   offset `H - V` if it is not already present. The final frame is flush with the bottom,
+   and no offset is captured twice.
 4. Assert that the committed baseline set for that (case, variant) is exactly the `N`
    images this produced — no more, no fewer. A missing or orphaned image fails the run.
 

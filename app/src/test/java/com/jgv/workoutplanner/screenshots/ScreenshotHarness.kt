@@ -30,7 +30,6 @@ import org.junit.runner.Description
 import org.junit.runners.model.Statement
 import com.jgv.workoutplanner.core.designsystem.AppTheme
 import java.io.File
-import kotlin.math.ceil
 import kotlin.math.roundToInt
 import org.junit.Assert.assertEquals
 
@@ -208,11 +207,11 @@ fun ComposeContentTestRule.captureScreenshot(
  * Reads the viewport height `V` (the scrollable column's own box) and the scroll
  * range `H - V` (the column's `VerticalScrollAxisRange`, which the scroller
  * maintains — no child enumeration, so bare text rows cannot go missing) and
- * captures `N = ceil(H / (V - 64dp))` frames at offsets `0, (V - 64dp), …`,
- * clamping the last flush with the content end — the overlap keeps a row from
- * falling between frames. Frame suffixes follow the suite contract: none when
- * `N = 1`; `-top`/`-bottom` when 2; `-top`/`-middle`/`-bottom` when 3;
- * `-p1`…`-pN` beyond that.
+ * captures at offsets `0, (V - 64dp), …`, followed by the exact content-end
+ * offset when it is not already present. The overlap keeps a row from falling
+ * between frames without ever capturing the same terminal frame twice. Frame
+ * suffixes follow the suite contract: none when `N = 1`; `-top`/`-bottom` when
+ * 2; `-top`/`-middle`/`-bottom` when 3; `-p1`…`-pN` beyond that.
  *
  * Scrolling a `Column` goes through the `ScrollBy` semantics action; scrolling a
  * `LazyColumn` needs its hoisted [LazyListState] (lazy lists offer no `ScrollBy`
@@ -292,16 +291,7 @@ fun ComposeContentTestRule.captureScrollable(
         }
     }
     val contentHeight = viewportHeight + maxSeen
-    val lastOffset = (contentHeight - viewportHeight).coerceAtLeast(0)
-    // Content that fits the viewport needs no scrolling: the formula's offsets
-    // would all coincide, so collapse to the single unsuffixed frame instead of
-    // committing duplicate images.
-    val offsets = if (lastOffset == 0) {
-        listOf(0)
-    } else {
-        val measuredFrames = ceil(contentHeight / step.toFloat()).toInt().coerceAtLeast(1)
-        List(measuredFrames) { index -> (index * step).coerceAtMost(lastOffset) }
-    }
+    val offsets = screenshotOffsets(contentHeight, viewportHeight, step)
     val frameCount = offsets.size
     println("Screenshot $baseName-$variant: content=${contentHeight}px viewport=${viewportHeight}px frames=$frameCount")
     var scrolled = 0
@@ -327,6 +317,22 @@ fun ComposeContentTestRule.captureScrollable(
         expected,
         actual,
     )
+}
+
+/** Returns overlapping scroll offsets with exactly one frame flush to the content end. */
+internal fun screenshotOffsets(
+    contentHeight: Int,
+    viewportHeight: Int,
+    stepPixels: Int,
+): List<Int> {
+    require(contentHeight >= 0) { "contentHeight must not be negative" }
+    require(viewportHeight >= 0) { "viewportHeight must not be negative" }
+    require(stepPixels > 0) { "stepPixels must be positive" }
+
+    val lastOffset = (contentHeight - viewportHeight).coerceAtLeast(0)
+    if (lastOffset == 0) return listOf(0)
+
+    return (0 until lastOffset step stepPixels).toList() + lastOffset
 }
 
 private fun frameName(baseName: String, variant: String, frameCount: Int, index: Int): String {
