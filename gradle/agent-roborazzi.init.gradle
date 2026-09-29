@@ -1,0 +1,40 @@
+/*
+ * Agent-only Roborazzi runner.
+ *
+ * Gradle's Test task always forks a worker that connects to the build over a
+ * loopback socket. Some automation shells deny that connection. JavaExec starts
+ * JUnit directly with the resolved Android unit-test classpath and does not use
+ * Gradle's Test-worker protocol.
+ */
+gradle.projectsEvaluated {
+    def appProject = gradle.rootProject.project(':app')
+    def testTask = appProject.tasks.named('testDebugUnitTest').get()
+    def mode = appProject.providers.gradleProperty('agent.roborazzi.mode').get()
+
+    if (!(mode in ['record', 'verify', 'compare'])) {
+        throw new GradleException("Unsupported agent Roborazzi mode: ${mode}")
+    }
+
+    def screenshotClasses = appProject.fileTree(
+        'src/test/java/com/jgv/workoutplanner/screenshots'
+    ) {
+        include '*ScreenshotTest.kt'
+    }.files.collect { source ->
+        "com.jgv.workoutplanner.screenshots.${source.name - '.kt'}"
+    }.sort()
+
+    if (screenshotClasses.isEmpty()) {
+        throw new GradleException('No screenshot test classes found')
+    }
+
+    appProject.tasks.register('agentRoborazzi', JavaExec) {
+        group = 'verification'
+        description = "Runs Roborazzi ${mode} directly through JUnit without Gradle Test-worker IPC"
+        classpath = testTask.testClassesDirs + testTask.classpath
+        mainClass = 'org.junit.runner.JUnitCore'
+        args screenshotClasses
+        workingDir = testTask.workingDir
+        systemProperties testTask.systemProperties
+        systemProperty "roborazzi.test.${mode}", 'true'
+    }
+}

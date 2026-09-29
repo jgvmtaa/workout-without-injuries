@@ -146,6 +146,20 @@ harness skips its tests when no Roborazzi task type is set, so plain
 ./gradlew verifyRoborazziDebug  # byte-compare against the committed baselines (also run in CI)
 ```
 
+Coding agents running in a loopback-restricted automation shell must run the equivalent
+agent-safe commands instead of deferring screenshot verification to the user:
+
+```bash
+./gradlew-agent recordRoborazziDebug
+./gradlew-agent verifyRoborazziDebug
+```
+
+`gradlew-agent` keeps Gradle in its launcher JVM, compiles Kotlin in-process, and runs
+the screenshot classes directly through JUnit on the resolved debug-unit-test
+classpath. This avoids both Gradle daemon and Test-worker loopback connections while
+preserving Roborazzi's record/verify behavior. Normal terminals and CI should continue
+using the standard wrapper tasks.
+
 When adding a case, record it, inspect the PNGs it produced, then run verify to
 prove the run is green. When changing a Robolectric or Roborazzi version, keep it
 contemporary with the AGP/Kotlin/Compose versions in the catalog and update the
@@ -174,10 +188,11 @@ Automation shells can fail in two distinct ways, each requiring a different resp
    the build in a separate daemon JVM reached over a loopback socket, so the symptom is
    distinctive: `./gradlew --version` succeeds, the daemon logs `Daemon server started`,
    and the client then fails with `Could not connect to the Gradle daemon`. `--no-daemon`
-   does not help because it still forks.
-
-In either case you are in the wrong kind of shell. Build from your own terminal,
-Android Studio, or CI.
+   alone does not help because it still forks. For Roborazzi work, use
+   `./gradlew-agent recordRoborazziDebug` or `./gradlew-agent verifyRoborazziDebug`; agents
+   should run these commands themselves whenever screenshot work requires them. Other
+   tasks that require Gradle's forked Test workers still need a normal terminal,
+   Android Studio, or CI.
 
 ## Note on emulator installs
 

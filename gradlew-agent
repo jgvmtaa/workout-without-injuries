@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+repo_root=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+cd "$repo_root"
+
+if [[ $# -lt 1 ]]; then
+    echo "Usage: ./gradlew-agent {recordRoborazziDebug|verifyRoborazziDebug|compareRoborazziDebug} [Gradle options]" >&2
+    exit 2
+fi
+
+requested_task=$1
+shift
+
+case "$requested_task" in
+    recordRoborazziDebug) roborazzi_mode=record ;;
+    verifyRoborazziDebug) roborazzi_mode=verify ;;
+    compareRoborazziDebug) roborazzi_mode=compare ;;
+    *)
+        echo "Unsupported task: $requested_task" >&2
+        echo "Supported tasks: recordRoborazziDebug, verifyRoborazziDebug, compareRoborazziDebug" >&2
+        exit 2
+        ;;
+esac
+
+wrapper_properties="$repo_root/gradle/wrapper/gradle-wrapper.properties"
+distribution_url=$(sed -n 's/^distributionUrl=//p' "$wrapper_properties")
+distribution_archive=${distribution_url##*/}
+distribution_name=${distribution_archive%.zip}
+gradle_version=${distribution_name#gradle-}
+gradle_version=${gradle_version%-bin}
+gradle_version=${gradle_version%-all}
+
+gradle_cache_root=${GRADLE_USER_HOME:-"${HOME}/.gradle"}
+distribution_cache="$gradle_cache_root/wrapper/dists/$distribution_name"
+launcher_jar=$(find "$distribution_cache" -path "*/gradle-$gradle_version/lib/gradle-launcher-$gradle_version.jar" -print -quit 2>/dev/null || true)
+
+if [[ -z "$launcher_jar" ]]; then
+    # The wrapper can download and report its version without starting a daemon.
+    "$repo_root/gradlew" --version >/dev/null
+    launcher_jar=$(find "$distribution_cache" -path "*/gradle-$gradle_version/lib/gradle-launcher-$gradle_version.jar" -print -quit 2>/dev/null || true)
+fi
+
+if [[ -z "$launcher_jar" ]]; then
+    echo "Could not locate the Gradle $gradle_version launcher under $distribution_cache" >&2
+    exit 1
+fi
+
+gradle_lib_dir=$(dirname "$launcher_jar")
+instrumentation_agent="$gradle_lib_dir/agents/gradle-instrumentation-agent-$gradle_version.jar"
+if [[ ! -f "$instrumentation_agent" ]]; then
+    echo "Could not locate Gradle's instrumentation agent: $instrumentation_agent" >&2
+    exit 1
+fi
+
+if [[ -n "${JAVA_HOME:-}" && -x "$JAVA_HOME/bin/java" ]]; then
+    java_bin="$JAVA_HOME/bin/java"
+else
+    java_bin=$(command -v java)
+fi
+
+project_jvm_args_line=$(sed -n 's/^org.gradle.jvmargs=//p' "$repo_root/gradle.properties" | tail -1)
+if [[ -z "$project_jvm_args_line" ]]; then
+    echo "org.gradle.jvmargs must be set in gradle.properties" >&2
+    exit 1
+fi
+read -r -a project_jvm_args <<< "$project_jvm_args_line"
+
+# Gradle only stays in the launcher process when its JVM exactly matches the
+# requested build JVM. This avoids both the daemon and Test-worker loopback
+# protocols that are unavailable in some automation shells.
+exec "$java_bin" \
+    "-javaagent:$instrumentation_agent" \
+    "${project_jvm_args[@]}" \
+    -Duser.country=US \
+    -Duser.language=en \
+    -Duser.variant= \
+    --add-opens=java.base/java.util=ALL-UNNAMED \
+    --add-opens=java.base/java.lang=ALL-UNNAMED \
+    --add-opens=java.base/java.lang.invoke=ALL-UNNAMED \
+    --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED \
+    --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
+    --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED \
+    --add-opens=java.base/java.nio.charset=ALL-UNNAMED \
+    --add-opens=java.base/java.net=ALL-UNNAMED \
+    --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED \
+    "-Dorg.gradle.jvmargs=$project_jvm_args_line" \
+    -cp "$launcher_jar" \
+    org.gradle.launcher.GradleMain \
+    --no-daemon \
+    -I "$repo_root/gradle/agent-roborazzi.init.gradle" \
+    -Pkotlin.compiler.execution.strategy=in-process \
+    "-Pagent.roborazzi.mode=$roborazzi_mode" \
+    :app:agentRoborazzi \
+    "$@"
