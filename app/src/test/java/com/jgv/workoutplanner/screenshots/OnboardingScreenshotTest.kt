@@ -52,7 +52,7 @@ class OnboardingScreenshotTest {
 
     @Test
     fun `should show welcome steps and actions in light theme`() {
-        captureScreenshot("welcome-light-1_0") {
+        composeRule.captureScreenshot("welcome-light-1_0") {
             WelcomeScreen(onGetStarted = {}, onReviewSafety = {})
         }
     }
@@ -60,14 +60,14 @@ class OnboardingScreenshotTest {
     @Test
     @Config(qualifiers = DARK_QUALIFIERS)
     fun `should show welcome steps and actions in dark theme`() {
-        captureScreenshot("welcome-dark-1_0") {
+        composeRule.captureScreenshot("welcome-dark-1_0") {
             WelcomeScreen(onGetStarted = {}, onReviewSafety = {})
         }
     }
 
     @Test
     fun `should disable accept action when safety is unacknowledged in light theme`() {
-        captureScreenshot("safety-unacknowledged-light-1_0") {
+        composeRule.captureScreenshot("safety-unacknowledged-light-1_0") {
             SafetyNoticeScreen(
                 state = SafetyNoticeUiState(isLoading = false, isAcknowledged = false),
                 onEvent = {},
@@ -78,7 +78,7 @@ class OnboardingScreenshotTest {
     @Test
     @Config(qualifiers = DARK_QUALIFIERS)
     fun `should disable accept action when safety is unacknowledged in dark theme`() {
-        captureScreenshot("safety-unacknowledged-dark-1_0") {
+        composeRule.captureScreenshot("safety-unacknowledged-dark-1_0") {
             SafetyNoticeScreen(
                 state = SafetyNoticeUiState(isLoading = false, isAcknowledged = false),
                 onEvent = {},
@@ -88,7 +88,7 @@ class OnboardingScreenshotTest {
 
     @Test
     fun `should disable accept action when safety is unacknowledged at large text`() {
-        captureScreenshot(
+        composeRule.captureScreenshot(
             fileName = "safety-unacknowledged-light-1_3",
             fontScale = 1.3f,
         ) {
@@ -101,7 +101,7 @@ class OnboardingScreenshotTest {
 
     @Test
     fun `should enable accept action when safety is acknowledged in light theme`() {
-        captureScreenshot("safety-acknowledged-light-1_0") {
+        composeRule.captureScreenshot("safety-acknowledged-light-1_0") {
             SafetyNoticeScreen(
                 state = SafetyNoticeUiState(isLoading = false, isAcknowledged = true),
                 onEvent = {},
@@ -112,7 +112,7 @@ class OnboardingScreenshotTest {
     @Test
     @Config(qualifiers = DARK_QUALIFIERS)
     fun `should enable accept action when safety is acknowledged in dark theme`() {
-        captureScreenshot("safety-acknowledged-dark-1_0") {
+        composeRule.captureScreenshot("safety-acknowledged-dark-1_0") {
             SafetyNoticeScreen(
                 state = SafetyNoticeUiState(isLoading = false, isAcknowledged = true),
                 onEvent = {},

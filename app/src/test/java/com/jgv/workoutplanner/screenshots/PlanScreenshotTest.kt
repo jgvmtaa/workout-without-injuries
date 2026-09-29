@@ -36,7 +36,7 @@ class PlanScreenshotTest {
 
     @Test
     fun `should show generate action with no saved plan in light theme`() {
-        captureScreenshot("plan-not-generated-light-1_0") {
+        composeRule.captureScreenshot("plan-not-generated-light-1_0") {
             PlanScreen(
                 state = PlanUiState(isLoading = false, hasNoPlan = true),
                 showRegenerateConfirm = false,
@@ -50,7 +50,7 @@ class PlanScreenshotTest {
     @Test
     @Config(qualifiers = DARK_QUALIFIERS)
     fun `should show generate action with no saved plan in dark theme`() {
-        captureScreenshot("plan-not-generated-dark-1_0") {
+        composeRule.captureScreenshot("plan-not-generated-dark-1_0") {
             PlanScreen(
                 state = PlanUiState(isLoading = false, hasNoPlan = true),
                 showRegenerateConfirm = false,
@@ -63,7 +63,7 @@ class PlanScreenshotTest {
 
     @Test
     fun `should show generate action with no saved plan at large text`() {
-        captureScreenshot(
+        composeRule.captureScreenshot(
             fileName = "plan-not-generated-light-1_3",
             fontScale = 1.3f,
         ) {
@@ -322,7 +322,10 @@ class PlanScreenshotTest {
 
     @Test
     fun `should show generating message while regenerating in light theme`() {
-        captureScreenshot("plan-generating-light-1_0") {
+        composeRule.captureScreenshot(
+            fileName = "plan-generating-light-1_0",
+            frameTimeMillis = LOADING_FRAME_TIME_MILLIS,
+        ) {
             PlanScreen(
                 state = PlanUiState(isLoading = false, isGenerating = true),
                 showRegenerateConfirm = false,
@@ -331,12 +334,16 @@ class PlanScreenshotTest {
                 onEvent = {},
             )
         }
+        composeRule.assertIndeterminateProgressDisplayed()
     }
 
     @Test
     @Config(qualifiers = DARK_QUALIFIERS)
     fun `should show generating message while regenerating in dark theme`() {
-        captureScreenshot("plan-generating-dark-1_0") {
+        composeRule.captureScreenshot(
+            fileName = "plan-generating-dark-1_0",
+            frameTimeMillis = LOADING_FRAME_TIME_MILLIS,
+        ) {
             PlanScreen(
                 state = PlanUiState(isLoading = false, isGenerating = true),
                 showRegenerateConfirm = false,
@@ -345,6 +352,7 @@ class PlanScreenshotTest {
                 onEvent = {},
             )
         }
+        composeRule.assertIndeterminateProgressDisplayed()
     }
 
     /**

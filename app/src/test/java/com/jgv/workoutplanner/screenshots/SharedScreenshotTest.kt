@@ -20,18 +20,29 @@ class SharedScreenshotTest {
     @get:Rule
     val roborazziRule = screenshotRule()
 
+    @get:Rule
+    val composeRule = ScrollableScreenshotRule()
+
     @Test
     fun `should show loading indicator in light theme`() {
-        captureScreenshot("loading-light-1_0") {
+        composeRule.captureScreenshot(
+            fileName = "loading-light-1_0",
+            frameTimeMillis = LOADING_FRAME_TIME_MILLIS,
+        ) {
             LoadingContent()
         }
+        composeRule.assertIndeterminateProgressDisplayed()
     }
 
     @Test
     @Config(qualifiers = DARK_QUALIFIERS)
     fun `should show loading indicator in dark theme`() {
-        captureScreenshot("loading-dark-1_0") {
+        composeRule.captureScreenshot(
+            fileName = "loading-dark-1_0",
+            frameTimeMillis = LOADING_FRAME_TIME_MILLIS,
+        ) {
             LoadingContent()
         }
+        composeRule.assertIndeterminateProgressDisplayed()
     }
 }

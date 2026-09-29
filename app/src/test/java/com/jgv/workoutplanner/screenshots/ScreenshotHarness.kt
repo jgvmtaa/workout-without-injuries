@@ -8,8 +8,11 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performSemanticsAction
@@ -44,7 +47,7 @@ import org.junit.Assert.assertEquals
  * never a ViewModel — and captures the complete app window.
  *
  * Recording vs verifying is owned by the Roborazzi Gradle tasks, not by plain
- * `test` (with no task type set, captures are a no-op):
+ * `test` (with no task type set, screenshot tests are skipped):
  *
  * - `./gradlew recordRoborazziDebug` writes baselines into `src/test/screenshots/`.
  * - `./gradlew verifyRoborazziDebug` byte-compares against the committed baselines.
@@ -53,6 +56,7 @@ import org.junit.Assert.assertEquals
  * runner, graphics mode, and light qualifier, plus this rule.
  */
 internal const val BASELINE_DIR = "src/test/screenshots"
+internal const val LOADING_FRAME_TIME_MILLIS = 600L
 
 // Locale leads, density trails; only the night segment varies between the
 // light and dark variants.
@@ -63,7 +67,8 @@ internal const val DARK_QUALIFIERS = "en-rUS-w360dp-h800dp-notlong-port-night-xh
 internal const val RTL_QUALIFIERS = "ar-rXB-w360dp-h800dp-notlong-port-notnight-xhdpi"
 
 /**
- * Compose rule for scrollable captures that only runs where screenshots can run.
+ * Compose rule for single-frame and scrollable captures that only runs where
+ * screenshots can run.
  *
  * The rule's activity (`ComponentActivity`) is declared by the compose test
  * manifest, which is a debug-only dependency — launching it outside a Roborazzi
@@ -107,6 +112,33 @@ class ScrollableScreenshotRule : TestRule {
             )
     }
 
+    fun captureScreenshot(
+        fileName: String,
+        fontScale: Float = 1f,
+        frameTimeMillis: Long? = null,
+        content: @Composable () -> Unit,
+    ) {
+        requireNotNull(delegate) { "Rule did not run" }
+            .captureScreenshot(
+                fileName = fileName,
+                fontScale = fontScale,
+                frameTimeMillis = frameTimeMillis,
+                content = content,
+            )
+    }
+
+    fun assertIndeterminateProgressDisplayed() {
+        requireNotNull(delegate) { "Rule did not run" }
+            .onNode(
+                SemanticsMatcher.expectValue(
+                    SemanticsProperties.ProgressBarRangeInfo,
+                    ProgressBarRangeInfo.Indeterminate,
+                ),
+                useUnmergedTree = true,
+            )
+            .assertIsDisplayed()
+    }
+
     @OptIn(ExperimentalRoborazziApi::class)
     private fun isScreenshotRun(): Boolean =
         roborazziSystemPropertyTaskType().isEnabled()
@@ -125,28 +157,49 @@ fun screenshotRule(): RoborazziRule = RoborazziRule(
 )
 
 /**
- * Renders [content] in [AppTheme] — the theme is driven by the test
- * qualifier, never by stubbing — and captures it to the suite's baseline
- * path. [fileName] is `<screen>-<state>[-<scroll>]-<variant>` without extension.
+ * Renders [content] through the Compose test rule in [AppTheme] — the theme is
+ * driven by the test qualifier, never by stubbing — and captures it to the
+ * suite's baseline path. [fileName] is
+ * `<screen>-<state>[-<scroll>]-<variant>` without extension.
  *
  * Large-text variants ([fontScale] other than 1.0) provide a [Density] with
  * the scaled font size. The app is fully Compose, and Compose reads text
  * scaling from [Density], so this renders the same pixels as a device
- * setting; `dp` dimensions and the viewport are untouched. Variants at the
- * default scale run the unmodified production composition.
+ * setting; `dp` dimensions and the viewport are untouched. The test clock is
+ * held after one frame by default, or after [frameTimeMillis] when a case needs
+ * a representative animation frame, so animations render deterministically
+ * and cannot keep Robolectric's main thread alive during teardown. Variants at
+ * the default scale run the otherwise unmodified production composition.
  */
-fun captureScreenshot(
+@OptIn(ExperimentalRoborazziApi::class)
+fun ComposeContentTestRule.captureScreenshot(
     fileName: String,
     fontScale: Float = 1f,
+    frameTimeMillis: Long? = null,
     content: @Composable () -> Unit,
 ) {
-    captureRoboImage(
-        filePath = "$BASELINE_DIR/$fileName.png",
-    ) {
+    Assume.assumeTrue(
+        "Screenshots run under record/verify/compare on debug",
+        roborazziSystemPropertyTaskType().isEnabled(),
+    )
+    mainClock.autoAdvance = false
+    setContent {
         AppTheme {
             ScaledContent(fontScale, content)
         }
     }
+    // Render a deterministic frame. Keeping auto-advance disabled prevents
+    // indeterminate indicators from continuously scheduling frames during
+    // capture and activity teardown. Loading cases advance farther so their
+    // pinned frame contains a substantial, regression-detectable arc.
+    if (frameTimeMillis == null) {
+        mainClock.advanceTimeByFrame()
+    } else {
+        require(frameTimeMillis >= 0L) { "frameTimeMillis must not be negative" }
+        mainClock.advanceTimeBy(frameTimeMillis)
+    }
+    waitForIdle()
+    onRoot().captureRoboImage("$BASELINE_DIR/$fileName.png")
 }
 
 /**
@@ -185,9 +238,10 @@ fun ComposeContentTestRule.captureScrollable(
     listState: LazyListState? = null,
     content: @Composable () -> Unit,
 ) {
-    if (!roborazziSystemPropertyTaskType().isEnabled()) {
-        return
-    }
+    Assume.assumeTrue(
+        "Screenshots run under record/verify/compare on debug",
+        roborazziSystemPropertyTaskType().isEnabled(),
+    )
     setContent {
         AppTheme {
             ScaledContent(fontScale, content)

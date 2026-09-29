@@ -12,6 +12,4 @@ only to suggest movement limitations; the user decides which limitations apply.
 
 - [`docs/spec.md`](docs/spec.md) is the source of truth for product requirements and app
   behavior.
-- [`tests.spec`](tests.spec) defines required visual test coverage.
 - [`docs/toolchain.md`](docs/toolchain.md) explains the build environment and commands.
-- [`docs/follow-ups.md`](docs/follow-ups.md) tracks unfinished work.

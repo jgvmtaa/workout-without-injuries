@@ -1,14 +1,15 @@
-# UI Screenshot Test Specification
+# Remaining UI Screenshot Tests
 
 ## Purpose
 
-Capture every stable, visually distinct state required by
-[`docs/spec.md`](docs/spec.md), the source of truth for application behavior. Update
-this file in the same change whenever that behavior adds or changes a visual state.
+This temporary file tracks only unimplemented visual cases required by
+[`docs/spec.md`](docs/spec.md), the source of truth for application behavior. Delete a
+case as soon as all of its required variants and baselines are implemented; do not mark
+it complete or retain it as history. Delete this file and its documentation references
+when no cases remain.
 
-This specification is complete when every rendering branch in a screen composable is
-represented by at least one case below. A case may cover several independent branches.
-Combinations that render no new pixels do not require separate captures.
+A case may cover several independent rendering branches. Combinations that render no
+new pixels do not require separate captures.
 
 ## Harness
 
@@ -18,8 +19,7 @@ difference is a harness bug, not a UI change.
 
 - Renderer: Roborazzi over Robolectric native graphics, run as a JVM unit test. No
   emulator — an emulator's GPU, system UI, and font stack vary per host and cannot be
-  pinned. (Not yet in the build: adding the Roborazzi plugin and the Robolectric
-  dependency is prerequisite work for this spec.)
+  pinned.
 - SDK: `@Config(sdk = [35])`, matching `compileSdk`. Not `minSdk` 24 — the baseline
   tracks what the app is compiled and shipped against.
 - Device qualifier: `en-rUS-w360dp-h800dp-notlong-port-notnight-xhdpi`, giving a
@@ -122,77 +122,22 @@ and that screenshots are uniquely good at — mirroring and large text.
   index/weight/overflow arrangement, `SummaryRow`'s `TextAlign.End`, and the
   text-plus-trailing-control rows in the library, picker, and replacement lists.
 
-A case is complete when, for every variant its tags require, the committed baselines
-match the frame count the harness measures for that variant (see Scroll positions,
-step 4). Because the count is measured per variant rather than declared per case, adding
-a row to a dense screen fails the run at 2.0x even when 1.0x still fits.
+A case should be deleted from this file when, for every variant its tags require, the
+committed baselines match the frame count the harness measures for that variant (see
+Scroll positions, step 4). Because the count is measured per variant rather than
+declared per case, adding a row to a dense screen fails the run at 2.0x even when 1.0x
+still fits.
 
-## Screenshot cases
-
-### Onboarding
-
-- [x] `SC-001-welcome` — Welcome headline, disclaimer, three setup steps, Get started,
-  and Review safety actions. No back affordance.
-- [x] `SC-002-safety-unacknowledged` — Four acknowledgements, unchecked confirmation,
-  and disabled Accept safety action. `[dense]`
-- [x] `SC-003-safety-acknowledged` — Checked confirmation and enabled Accept safety
-  action.
-- [x] `SC-004-preferences-incomplete` — Required preference fields unanswered, no
-  derived-split card, fixed disabled Bodyweight row, and Continue disabled.
-  `[tall+]` `[dense+]`
-- [x] `SC-005-preferences-complete` — Goal, experience, schedule, duration, selected
-  equipment, fixed Bodyweight, derived split, and Continue enabled.
-  `[tall+]` `[dense+]` `[rtl]`
-- [x] `SC-006-injuries-none-selected` — Grouped injury list with no selected-count label
-  or status controls. `[tall++]`
-- [x] `SC-007-injuries-selected` — Non-zero selected count and the selected injury's
-  status control. `[tall++]` `[dense]`
-- [x] `SC-008-limitations-no-suggestions` — No-suggestions card, browsable limitations,
-  no selected-count label, and enabled continuation. `[tall++]`
-- [x] `SC-009-limitations-unconfirmed` — Injury-derived suggestions shown separately,
-  all unchecked, and no selected-count label. `[tall++]` `[dense]`
-- [x] `SC-010-limitations-confirmed` — Confirmed suggested and manually browsed
-  limitations, with the non-zero selected-count label. `[tall++]`
-- [x] `SC-011-profile-review` — Complete populated profile, including non-empty injuries
-  and limitations, with Finish setup enabled. `[dense]` `[rtl]`
-- [x] `SC-044-profile-review-minimal` — Complete profile with Bodyweight only, no
-  injuries, and no limitations; both empty-section messages are visible.
-- [x] `SC-045-profile-review-incomplete` — Missing-value labels, incomplete-profile error,
-  and disabled Finish setup action. `[dense]`
-
-### Home
-
-- [x] `SC-012-home-no-plan` — Complete profile summary, zero-limitations copy, library
-  and profile entry points, and Generate plan action. `[dense]`
-- [x] `SC-013-home-current-plan` — Saved plan name, non-zero limitation count, complete
-  profile summary, and View plan action. `[dense]`
-- [x] `SC-014-home-outdated-plan` — Saved plan remains visible with the profile-changed
-  warning and View plan action. `[dense]`
-- [x] `SC-046-home-profile-unavailable` — Defensive state produced when Home observes no
-  saved profile: missing profile-summary value, zero-limitations copy, and no-plan action.
+## Remaining screenshot cases
 
 ### Plan
 
-- [x] `SC-015-plan-not-generated` — Empty plan state with Plan fallback title, no
-  Regenerate action in the app bar, and Generate plan action. `[dense]`
-- [x] `SC-016-plan-complete` — Generated workout days, exercise prescriptions, dividers,
-  and a full-capacity day with no add row. `[tall+]` `[dense+]` `[rtl]`
-- [x] `SC-017-plan-partial` — Partial plan with multiple localized no-match warnings and
-  valid exercises retained below them. `[tall]` `[dense+]`
 - [ ] `SC-018-plan-menu-middle-row` — Middle-row menu with Details, Replace, Move up,
   Move down, and Remove all enabled. `[dense]`
-- [x] `SC-019-plan-add-one-slot` — Editable workout day with one remaining slot and the
-  singular add-exercise label. `[dense]`
-- [x] `SC-020-plan-empty-day` — Manually emptied editable day showing "No exercises in
-  this workout" and its add-exercise row.
-- [x] `SC-021-plan-outdated` — Outdated warning with exercise menus, add rows, and stored
-  partial-plan warnings all hidden. `[tall]` `[dense]`
 - [ ] `SC-022-plan-remove-dialog` — Remove-exercise confirmation dialog over a populated
   plan. `[dense]`
 - [ ] `SC-023-plan-regenerate-dialog` — Regeneration dialog warning that manual edits
   will be lost. `[dense+]`
-- [x] `SC-047-plan-generating` — Held generation state with "Generating your plan…" rather
-  than the generic loading message.
 - [ ] `SC-048-plan-menu-first-row` — First-row menu with Move up disabled and Move down
   enabled.
 - [ ] `SC-049-plan-menu-last-row` — Last-row menu with Move up enabled and Move down
@@ -266,8 +211,6 @@ a row to a dense screen fails the run at 2.0x even when 1.0x still fits.
 
 ### Shared and transient visual states
 
-- [x] `SC-042-loading` — Generic application loading component. It represents every
-  screen that renders the same `LoadingContent` with the default message.
 - [ ] `SC-043-plan-error-snackbar` — "Selected exercise is not eligible for your current
   profile." over a populated plan, verifying snackbar wrapping and bottom placement. This
   is the longest of the five `plan_edit_failed_*` strings; the outdated-plan message is
@@ -328,10 +271,11 @@ tests for behavior that a static image cannot prove:
 
 ## Maintenance rule
 
-When a composable adds or changes a conditional rendering branch, overlay, empty state,
-or supported visual configuration, update this file in the same change. The change is
-complete only when the branch is mapped to an existing case, assigned a new case, or
-listed above as unreachable with the reason it cannot be built.
+When a composable adds or changes an uncovered conditional rendering branch, overlay,
+empty state, or supported visual configuration, add a case in the same change. Delete
+the case once all required tests and baselines are implemented; never convert it to a
+completed checkbox. Delete this file and remove its references when the list becomes
+empty.
 
 When copy changes, re-check the strings this file names as longest: `SC-043`, `SC-056`,
 `SC-057`, and `SC-058` are only meaningful while their message really is the longest in

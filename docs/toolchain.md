@@ -120,7 +120,7 @@ coverage is tracked in [follow-ups.md](follow-ups.md#testing).
 
 ## Screenshot test setup
 
-The screenshot suite in [`tests.spec`](../tests.spec) runs on:
+The remaining screenshot work in [`tests.spec`](../tests.spec) uses:
 
 - **Robolectric** (`org.robolectric:robolectric` in the catalog), to run Compose
   layout on the JVM at the pinned SDK level (`@Config(sdk = [35])`, matching
@@ -137,9 +137,9 @@ under `app/src/test/screenshots/` and named
 Failure actuals/diffs (`*_actual.png`, `*_compare.png`) land next to the baselines
 and under `build/outputs/roborazzi/`; both are git-ignored, never committed.
 
-Recording vs verifying is owned by the Roborazzi Gradle tasks — with no task type
-set, `captureRoboImage` is a no-op, so plain `./gradlew test` neither records nor
-verifies screenshots:
+Recording vs verifying is owned by the Roborazzi Gradle tasks. The screenshot
+harness skips its tests when no Roborazzi task type is set, so plain
+`./gradlew test` neither records nor verifies screenshots:
 
 ```bash
 ./gradlew recordRoborazziDebug  # (re)generate baselines, then review and commit them

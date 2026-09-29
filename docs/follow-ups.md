@@ -2,8 +2,8 @@
 
 This file contains only unfinished, actionable work. Remove an item when it is complete.
 Use [`README.md`](../README.md) for the product overview,
-[`spec.md`](spec.md) for app behavior, and [`tests.spec`](../tests.spec) for required
-visual coverage.
+[`spec.md`](spec.md) for app behavior, and [`tests.spec`](../tests.spec) for remaining
+visual test work.
 
 ## Testing
 
