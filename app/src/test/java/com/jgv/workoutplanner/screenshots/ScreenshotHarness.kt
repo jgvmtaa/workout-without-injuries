@@ -1,8 +1,10 @@
 package com.jgv.workoutplanner.screenshots
 
 import android.content.Context
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -148,6 +150,21 @@ class ScrollableScreenshotRule : TestRule {
             )
     }
 
+    fun captureSnackbarScreenshot(
+        fileName: String,
+        fontScale: Float = 1f,
+        snackbarMessage: String,
+        content: @Composable (SnackbarHostState) -> Unit,
+    ) {
+        requireNotNull(delegate) { "Rule did not run" }
+            .captureSnackbarScreenshot(
+                fileName = fileName,
+                fontScale = fontScale,
+                snackbarMessage = snackbarMessage,
+                content = content,
+            )
+    }
+
     fun captureMenuScreenshot(
         fileName: String,
         fontScale: Float = 1f,
@@ -284,6 +301,47 @@ fun ComposeContentTestRule.captureDialogScreenshot(
     } finally {
         RuntimeEnvironment.setFontScale(originalFontScale)
     }
+}
+
+/**
+ * Single-frame capture with a hoisted snackbar held open.
+ *
+ * The snackbar lives in the screen's own composition (unlike dialogs and menus,
+ * which render in a separate window), so this captures through `onRoot()`. The
+ * message is shown via a `LaunchedEffect` — the fixture "opens" it rather than
+ * timing a real operation — and the clock advances past the snackbar's enter
+ * animation so the captured frame is the settled state. [snackbarMessage] is
+ * asserted displayed so a missing snackbar fails instead of recording a
+ * snackbar-less baseline. The default short duration (4000ms) outlasts the
+ * 1000ms advance, so the snackbar is still visible at capture time.
+ */
+@OptIn(ExperimentalRoborazziApi::class)
+fun ComposeContentTestRule.captureSnackbarScreenshot(
+    fileName: String,
+    fontScale: Float = 1f,
+    snackbarMessage: String,
+    content: @Composable (SnackbarHostState) -> Unit,
+) {
+    Assume.assumeTrue(
+        "Screenshots run under record/verify/compare on debug",
+        roborazziSystemPropertyTaskType().isEnabled(),
+    )
+    mainClock.autoAdvance = false
+    val snackbarHostState = SnackbarHostState()
+    setContent {
+        AppTheme {
+            ScaledContent(fontScale) {
+                LaunchedEffect(Unit) {
+                    snackbarHostState.showSnackbar(snackbarMessage)
+                }
+                content(snackbarHostState)
+            }
+        }
+    }
+    mainClock.advanceTimeBy(1_000L)
+    waitForIdle()
+    onNodeWithText(snackbarMessage).assertIsDisplayed()
+    onRoot().captureRoboImage("$BASELINE_DIR/$fileName.png")
 }
 
 /**

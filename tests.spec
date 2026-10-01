@@ -131,13 +131,6 @@ still fits.
 
 ## Remaining screenshot cases
 
-### Plan
-
-- [ ] `SC-022-plan-remove-dialog` — Remove-exercise confirmation dialog over a populated
-  plan. `[dense]`
-- [ ] `SC-051-plan-add-multiple-slots` — Editable workout day with at least two remaining
-  slots and the plural add-exercise label. `[dense]`
-
 ### Exercise library and details
 
 - [ ] `SC-024-library-default` — Empty search with no clear icon, no Clear filters action,
@@ -203,18 +196,10 @@ still fits.
 
 ### Shared and transient visual states
 
-- [ ] `SC-043-plan-error-snackbar` — "Selected exercise is not eligible for your current
-  profile." over a populated plan, verifying snackbar wrapping and bottom placement. This
-  is the longest of the five `plan_edit_failed_*` strings; the outdated-plan message is
-  shorter and does not test wrapping. `[dense+]`
 - [ ] `SC-056-replacement-error-snackbar` — The same longest edit-failure message on
   Replacement with its confirmation bottom bar present. `[dense+]`
 - [ ] `SC-057-picker-error-snackbar` — The same longest edit-failure message on the
   Picker with its confirmation bottom bar present. `[dense+]`
-- [ ] `SC-058-plan-generation-error-snackbar` — "Could not generate the plan. Check your
-  profile and try again." over the empty-plan body. The longest snackbar string in the
-  app, and the only one that appears over centred empty content rather than a list.
-  `[dense+]`
 
 ## States intentionally excluded from screenshots
 

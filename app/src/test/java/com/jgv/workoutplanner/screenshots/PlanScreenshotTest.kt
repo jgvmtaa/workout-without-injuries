@@ -11,6 +11,7 @@ import com.jgv.workoutplanner.domain.model.ExerciseDefinition
 import com.jgv.workoutplanner.domain.model.ExerciseId
 import com.jgv.workoutplanner.domain.model.PlanWarning
 import com.jgv.workoutplanner.domain.model.WorkoutDayFocus
+import com.jgv.workoutplanner.feature.plan.PendingExerciseRemoval
 import com.jgv.workoutplanner.feature.plan.PlannedExerciseUiModel
 import com.jgv.workoutplanner.feature.plan.PlanScreen
 import com.jgv.workoutplanner.feature.plan.PlanUiState
@@ -489,6 +490,172 @@ class PlanScreenshotTest {
     }
 
     @Test
+    fun `should confirm removal over a populated plan in light theme`() {
+        composeRule.captureDialogScreenshot(
+            fileName = "plan-remove-dialog-light-1_0",
+            dialogTitle = removeDialogTitle(),
+        ) {
+            PlanScreen(
+                state = completePlan,
+                showRegenerateConfirm = false,
+                pendingRemoval = PendingExerciseRemoval(
+                    dayId = "day-upper-1",
+                    exerciseId = ExerciseId.MACHINE_CHEST_PRESS,
+                ),
+                snackbarHostState = SnackbarHostState(),
+                onEvent = {},
+            )
+        }
+    }
+
+    @Test
+    @Config(qualifiers = DARK_QUALIFIERS)
+    fun `should confirm removal over a populated plan in dark theme`() {
+        composeRule.captureDialogScreenshot(
+            fileName = "plan-remove-dialog-dark-1_0",
+            dialogTitle = removeDialogTitle(),
+        ) {
+            PlanScreen(
+                state = completePlan,
+                showRegenerateConfirm = false,
+                pendingRemoval = PendingExerciseRemoval(
+                    dayId = "day-upper-1",
+                    exerciseId = ExerciseId.MACHINE_CHEST_PRESS,
+                ),
+                snackbarHostState = SnackbarHostState(),
+                onEvent = {},
+            )
+        }
+    }
+
+    @Test
+    fun `should confirm removal over a populated plan at large text`() {
+        composeRule.captureDialogScreenshot(
+            fileName = "plan-remove-dialog-light-1_3",
+            fontScale = 1.3f,
+            dialogTitle = removeDialogTitle(),
+        ) {
+            PlanScreen(
+                state = completePlan,
+                showRegenerateConfirm = false,
+                pendingRemoval = PendingExerciseRemoval(
+                    dayId = "day-upper-1",
+                    exerciseId = ExerciseId.MACHINE_CHEST_PRESS,
+                ),
+                snackbarHostState = SnackbarHostState(),
+                onEvent = {},
+            )
+        }
+    }
+
+    @Test
+    fun `should show plural add label with two slots left in light theme`() {
+        planCase(
+            baseName = "plan-add-multiple-slots",
+            variant = "light-1_0",
+            state = multiSlotPlan,
+        )
+    }
+
+    @Test
+    @Config(qualifiers = DARK_QUALIFIERS)
+    fun `should show plural add label with two slots left in dark theme`() {
+        planCase(
+            baseName = "plan-add-multiple-slots",
+            variant = "dark-1_0",
+            state = multiSlotPlan,
+        )
+    }
+
+    @Test
+    fun `should show plural add label with two slots left at large text`() {
+        planCase(
+            baseName = "plan-add-multiple-slots",
+            variant = "light-1_3",
+            fontScale = 1.3f,
+            state = multiSlotPlan,
+        )
+    }
+
+    @Test
+    fun `should show ineligible edit failure over a populated plan in light theme`() {
+        planSnackbarCase(
+            fileName = "plan-error-snackbar-light-1_0",
+            state = completePlan,
+            messageRes = R.string.plan_edit_failed_ineligible,
+        )
+    }
+
+    @Test
+    @Config(qualifiers = DARK_QUALIFIERS)
+    fun `should show ineligible edit failure over a populated plan in dark theme`() {
+        planSnackbarCase(
+            fileName = "plan-error-snackbar-dark-1_0",
+            state = completePlan,
+            messageRes = R.string.plan_edit_failed_ineligible,
+        )
+    }
+
+    @Test
+    fun `should show ineligible edit failure over a populated plan at large text`() {
+        planSnackbarCase(
+            fileName = "plan-error-snackbar-light-1_3",
+            state = completePlan,
+            messageRes = R.string.plan_edit_failed_ineligible,
+            fontScale = 1.3f,
+        )
+    }
+
+    @Test
+    fun `should show ineligible edit failure over a populated plan at largest text`() {
+        planSnackbarCase(
+            fileName = "plan-error-snackbar-light-2_0",
+            state = completePlan,
+            messageRes = R.string.plan_edit_failed_ineligible,
+            fontScale = 2f,
+        )
+    }
+
+    @Test
+    fun `should show generation failure over the empty plan body in light theme`() {
+        planSnackbarCase(
+            fileName = "plan-generation-error-snackbar-light-1_0",
+            state = PlanUiState(isLoading = false, hasNoPlan = true),
+            messageRes = R.string.plan_generation_failed,
+        )
+    }
+
+    @Test
+    @Config(qualifiers = DARK_QUALIFIERS)
+    fun `should show generation failure over the empty plan body in dark theme`() {
+        planSnackbarCase(
+            fileName = "plan-generation-error-snackbar-dark-1_0",
+            state = PlanUiState(isLoading = false, hasNoPlan = true),
+            messageRes = R.string.plan_generation_failed,
+        )
+    }
+
+    @Test
+    fun `should show generation failure over the empty plan body at large text`() {
+        planSnackbarCase(
+            fileName = "plan-generation-error-snackbar-light-1_3",
+            state = PlanUiState(isLoading = false, hasNoPlan = true),
+            messageRes = R.string.plan_generation_failed,
+            fontScale = 1.3f,
+        )
+    }
+
+    @Test
+    fun `should show generation failure over the empty plan body at largest text`() {
+        planSnackbarCase(
+            fileName = "plan-generation-error-snackbar-light-2_0",
+            state = PlanUiState(isLoading = false, hasNoPlan = true),
+            messageRes = R.string.plan_generation_failed,
+            fontScale = 2f,
+        )
+    }
+
+    @Test
     fun `should show generating message while regenerating in light theme`() {
         composeRule.captureScreenshot(
             fileName = "plan-generating-light-1_0",
@@ -552,6 +719,33 @@ class PlanScreenshotTest {
         }
     }
 
+    /**
+     * Single-frame plan capture with a hoisted snackbar held open showing the
+     * longest message for its host layout.
+     */
+    private fun planSnackbarCase(
+        fileName: String,
+        state: PlanUiState,
+        messageRes: Int,
+        fontScale: Float = 1f,
+    ) {
+        val message = ApplicationProvider.getApplicationContext<Context>()
+            .getString(messageRes)
+        composeRule.captureSnackbarScreenshot(
+            fileName = fileName,
+            fontScale = fontScale,
+            snackbarMessage = message,
+        ) { snackbarHostState ->
+            PlanScreen(
+                state = state,
+                showRegenerateConfirm = false,
+                pendingRemoval = null,
+                snackbarHostState = snackbarHostState,
+                onEvent = {},
+            )
+        }
+    }
+
     private fun menuCase(
         fileName: String,
         state: PlanUiState,
@@ -598,6 +792,29 @@ class PlanScreenshotTest {
         fun regenerateDialogTitle(): String =
             ApplicationProvider.getApplicationContext<Context>()
                 .getString(R.string.plan_regenerate_confirm_title)
+
+        /** Removal dialog title, resolved from resources. */
+        fun removeDialogTitle(): String =
+            ApplicationProvider.getApplicationContext<Context>()
+                .getString(R.string.plan_remove_confirm_title)
+
+        /** Single editable day with two remaining slots, exercising the plural add label. */
+        val multiSlotPlan = PlanUiState(
+            isLoading = false,
+            planName = "UPPER_LOWER - 4 days",
+            days = listOf(
+                WorkoutDayUiModel(
+                    id = "day-upper-1",
+                    name = "Upper 1",
+                    focus = WorkoutDayFocus.UPPER_BODY,
+                    exercises = listOf(
+                        planned(ExerciseId.MACHINE_CHEST_PRESS, 3, 8..12, 90, 0),
+                        planned(ExerciseId.LAT_PULLDOWN, 3, 8..12, 90, 1),
+                    ),
+                    remainingCapacity = 2,
+                ),
+            ),
+        )
 
         fun planned(
             id: ExerciseId,
