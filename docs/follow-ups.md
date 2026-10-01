@@ -18,8 +18,6 @@ visual test work.
 - [ ] Use the Android SplashScreen API to bridge profile loading and avoid flashing the
   in-app loading spinner during startup.
 - [ ] Add a step counter or progress indicator to the six-step onboarding flow.
-- [ ] Model time-based prescriptions so isometric exercises such as front and side
-  planks display a hold duration instead of `1–1 reps`.
 - [ ] Search localized exercise and filter labels rather than enum identifiers while
   preserving normalized matching.
 - [ ] Show which selected injury or injuries produced each suggested movement
